@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ApiResponseOutDto<T> {
     private String status;
-    private ResponseDetailsOutDto response;
+    private String message;
     private T data;
-    private ResponseMetaOutDto meta;
+    private Instant timestamp;
 }
