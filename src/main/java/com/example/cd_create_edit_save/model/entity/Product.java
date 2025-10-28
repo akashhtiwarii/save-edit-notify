@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,19 +41,19 @@ public class Product {
     private String purchaseAprType;
 
     @Column(name = "PURCHASE_APR_MIN", precision = 5, scale = 2)
-    private Double purchaseAprMin;
+    private BigDecimal purchaseAprMin;
 
     @Column(name = "PURCHASE_APR_MAX", precision = 5, scale = 2)
-    private Double purchaseAprMax;
+    private BigDecimal purchaseAprMax;
 
     @Column(name = "CASH_APR_TYPE", length = 50)
     private String cashAprType;
 
     @Column(name = "CASH_APR_MIN", precision = 5, scale = 2)
-    private Double cashAprMin;
+    private BigDecimal cashAprMin;
 
     @Column(name = "CASH_APR_MAX", precision = 5, scale = 2)
-    private Double cashAprMax;
+    private BigDecimal cashAprMax;
 
     @Column(name = "CREDIT_LINE_MIN")
     private Integer creditLineMin;
@@ -102,8 +103,7 @@ public class Product {
     @Column(name = "OVERRIDE_DATETIME")
     private LocalDateTime overrideDatetime;
 
-    @Lob
-    @Column(name = "OVERRIDE_JUSTIFICATION")
+    @Column(name = "override_justification", columnDefinition = "BYTEA")
     private byte[] overrideJustification;
 
     @Column(name = "REVIEW_COMMENTS", length = 1000)
