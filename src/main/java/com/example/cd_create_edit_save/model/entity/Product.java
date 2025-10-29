@@ -109,10 +109,10 @@ public class Product {
     private String reviewComments;
 
     @Column(name = "PRIN")
-    private Integer prin;
+    private String prin;
 
     @Column(name = "CWS_PRODUCT_ID")
-    private Integer cwsProductId;
+    private String cwsProductId;
 
     @Column(name = "CHA_CODE", length = 4)
     private String chaCode;
