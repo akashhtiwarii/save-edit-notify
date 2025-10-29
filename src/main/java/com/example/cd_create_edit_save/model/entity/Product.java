@@ -3,7 +3,6 @@ package com.example.cd_create_edit_save.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -118,8 +117,8 @@ public class Product {
     @Column(name = "CHA_CODE", length = 4)
     private String chaCode;
 
-    @Column(name = "BOARDING_INDICATOR", length = 50)
-    private String boardingIndicator;
+    @Column(name = "BOARDING_INDICATOR", columnDefinition = "text[]")
+    private String[] boardingIndicator;
 
     @Column(name = "START_DATE")
     private LocalDateTime startDate;
