@@ -1,6 +1,6 @@
 package com.example.cd_create_edit_save.exception;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
