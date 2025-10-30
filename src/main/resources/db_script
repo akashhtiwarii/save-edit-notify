@@ -122,15 +122,12 @@ CREATE TABLE TBL_PRODUCT (
     FEE_TYPE_SHT_CD VARCHAR(2) NOT NULL,
     REWARDS_TYPE_SHT_CD VARCHAR(2) NOT NULL,
     APR_TYPE VARCHAR(50),
-    PURCHASE_APR_TYPE VARCHAR(50),
     PURCHASE_APR_MIN NUMERIC(5,2),
     PURCHASE_APR_MAX NUMERIC(5,2),
-    CASH_APR_TYPE VARCHAR(50) CHECK (CASH_APR_TYPE IN ('BAND', 'SPECIFIC')),
     CASH_APR_MIN NUMERIC(5,2),
     CASH_APR_MAX NUMERIC(5,2),
     CREDIT_LINE_MIN INT,
     CREDIT_LINE_MAX INT,
-    SECURITY_DEPOSIT_VALUE INT,
     SECURITY_DEPOSIT_INDICATOR VARCHAR(1),
     DEPOSIT_MIN INT,
     DEPOSIT_MAX INT,
@@ -179,6 +176,11 @@ DECLARE
     prin VARCHAR(50);
     cws VARCHAR(50);
     cha VARCHAR(50);
+    apr_type_val VARCHAR(50);
+    sec_deposit_ind VARCHAR(1);
+    random_flags TEXT[];
+    credit_min INT;
+    credit_max INT;
 BEGIN
     WHILE i <= 50 LOOP
         SELECT PRD_SHT_CD INTO prd FROM TBL_PRODUCT_SHT_CODE ORDER BY RANDOM() LIMIT 1;
@@ -189,14 +191,54 @@ BEGIN
         SELECT CHA_CODE INTO cha FROM TBL_CHA_CODE ORDER BY RANDOM() LIMIT 1;
 
         pid := prd || '-' || fee || '-' || rew || '-' || LPAD(i::TEXT, 7, '0');
+
+        -- Randomly assign APR_TYPE as FIXED or VARIABLE
+        IF RANDOM() < 0.5 THEN
+            apr_type_val := 'FIXED';
+        ELSE
+            apr_type_val := 'VARIABLE';
+        END IF;
+
+        -- Generate APR values
         pmin := ROUND(((RANDOM() * 20) + 5)::numeric, 2);
-        pmax := pmin + 10.00;
+
+        -- For FIXED, min = max; for VARIABLE, max > min
+        IF apr_type_val = 'FIXED' THEN
+            pmax := pmin;
+        ELSE
+            pmax := pmin + ROUND(((RANDOM() * 10) + 5)::numeric, 2);
+        END IF;
+
+        -- Generate Credit Line Min and Max (ALWAYS populated, independent of security deposit)
+        credit_min := (FLOOR(RANDOM() * 10) + 3) * 100; -- Random: 300, 400, 500...1200
+        credit_max := credit_min + (FLOOR(RANDOM() * 50) + 20) * 100; -- credit_max > credit_min
+
+        -- Randomly set security deposit indicator
+        IF RANDOM() < 0.6 THEN
+            sec_deposit_ind := 'Y';
+        ELSE
+            sec_deposit_ind := 'N';
+        END IF;
+
+        -- Generate random boarding indicators (flags)
+        random_flags := ARRAY[]::TEXT[];
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG1'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG2'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG3'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG4'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG5'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG6'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG7'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG8'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG9'); END IF;
+        IF RANDOM() < 0.3 THEN random_flags := array_append(random_flags, 'PC_FLAG10'); END IF;
+        IF RANDOM() < 0.4 THEN random_flags := array_append(random_flags, 'UPC'); END IF;
 
         INSERT INTO TBL_PRODUCT (
             PRODUCT_ID, PRODUCT_SHT_CD, FEE_TYPE_SHT_CD, REWARDS_TYPE_SHT_CD,
-            APR_TYPE, PURCHASE_APR_TYPE, PURCHASE_APR_MIN, PURCHASE_APR_MAX,
-            CASH_APR_TYPE, CASH_APR_MIN, CASH_APR_MAX,
-            CREDIT_LINE_MIN, CREDIT_LINE_MAX, SECURITY_DEPOSIT_VALUE,
+            APR_TYPE, PURCHASE_APR_MIN, PURCHASE_APR_MAX,
+            CASH_APR_MIN, CASH_APR_MAX,
+            CREDIT_LINE_MIN, CREDIT_LINE_MAX,
             SECURITY_DEPOSIT_INDICATOR, DEPOSIT_MIN, DEPOSIT_MAX,
             TERMS_CONDITIONS, CARDHOLDER_AGREEMENT, CARD_IMAGE,
             STATUS, CREATED_BY, CREATED_DATETIME, REVIEWED_BY, REVIEWED_DATETIME,
@@ -205,14 +247,19 @@ BEGIN
         )
         VALUES (
             pid, prd, fee, rew,
-            'STANDARD', 'FIXED', pmin, pmax,
-            'BAND', pmin * 1.05, pmax * 1.05,
-            500, 5000, 100,
-            'Y', 100, 500,
-            'Terms & Conditions Sample', 'Agreement Sample', 'ImagePath',
+            apr_type_val, pmin, pmax,
+            pmin * 1.05, pmax * 1.05,
+            credit_min, credit_max,  -- ✅ ALWAYS POPULATED
+            sec_deposit_ind,
+            CASE WHEN sec_deposit_ind = 'Y' THEN 200 ELSE NULL END,  -- ✅ Only deposit min/max depend on indicator
+            CASE WHEN sec_deposit_ind = 'Y' THEN 5000 ELSE NULL END,
+            'https://example.com/terms/' || pid,
+            'https://example.com/agreement/' || pid,
+            'https://example.com/card-image/' || pid,
             'ACTIVE', 'SYSTEM', NOW(), 'REVIEWER', NOW(),
-            'ADMIN', NOW(), '\\x00', 'OK',
-            prin, cws, cha, ARRAY['PC_FLAG1', 'PC_FLAG3', 'PC_FLAG5']::VARCHAR[], NOW(), NOW() + INTERVAL '1 year'
+            NULL, NULL, NULL, 'Product created automatically',
+            prin, cws, cha, random_flags,
+            NOW(), NOW() + INTERVAL '1 year'
         );
 
         i := i + 1;
@@ -232,8 +279,14 @@ SET PURCHASE_APR_MIN = CASE
 END;
 
 UPDATE TBL_PRODUCT
+SET PURCHASE_APR_MAX = CASE
+    WHEN PURCHASE_APR_MAX < 5 THEN 5
+    WHEN PURCHASE_APR_MAX > 50 THEN 50
+    ELSE PURCHASE_APR_MAX
+END;
+
+UPDATE TBL_PRODUCT
 SET CASH_APR_MIN = PURCHASE_APR_MIN * 1.05;
 
 UPDATE TBL_PRODUCT
-SET CASH_APR_MAX = PURCHASE_APR_MAX * 1.05
-WHERE CASH_APR_TYPE = 'BAND';
+SET CASH_APR_MAX = PURCHASE_APR_MAX * 1.05;

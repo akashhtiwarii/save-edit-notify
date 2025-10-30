@@ -36,17 +36,11 @@ public class Product {
     @Column(name = "APR_TYPE", length = 50)
     private String aprType;
 
-    @Column(name = "PURCHASE_APR_TYPE", length = 50)
-    private String purchaseAprType;
-
     @Column(name = "PURCHASE_APR_MIN", precision = 5, scale = 2)
     private BigDecimal purchaseAprMin;
 
     @Column(name = "PURCHASE_APR_MAX", precision = 5, scale = 2)
     private BigDecimal purchaseAprMax;
-
-    @Column(name = "CASH_APR_TYPE", length = 50)
-    private String cashAprType;
 
     @Column(name = "CASH_APR_MIN", precision = 5, scale = 2)
     private BigDecimal cashAprMin;
@@ -59,9 +53,6 @@ public class Product {
 
     @Column(name = "CREDIT_LINE_MAX")
     private Integer creditLineMax;
-
-    @Column(name = "SECURITY_DEPOSIT_VALUE")
-    private Integer securityDepositValue;
 
     @Column(name = "SECURITY_DEPOSIT_INDICATOR", length = 1)
     private String securityDepositIndicator;
@@ -102,7 +93,7 @@ public class Product {
     @Column(name = "OVERRIDE_DATETIME")
     private LocalDateTime overrideDatetime;
 
-    @Column(name = "override_justification", columnDefinition = "BYTEA")
+    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "BYTEA")
     private byte[] overrideJustification;
 
     @Column(name = "REVIEW_COMMENTS", length = 1000)
@@ -114,7 +105,7 @@ public class Product {
     @Column(name = "CWS_PRODUCT_ID")
     private String cwsProductId;
 
-    @Column(name = "CHA_CODE", length = 4)
+    @Column(name = "CHA_CODE", length = 50)
     private String chaCode;
 
     @Column(name = "BOARDING_INDICATOR", columnDefinition = "text[]")
