@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -27,97 +30,113 @@ public class ProductServiceImpl implements ProductService {
     private ProductShortCodeRepository productShortCodeRepository;
 
     @Override
-    public ApiResponseOutDto<List<ProductOutDto>> getProducts(Long offset , Long limit) {
-//
-        if (offset == null) offset = 0L;
-        if (limit == null) limit = Long.MAX_VALUE;
-        List<Object[]> resultList = productRepository.getProducts(offset, limit);
+    public ApiResponseOutDto<List<ProductOutDto>> getProducts(Long offset, Long limit) {
+        try {
+            if (offset == null) offset = 0L;
+            if (limit == null) limit = Long.MAX_VALUE;
 
-        List<ProductOutDto> products = resultList.stream()
-                .map(obj -> ProductOutDto.builder()
-                        .shortCode((String) obj[0])
-                        .productName((String) obj[1])
-                        .fee_type((String) obj[2])
-                        .status((String) obj[3])
-                        .startDate(obj[4] != null ? ((Timestamp) obj[4]).toLocalDateTime() : null)
-                        .endDate(obj[5] != null ? ((Timestamp) obj[5]).toLocalDateTime() : null)
-                        .min_apr(obj[6] != null ? ((Number) obj[6]).doubleValue() : null)
-                        .max_apr(obj[7] != null ? ((Number) obj[7]).doubleValue() : null)
-                        .build())
-                .collect(Collectors.toList());
+            List<Object[]> resultList = productRepository.getProducts(offset, limit);
 
+            List<ProductOutDto> products = resultList.stream()
+                    .map(ProductOutDto::fromEntity)
+                    .collect(Collectors.toList());
 
-        return ApiResponseOutDto.success(products);
+            return ApiResponseOutDto.<List<ProductOutDto>>builder()
+                    .status("success")
+                    .message("Products retrieved successfully")
+                    .data(products)
+                    .timestamp(Instant.now())
+                    .build();
+
+        } catch (Exception e) {
+            return ApiResponseOutDto.<List<ProductOutDto>>builder()
+                    .status("error")
+                    .message("Error retrieving products: " + e.getMessage())
+                    .data(Collections.emptyList())
+                    .timestamp(Instant.now())
+                    .build();
+        }
     }
 
     @Override
-    public ApiResponseOutDto<List<ProductOutDto>> getProductByParameters(String text, Double min_apr, Double max_apr, String status , long offset , long limit)  {
+    public ApiResponseOutDto<Map<String, Object>> getProductByParameters(String text, Double min_apr, Double max_apr, String status, Long offset, Long limit) {
+        try {
+            if (text != null && text.trim().isEmpty()) text = null;
+            if (status != null && status.trim().isEmpty()) status = null;
+            if (offset == null) offset = 0L;
+            if (limit == null) limit = Long.MAX_VALUE;
+            List<Object[]> resultList = productRepository.findProductsFiltered(text, status, min_apr, max_apr, limit, offset);
+            long totalCount = 0L;
 
-        if (text != null && text.trim().isEmpty()) text = null;
-        if (status != null && status.trim().isEmpty()) status = null;
-
-        List<Object[]> resultList = productRepository.findProductsFiltered(text, status, min_apr, max_apr , limit ,offset);
-
-        List<ProductOutDto> products = resultList.stream()
-                .map(obj -> ProductOutDto.builder()
-                        .shortCode((String) obj[0])
-                        .productName((String) obj[1])
-                        .fee_type((String) obj[2])
-                        .status((String) obj[3])
-                        .startDate(obj[4] != null ? ((Timestamp) obj[4]).toLocalDateTime() : null)
-                        .endDate(obj[5] != null ? ((Timestamp) obj[5]).toLocalDateTime() : null)
-                        .min_apr(obj[6] != null ? ((Number) obj[6]).doubleValue() : null)
-                        .max_apr(obj[7] != null ? ((Number) obj[7]).doubleValue() : null)
-                        .build())
-                .collect(Collectors.toList());
-
-        products.forEach(System.out::println);
-
-        return ApiResponseOutDto.success(products);
-    }
-
-
-
-
-     @Override
-     public ByteArrayInputStream exportProductsToCsv() {
-        List<Object[]> resultList = productRepository.getProducts(0L, Long.MAX_VALUE);
-        List<ProductOutDto> products = resultList.stream()
-                .map(obj -> ProductOutDto.builder()
-                        .shortCode((String) obj[0])
-                        .productName((String) obj[1])
-                        .fee_type((String) obj[2])
-                        .status((String) obj[3])
-                        .startDate(obj[4] != null ? ((Timestamp) obj[4]).toLocalDateTime() : null)
-                        .endDate(obj[5] != null ? ((Timestamp) obj[5]).toLocalDateTime() : null)
-                        .min_apr(obj[6] != null ? ((Number) obj[6]).doubleValue() : null)
-                        .max_apr(obj[7] != null ? ((Number) obj[7]).doubleValue() : null)
-                        .build())
-                .collect(Collectors.toList());
-
-
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             CSVPrinter csvPrinter = new CSVPrinter(
-                     new PrintWriter(out),
-                     CSVFormat.DEFAULT.withHeader("Product Code", "Product Name", "Status", "APR Type"))) {
-
-            for (ProductOutDto p : products) {
-                csvPrinter.printRecord(
-                        p.getShortCode(),
-                        p.getStatus(),
-                        p.getProductName(),
-                        p.getFee_type(),
-                        p.getMin_apr(),
-                        p.getMax_apr(),
-                        p.getStartDate(),
-                        p.getEndDate()
-                );
+            if (resultList != null && !resultList.isEmpty() && resultList.get(0)[8] != null) {
+                totalCount = ((Number) resultList.get(0)[8]).longValue();
+            } else {
+                totalCount = ((Number) productRepository.findProductsFiltered(text, status, min_apr, max_apr ,Long.MAX_VALUE , 0L).get(0)[8]).longValue();
             }
 
-            csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
+            List<ProductOutDto> products = resultList.stream()
+                    .map(ProductOutDto::fromEntity)
+                    .collect(Collectors.toList());
+
+            System.out.println("Total Count: " + totalCount);
+            products.forEach(System.out::println);
+
+
+
+            return ApiResponseOutDto.<Map<String , Object>>builder()
+                    .status("success")
+                    .message("Filtered products retrieved successfully. Total: " + totalCount)
+                    .data(Map.of("products", products, "totalCount", totalCount))
+                    .timestamp(Instant.now())
+                    .build();
+
         } catch (Exception e) {
-            throw new RuntimeException("Error generating CSV file: " + e.getMessage());
+            return ApiResponseOutDto.<Map<String , Object>>builder()
+                    .status("error")
+                    .message("Error retrieving filtered products: " + e.getMessage())
+                    .data(Collections.emptyMap())
+                    .timestamp(Instant.now())
+                    .build();
+        }
+    }
+
+    @Override
+    public ByteArrayInputStream exportProductsToCsv() {
+        try {
+            List<Object[]> resultList = productRepository.getProducts(0L, Long.MAX_VALUE);
+            List<ProductOutDto> products = resultList.stream()
+                    .map(ProductOutDto::fromEntity)
+                    .collect(Collectors.toList());
+
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+                 CSVPrinter csvPrinter = new CSVPrinter(
+                         new PrintWriter(out),
+                         CSVFormat.DEFAULT.withHeader(
+                                 "Product Code", "Product Name", "Status", "Fee Type", "Min APR", "Max APR", "Start Date", "End Date"
+                         ))) {
+
+                for (ProductOutDto p : products) {
+                    csvPrinter.printRecord(
+                            p.getShortCode(),
+                            p.getProductName(),
+                            p.getStatus(),
+                            p.getFee_type(),
+                            p.getMin_apr(),
+                            p.getMax_apr(),
+                            p.getStartDate(),
+                            p.getEndDate()
+                    );
+                }
+
+                csvPrinter.flush();
+                return new ByteArrayInputStream(out.toByteArray());
+
+            } catch (IOException e) {
+                throw new RuntimeException("Error writing CSV: " + e.getMessage(), e);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating CSV file: " + e.getMessage(), e);
         }
     }
 

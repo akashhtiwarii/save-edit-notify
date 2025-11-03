@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -33,7 +34,7 @@ public class ProductController {
 
 
     @GetMapping("getProductsByParameters")
-    public ResponseEntity<ApiResponseOutDto<List<ProductOutDto>>> getProductByParameters(
+    public ResponseEntity<ApiResponseOutDto<Map<String , Object>>> getProductByParameters(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) Double min_apr,
             @RequestParam(required = false) Double max_apr,
@@ -41,7 +42,7 @@ public class ProductController {
             @RequestParam(required = false) Long offset ,
             @RequestParam(required = false) Long limit
     ) {
-        ApiResponseOutDto<List<ProductOutDto>> products = productService.getProductByParameters(text, min_apr, max_apr, status ,offset,limit);
+        ApiResponseOutDto<Map<String , Object>> products = productService.getProductByParameters(text, min_apr, max_apr, status ,offset,limit);
         return new ResponseEntity<>(products, HttpStatus.OK);
 
     }

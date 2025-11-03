@@ -44,7 +44,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             p.START_DATE AS startDate,
             p.END_DATE AS endDate,
             p.purchase_apr_min,
-            p.purchase_apr_max
+            p.purchase_apr_max,
+            COUNT(*) OVER() AS total_count
         FROM (
             SELECT p.product_sht_cd, p.fee_type_sht_cd, p.purchase_apr_min, p.purchase_apr_max,
                    p.status, p.start_date, p.end_date
