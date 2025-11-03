@@ -1,12 +1,11 @@
-INSERT INTO TBL_USER (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, ROLE, PASSWORD)
-VALUES
-    ('John', 'Doe', 'jdoe', 'jdoe@example.com', 'ADMIN', 'admin@123'),
-    ('Jane', 'Smith', 'jsmith', 'jsmith@example.com', 'MANAGER', 'user@123'),
-    ('Robert', 'Brown', 'rbrown', 'rbrown@example.com', 'EDITOR', 'pass@123'),
-    ('Emily', 'Johnson', 'ejohnson', 'ejohnson@example.com', 'ADMIN', 'manager@123'),
-    ('David', 'Miller', 'dmiller', 'dmiller@example.com', 'EDITOR', 'support@123');
+USE CB_DB;
+GO
 
-	INSERT INTO TBL_PRODUCT_SHT_CODE (PRODUCT, PRD_SHT_CD)
+-- ==============================
+-- 1. MASTER DATA INSERTS
+-- ==============================
+
+INSERT INTO TBL_PRODUCT_SHT_CODE (PRODUCT, PRD_SHT_CD)
 VALUES
     ('LEGACY', 'LEG'),
     ('LAUNCH', 'LAU'),
@@ -14,19 +13,22 @@ VALUES
     ('GOLD', 'GOL'),
     ('PARTIAL', 'PAR'),
     ('UNSECURED', 'UNS');
+GO
 
-	INSERT INTO TBL_FEE_TYPE_SHT_CODE (FEE_TYPE, FEE_TYPE_SHT_CD)
+INSERT INTO TBL_FEE_TYPE_SHT_CODE (FEE_TYPE, FEE_TYPE_SHT_CD)
 VALUES
     ('ANNUAL', 'AF'),
     ('MONTHLY', 'MF'),
     ('NO', 'NF');
+GO
 
-	INSERT INTO TBL_REWARDS_TYPE_SHT_CODE (REWARDS_TYPE, REWARDS_TYPE_SHT_CD)
+INSERT INTO TBL_REWARDS_TYPE_SHT_CODE (REWARDS_TYPE, REWARDS_TYPE_SHT_CD)
 VALUES
     ('PARTNER', 'PR'),
     ('CASH BACK', 'CB'),
     ('TRAVEL', 'TR'),
     ('POINTS', 'PT');
+GO
 
 INSERT INTO TBL_PRIN_CODE (PRIN_CODE, DESCRIPTION, STATUS)
 VALUES
@@ -36,6 +38,7 @@ VALUES
     ('PRIN004', 'Backup', 'Active'),
     ('PRIN005', 'Emergency', 'Inactive'),
     ('PRIN006', 'Testing', 'Draft');
+GO
 
 INSERT INTO TBL_CWS_PROD_CODE (CWS_PROD_CODE, DESCRIPTION, STATUS)
 VALUES
@@ -45,6 +48,7 @@ VALUES
     ('CWS-004', 'Analytics Service', 'Pending'),
     ('CWS-005', 'Reporting Service', 'Active'),
     ('CWS-006', 'Integration Service', 'Draft');
+GO
 
 INSERT INTO TBL_CHA_CODE (CHA_CODE, DESCRIPTION, STATUS)
 VALUES
@@ -54,120 +58,129 @@ VALUES
     ('CHA-API', 'API Gateway', 'Pending'),
     ('CHA-POS', 'Point of Sale', 'Active'),
     ('CHA-CALL', 'Call Center', 'Inactive');
+GO
 
-DO $$
-DECLARE
-    i INT := 1;
-    prd CHAR(3);
-    fee CHAR(2);
-    rew CHAR(2);
-    pid VARCHAR(50);
-    pmin NUMERIC(5,2);
-    pmax NUMERIC(5,2);
-    prin VARCHAR(50);
-    cws VARCHAR(50);
-    cha VARCHAR(50);
-    apr_type VARCHAR(50);
-    apr_val_type VARCHAR(50);
-    sec_deposit_ind CHAR(1);
-    random_flags TEXT;
-    credit_min INT;
-    credit_max INT;
-BEGIN
-    WHILE i <= 50 LOOP
-        -- Random lookups
-        SELECT PRD_SHT_CD INTO prd FROM TBL_PRODUCT_SHT_CODE ORDER BY RANDOM() LIMIT 1;
-        SELECT FEE_TYPE_SHT_CD INTO fee FROM TBL_FEE_TYPE_SHT_CODE ORDER BY RANDOM() LIMIT 1;
-        SELECT REWARDS_TYPE_SHT_CD INTO rew FROM TBL_REWARDS_TYPE_SHT_CODE ORDER BY RANDOM() LIMIT 1;
-        SELECT PRIN_CODE INTO prin FROM TBL_PRIN_CODE ORDER BY RANDOM() LIMIT 1;
-        SELECT CWS_PROD_CODE INTO cws FROM TBL_CWS_PROD_CODE ORDER BY RANDOM() LIMIT 1;
-        SELECT CHA_CODE INTO cha FROM TBL_CHA_CODE ORDER BY RANDOM() LIMIT 1;
-
-        pid := prd || '-' || fee || '-' || rew || '-' || LPAD(i::TEXT, 7, '0');
-
-        -- Random APR type
-        IF random() < 0.5 THEN
-            apr_type := 'FIXED';
-            apr_val_type := 'SPECIFIC';
-        ELSE
-            apr_type := 'VARIABLE';
-            apr_val_type := 'RANGE';
-        END IF;
-
-        -- Generate APR values
-        pmin := ROUND(((random() * 20) + 5)::numeric, 2);
-
-        IF apr_val_type = 'SPECIFIC' THEN
-    	pmax := pmin;
-		ELSE
-    	pmax := ROUND((pmin + ((random() * 10) + 5)::numeric), 2);
-		END IF;
-
-
-        -- Credit line
-        credit_min := (FLOOR(random() * 10) + 3) * 100;
-        credit_max := credit_min + (FLOOR(random() * 50) + 20) * 100;
-
-        -- Security deposit
-        IF random() < 0.6 THEN
-            sec_deposit_ind := 'Y';
-        ELSE
-            sec_deposit_ind := 'N';
-        END IF;
-
-        -- Random flags
-        random_flags := '';
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG1,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG2,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG3,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG4,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG5,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG6,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG7,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG8,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG9,'; END IF;
-        IF random() < 0.3 THEN random_flags := random_flags || 'PC_FLAG10,'; END IF;
-        IF random() < 0.4 THEN random_flags := random_flags || 'UPC,'; END IF;
-
-        IF RIGHT(random_flags,1) = ',' THEN
-            random_flags := LEFT(random_flags, LENGTH(random_flags)-1);
-        END IF;
-
-        -- Insert row
-        INSERT INTO TBL_PRODUCT (
-            PRODUCT_ID, PRODUCT_SHT_CD, FEE_TYPE_SHT_CD, REWARDS_TYPE_SHT_CD,
-            APR_TYPE, APR_VALUE_TYPE, PURCHASE_APR_MIN, PURCHASE_APR_MAX,
-            CASH_APR_MIN, CASH_APR_MAX,
-            CREDIT_LINE_MIN, CREDIT_LINE_MAX,
-            SECURITY_DEPOSIT_INDICATOR, SECURITY_DEPOSIT_MIN, SECURITY_DEPOSIT_MAX,
-            TERMS_CONDITIONS_LINK, CARDHOLDER_AGREEMENT_LINK, CARD_IMAGE_LINK,
-            STATUS, CREATED_BY, CREATED_DATETIME, REVIEWED_BY, REVIEWED_DATETIME,
-            OVERRIDE_BY, OVERRIDE_DATETIME, OVERRIDE_JUSTIFICATION, REVIEW_COMMENTS,
-            PRIN, CWS_PRODUCT_ID, CHA_CODE, BOARDING_INDICATOR, START_DATE, END_DATE
-        )
-        VALUES (
-            pid, prd, fee, rew,
-            apr_type, apr_val_type, pmin, pmax,
-            pmin * 1.05, pmax * 1.05,
-            credit_min, credit_max,
-            sec_deposit_ind,
-            CASE WHEN sec_deposit_ind = 'Y' THEN 200 ELSE NULL END,
-            CASE WHEN sec_deposit_ind = 'Y' THEN 5000 ELSE NULL END,
-            'https://example.com/terms/' || pid,
-            'https://example.com/agreement/' || pid,
-            'https://example.com/card-image/' || pid,
-            'ACTIVE', 'SYSTEM', NOW(), 'REVIEWER', NOW(),
-            NULL, NULL, NULL, 'Product created automatically',
-            prin, cws, cha, random_flags,
-            NOW(), NOW() + INTERVAL '1 year'
-        );
-
-        i := i + 1;
-    END LOOP;
-END $$;
 
 -- ==============================
--- 5. POST-INSERT UPDATES
+-- 2. USER DATA INSERTS
+-- ==============================
+
+INSERT INTO TBL_USER (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, ROLE, PASSWORD)
+VALUES
+    ('John', 'Doe', 'jdoe', 'jdoe@example.com', 'ADMIN', 'admin@123'),
+    ('Jane', 'Smith', 'jsmith', 'jsmith@example.com', 'MANAGER', 'user@123'),
+    ('Robert', 'Brown', 'rbrown', 'rbrown@example.com', 'EDITOR', 'pass@123'),
+    ('Emily', 'Johnson', 'ejohnson', 'ejohnson@example.com', 'ADMIN', 'manager@123'),
+    ('David', 'Miller', 'dmiller', 'dmiller@example.com', 'EDITOR', 'support@123');
+GO
+
+
+-- ==============================
+-- 3. RANDOM PRODUCT DATA GENERATION
+-- ==============================
+
+DECLARE
+    @i INT = 1,
+    @prd CHAR(3),
+    @fee CHAR(2),
+    @rew CHAR(2),
+    @pid VARCHAR(50),
+    @pmin DECIMAL(5,2),
+    @pmax DECIMAL(5,2),
+    @prin VARCHAR(50),
+    @cws VARCHAR(50),
+    @cha VARCHAR(50),
+    @apr_type VARCHAR(50),
+    @apr_val_type VARCHAR(50),
+    @sec_deposit_ind CHAR(1),
+    @random_flags NVARCHAR(MAX),
+    @credit_min INT,
+    @credit_max INT;
+
+WHILE @i <= 50
+BEGIN
+    SELECT TOP 1 @prd = PRD_SHT_CD FROM TBL_PRODUCT_SHT_CODE ORDER BY NEWID();
+    SELECT TOP 1 @fee = FEE_TYPE_SHT_CD FROM TBL_FEE_TYPE_SHT_CODE ORDER BY NEWID();
+    SELECT TOP 1 @rew = REWARDS_TYPE_SHT_CD FROM TBL_REWARDS_TYPE_SHT_CODE ORDER BY NEWID();
+    SELECT TOP 1 @prin = PRIN_CODE FROM TBL_PRIN_CODE ORDER BY NEWID();
+    SELECT TOP 1 @cws = CWS_PROD_CODE FROM TBL_CWS_PROD_CODE ORDER BY NEWID();
+    SELECT TOP 1 @cha = CHA_CODE FROM TBL_CHA_CODE ORDER BY NEWID();
+
+    SET @pid = @prd + '-' + @fee + '-' + @rew + '-' + RIGHT(REPLICATE('0',7) + CAST(@i AS VARCHAR(7)),7);
+
+    IF RAND(CHECKSUM(NEWID())) < 0.5
+    BEGIN
+        SET @apr_type = 'FIXED';
+        SET @apr_val_type = 'SPECIFIC';
+    END
+    ELSE
+    BEGIN
+        SET @apr_type = 'VARIABLE';
+        SET @apr_val_type = 'RANGE';
+    END
+
+    SET @pmin = ROUND((RAND(CHECKSUM(NEWID())) * 20) + 5, 2);
+    IF @apr_val_type = 'SPECIFIC'
+        SET @pmax = @pmin;
+    ELSE
+        SET @pmax = @pmin + ROUND((RAND(CHECKSUM(NEWID())) * 10) + 5, 2);
+
+    SET @credit_min = (FLOOR(RAND(CHECKSUM(NEWID())) * 10) + 3) * 100;
+    SET @credit_max = @credit_min + (FLOOR(RAND(CHECKSUM(NEWID())) * 50) + 20) * 100;
+
+    IF RAND(CHECKSUM(NEWID())) < 0.6
+        SET @sec_deposit_ind = 'Y';
+    ELSE
+        SET @sec_deposit_ind = 'N';
+
+    SET @random_flags = '';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG1,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG2,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG3,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG4,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG5,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG6,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG7,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG8,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG9,';
+    IF RAND(CHECKSUM(NEWID())) < 0.3 SET @random_flags += 'PC_FLAG10,';
+    IF RAND(CHECKSUM(NEWID())) < 0.4 SET @random_flags += 'UPC,';
+    IF RIGHT(@random_flags,1) = ',' SET @random_flags = LEFT(@random_flags, LEN(@random_flags)-1);
+
+    INSERT INTO TBL_PRODUCT (
+        PRODUCT_ID, PRODUCT_SHT_CD, FEE_TYPE_SHT_CD, REWARDS_TYPE_SHT_CD,
+        APR_TYPE, APR_VALUE_TYPE, PURCHASE_APR_MIN, PURCHASE_APR_MAX,
+        CASH_APR_MIN, CASH_APR_MAX,
+        CREDIT_LINE_MIN, CREDIT_LINE_MAX,
+        SECURITY_DEPOSIT_INDICATOR, SECURITY_DEPOSIT_MIN, SECURITY_DEPOSIT_MAX,
+        TERMS_CONDITIONS_LINK, CARDHOLDER_AGREEMENT_LINK, CARD_IMAGE_LINK,
+        STATUS, CREATED_BY, CREATED_DATETIME, REVIEWED_BY, REVIEWED_DATETIME,
+        OVERRIDE_BY, OVERRIDE_DATETIME, OVERRIDE_JUSTIFICATION, REVIEW_COMMENTS,
+        PRIN, CWS_PRODUCT_ID, CHA_CODE, BOARDING_INDICATOR, START_DATE, END_DATE
+    )
+    VALUES (
+        @pid, @prd, @fee, @rew,
+        @apr_type, @apr_val_type, @pmin, @pmax,
+        @pmin * 1.05, @pmax * 1.05,
+        @credit_min, @credit_max,
+        @sec_deposit_ind,
+        CASE WHEN @sec_deposit_ind = 'Y' THEN 200 ELSE NULL END,
+        CASE WHEN @sec_deposit_ind = 'Y' THEN 5000 ELSE NULL END,
+        'https://example.com/terms/' + @pid,
+        'https://example.com/agreement/' + @pid,
+        'https://example.com/card-image/' + @pid,
+        'ACTIVE', 'SYSTEM', GETDATE(), 'REVIEWER', GETDATE(),
+        NULL, NULL, NULL, 'Product created automatically',
+        @prin, @cws, @cha, @random_flags,
+        GETDATE(), DATEADD(YEAR, 1, GETDATE())
+    );
+
+    SET @i += 1;
+END;
+GO
+
+-- ==============================
+-- 4. POST-INSERT UPDATES
 -- ==============================
 
 UPDATE TBL_PRODUCT
@@ -189,6 +202,4 @@ SET CASH_APR_MIN = PURCHASE_APR_MIN * 1.05;
 
 UPDATE TBL_PRODUCT
 SET CASH_APR_MAX = PURCHASE_APR_MAX * 1.05;
-
-
-
+GO
