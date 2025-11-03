@@ -1,4 +1,4 @@
-package com.example.cd_create_edit_save.model.dto;
+package com.example.cd_create_edit_save.model.dto.outDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,26 +19,27 @@ public class ProductCreateOutDto {
     private String feeTypeShtCd;
     private String rewardsTypeShtCd;
     private String aprType;
+    private String aprValueType;
 
     private BigDecimal purchaseAprMin;
     private BigDecimal purchaseAprMax;
     private BigDecimal cashAprMin;
     private BigDecimal cashAprMax;
 
-    private String termsConditions;
-    private String cardholderAgreement;
-    private String cardImage;
+    private String termsConditionsLink;
+    private String cardholderAgreementLink;
+    private String cardImageLink;
 
     private Integer creditLineMin;
     private Integer creditLineMax;
     private String securityDepositIndicator;
-    private Integer depositMin;
-    private Integer depositMax;
+    private Integer securityDepositMin;
+    private Integer securityDepositMax;
 
     private String prin;
     private String cwsProductId;
     private String chaCode;
-    private String[] boardingIndicator;
+    private String boardingIndicator;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;

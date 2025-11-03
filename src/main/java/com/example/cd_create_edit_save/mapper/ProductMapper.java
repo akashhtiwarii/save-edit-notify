@@ -1,7 +1,8 @@
 package com.example.cd_create_edit_save.mapper;
 
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
-import com.example.cd_create_edit_save.model.dto.ProductCreateOutDto;
+import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,11 @@ import java.util.List;
 public class ProductMapper {
 
     public Product toEntity(ProductCreateInDto dto, String generatedProductId, String createdBy) {
-        String[] boardingIndicators = buildBoardingIndicators(dto);
+        String boardingIndicator = buildBoardingIndicator(
+                dto.getPcFlag1(), dto.getPcFlag2(), dto.getPcFlag3(), dto.getPcFlag4(), dto.getPcFlag5(),
+                dto.getPcFlag6(), dto.getPcFlag7(), dto.getPcFlag8(), dto.getPcFlag9(), dto.getPcFlag10(),
+                dto.getUpc()
+        );
 
         return Product.builder()
                 .productId(generatedProductId)
@@ -21,6 +26,7 @@ public class ProductMapper {
                 .feeTypeShtCd(dto.getFeeTypeShtCd())
                 .rewardsTypeShtCd(dto.getRewardsTypeShtCd())
                 .aprType(dto.getAprType())
+                .aprValueType(dto.getAprValueType())
                 .purchaseAprMin(dto.getPurchaseAprMin())
                 .purchaseAprMax(dto.getPurchaseAprMax())
                 .cashAprMin(dto.getCashAprMin())
@@ -28,11 +34,11 @@ public class ProductMapper {
                 .creditLineMin(dto.getCreditLineMin())
                 .creditLineMax(dto.getCreditLineMax())
                 .securityDepositIndicator(dto.getSecurityDepositIndicator())
-                .depositMin(dto.getDepositMin())
-                .depositMax(dto.getDepositMax())
-                .termsConditions(dto.getTermsConditions())
-                .cardholderAgreement(dto.getCardholderAgreement())
-                .cardImage(dto.getCardImage())
+                .securityDepositMin(dto.getSecurityDepositMin())
+                .securityDepositMax(dto.getSecurityDepositMax())
+                .termsConditionsLink(dto.getTermsConditionsLink())
+                .cardholderAgreementLink(dto.getCardholderAgreementLink())
+                .cardImageLink(dto.getCardImageLink())
                 .status("PENDING")
                 .createdBy(createdBy)
                 .createdDatetime(LocalDateTime.now())
@@ -41,7 +47,47 @@ public class ProductMapper {
                 .prin(dto.getPrin())
                 .cwsProductId(dto.getCwsProductId())
                 .chaCode(dto.getChaCode())
-                .boardingIndicator(boardingIndicators)
+                .boardingIndicator(boardingIndicator)
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .build();
+    }
+
+    public Product toEntity(ProductUpdateInDto dto, String generatedProductId, String updatedBy) {
+        String boardingIndicator = buildBoardingIndicator(
+                dto.getPcFlag1(), dto.getPcFlag2(), dto.getPcFlag3(), dto.getPcFlag4(), dto.getPcFlag5(),
+                dto.getPcFlag6(), dto.getPcFlag7(), dto.getPcFlag8(), dto.getPcFlag9(), dto.getPcFlag10(),
+                dto.getUpc()
+        );
+
+        return Product.builder()
+                .productId(generatedProductId)
+                .productShtCd(dto.getProductShtCd())
+                .feeTypeShtCd(dto.getFeeTypeShtCd())
+                .rewardsTypeShtCd(dto.getRewardsTypeShtCd())
+                .aprType(dto.getAprType())
+                .aprValueType(dto.getAprValueType())
+                .purchaseAprMin(dto.getPurchaseAprMin())
+                .purchaseAprMax(dto.getPurchaseAprMax())
+                .cashAprMin(dto.getCashAprMin())
+                .cashAprMax(dto.getCashAprMax())
+                .creditLineMin(dto.getCreditLineMin())
+                .creditLineMax(dto.getCreditLineMax())
+                .securityDepositIndicator(dto.getSecurityDepositIndicator())
+                .securityDepositMin(dto.getSecurityDepositMin())
+                .securityDepositMax(dto.getSecurityDepositMax())
+                .termsConditionsLink(dto.getTermsConditionsLink())
+                .cardholderAgreementLink(dto.getCardholderAgreementLink())
+                .cardImageLink(dto.getCardImageLink())
+                .status("PENDING")
+                .createdBy(updatedBy)
+                .createdDatetime(LocalDateTime.now())
+                .reviewedBy(dto.getReviewedBy())
+                .reviewComments(dto.getReviewComments())
+                .prin(dto.getPrin())
+                .cwsProductId(dto.getCwsProductId())
+                .chaCode(dto.getChaCode())
+                .boardingIndicator(boardingIndicator)
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .build();
@@ -54,18 +100,19 @@ public class ProductMapper {
                 .feeTypeShtCd(entity.getFeeTypeShtCd())
                 .rewardsTypeShtCd(entity.getRewardsTypeShtCd())
                 .aprType(entity.getAprType())
+                .aprValueType(entity.getAprValueType())
                 .purchaseAprMin(entity.getPurchaseAprMin())
                 .purchaseAprMax(entity.getPurchaseAprMax())
                 .cashAprMin(entity.getCashAprMin())
                 .cashAprMax(entity.getCashAprMax())
-                .termsConditions(entity.getTermsConditions())
-                .cardholderAgreement(entity.getCardholderAgreement())
-                .cardImage(entity.getCardImage())
+                .termsConditionsLink(entity.getTermsConditionsLink())
+                .cardholderAgreementLink(entity.getCardholderAgreementLink())
+                .cardImageLink(entity.getCardImageLink())
                 .creditLineMin(entity.getCreditLineMin())
                 .creditLineMax(entity.getCreditLineMax())
                 .securityDepositIndicator(entity.getSecurityDepositIndicator())
-                .depositMin(entity.getDepositMin())
-                .depositMax(entity.getDepositMax())
+                .securityDepositMin(entity.getSecurityDepositMin())
+                .securityDepositMax(entity.getSecurityDepositMax())
                 .prin(entity.getPrin())
                 .cwsProductId(entity.getCwsProductId())
                 .chaCode(entity.getChaCode())
@@ -80,21 +127,24 @@ public class ProductMapper {
                 .build();
     }
 
-    private String[] buildBoardingIndicators(ProductCreateInDto dto) {
+
+    private String buildBoardingIndicator(Boolean flag1, Boolean flag2, Boolean flag3, Boolean flag4, Boolean flag5,
+                                          Boolean flag6, Boolean flag7, Boolean flag8, Boolean flag9, Boolean flag10,
+                                          Boolean upc) {
         List<String> indicators = new ArrayList<>();
 
-        if (Boolean.TRUE.equals(dto.getPcFlag1())) indicators.add("PC_FLAG1");
-        if (Boolean.TRUE.equals(dto.getPcFlag2())) indicators.add("PC_FLAG2");
-        if (Boolean.TRUE.equals(dto.getPcFlag3())) indicators.add("PC_FLAG3");
-        if (Boolean.TRUE.equals(dto.getPcFlag4())) indicators.add("PC_FLAG4");
-        if (Boolean.TRUE.equals(dto.getPcFlag5())) indicators.add("PC_FLAG5");
-        if (Boolean.TRUE.equals(dto.getPcFlag6())) indicators.add("PC_FLAG6");
-        if (Boolean.TRUE.equals(dto.getPcFlag7())) indicators.add("PC_FLAG7");
-        if (Boolean.TRUE.equals(dto.getPcFlag8())) indicators.add("PC_FLAG8");
-        if (Boolean.TRUE.equals(dto.getPcFlag9())) indicators.add("PC_FLAG9");
-        if (Boolean.TRUE.equals(dto.getPcFlag10())) indicators.add("PC_FLAG10");
-        if (Boolean.TRUE.equals(dto.getUpc())) indicators.add("UPC");
+        if (Boolean.TRUE.equals(flag1)) indicators.add("PC_FLAG1");
+        if (Boolean.TRUE.equals(flag2)) indicators.add("PC_FLAG2");
+        if (Boolean.TRUE.equals(flag3)) indicators.add("PC_FLAG3");
+        if (Boolean.TRUE.equals(flag4)) indicators.add("PC_FLAG4");
+        if (Boolean.TRUE.equals(flag5)) indicators.add("PC_FLAG5");
+        if (Boolean.TRUE.equals(flag6)) indicators.add("PC_FLAG6");
+        if (Boolean.TRUE.equals(flag7)) indicators.add("PC_FLAG7");
+        if (Boolean.TRUE.equals(flag8)) indicators.add("PC_FLAG8");
+        if (Boolean.TRUE.equals(flag9)) indicators.add("PC_FLAG9");
+        if (Boolean.TRUE.equals(flag10)) indicators.add("PC_FLAG10");
+        if (Boolean.TRUE.equals(upc)) indicators.add("UPC");
 
-        return indicators.toArray(new String[0]);
+        return String.join(",", indicators);
     }
 }

@@ -16,8 +16,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ValidSecurityDeposit
-public class ProductCreateInDto {
+public class ProductUpdateInDto {
 
+    // NON-EDITABLE FIELDS (for validation only - will throw error if changed)
     @NotBlank(message = "Product short code is required")
     @Size(max = 3, message = "Product short code must be 3 characters")
     private String productShtCd;
@@ -30,6 +31,7 @@ public class ProductCreateInDto {
     @Size(max = 2, message = "Rewards type short code must be 2 characters")
     private String rewardsTypeShtCd;
 
+    // EDITABLE FIELDS
     @NotBlank(message = "APR type is required")
     @Pattern(regexp = "^(FIXED|VARIABLE)$", message = "APR type must be either FIXED or VARIABLE")
     private String aprType;
