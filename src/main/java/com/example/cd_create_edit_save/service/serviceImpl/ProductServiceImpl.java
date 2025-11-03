@@ -38,25 +38,20 @@ public class ProductServiceImpl implements ProductService {
         long startTime = System.currentTimeMillis();
 
         try {
-            // Perform all validations
             log.info("Validating product request");
             validateProductRequest(requestDto);
 
-            // Generate Product ID
             log.info("Generating product ID");
             String productId = generateProductId(requestDto.getProductShtCd(),
                     requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
             log.info("Generated product ID: {}", productId);
 
-            // Map DTO to Entity
             Product product = productMapper.toEntity(requestDto, productId, createdBy);
 
-            // Save to database
             log.info("Saving product to database with ID: {}", productId);
             Product savedProduct = productRepository.save(product);
             log.info("Product saved successfully with ID: {}", productId);
 
-            // Map Entity to Response DTO
             ProductCreateOutDto response = productMapper.toResponseDto(savedProduct);
 
             long endTime = System.currentTimeMillis();
@@ -81,7 +76,6 @@ public class ProductServiceImpl implements ProductService {
         long startTime = System.currentTimeMillis();
 
         try {
-            // 1. Find existing product
             log.info("Fetching existing product with ID: {}", productId);
             Product existingProduct = productRepository.findById(productId)
                     .orElseThrow(() -> {
@@ -91,29 +85,23 @@ public class ProductServiceImpl implements ProductService {
 
             log.info("Found existing product: {}", existingProduct.getProductId());
 
-            // 2. Validate non-editable fields haven't changed
             log.info("Validating non-editable fields");
             validateNonEditableFields(existingProduct, requestDto);
 
-            // 3. Perform all editable field validations
             log.info("Validating product update request");
             validateProductUpdateRequest(requestDto);
 
-            // 4. Generate new Product ID (increment sequence)
             log.info("Generating new product ID for updated version");
             String newProductId = generateProductId(requestDto.getProductShtCd(),
                     requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
             log.info("Generated new product ID: {}", newProductId);
 
-            // 5. Map DTO to Entity (creates new product version)
             Product newProduct = productMapper.toEntity(requestDto, newProductId, updatedBy);
 
-            // 6. Save new product version (old product remains as is - NO status change)
             log.info("Saving new product version with ID: {}", newProductId);
             Product savedProduct = productRepository.save(newProduct);
             log.info("Product version saved successfully with ID: {}", newProductId);
 
-            // 7. Map Entity to Response DTO
             ProductCreateOutDto response = productMapper.toResponseDto(savedProduct);
 
             long endTime = System.currentTimeMillis();
@@ -134,7 +122,6 @@ public class ProductServiceImpl implements ProductService {
     private void validateNonEditableFields(Product existingProduct, ProductUpdateInDto requestDto) {
         log.info("Checking if non-editable fields have been modified");
 
-        // Product Short Code cannot be changed
         if (!existingProduct.getProductShtCd().equals(requestDto.getProductShtCd())) {
             log.error("Attempt to change Product Short Code from {} to {}",
                     existingProduct.getProductShtCd(), requestDto.getProductShtCd());
@@ -144,7 +131,6 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        // Fee Type Short Code cannot be changed
         if (!existingProduct.getFeeTypeShtCd().equals(requestDto.getFeeTypeShtCd())) {
             log.error("Attempt to change Fee Type Short Code from {} to {}",
                     existingProduct.getFeeTypeShtCd(), requestDto.getFeeTypeShtCd());
@@ -154,7 +140,6 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        // Rewards Type Short Code cannot be changed
         if (!existingProduct.getRewardsTypeShtCd().equals(requestDto.getRewardsTypeShtCd())) {
             log.error("Attempt to change Rewards Type Short Code from {} to {}",
                     existingProduct.getRewardsTypeShtCd(), requestDto.getRewardsTypeShtCd());
@@ -170,20 +155,15 @@ public class ProductServiceImpl implements ProductService {
     private void validateProductRequest(ProductCreateInDto dto) {
         log.info("Starting validation for product request");
 
-        // 1. APR Type and Value Type Validation
         validateAprTypeAndValueType(dto.getAprType(), dto.getAprValueType());
 
-        // 2. APR Min/Max Validation
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
 
-        // 3. Cash APR Verification
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(),
                 dto.getCashAprMin(), dto.getCashAprMax());
 
-        // 4. Credit Line Validation
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
 
-        // 5. Date Validation
         validateDates(dto.getStartDate(), dto.getEndDate());
 
         log.info("All validations passed successfully");
@@ -192,20 +172,15 @@ public class ProductServiceImpl implements ProductService {
     private void validateProductUpdateRequest(ProductUpdateInDto dto) {
         log.info("Starting validation for product update request");
 
-        // 1. APR Type and Value Type Validation
         validateAprTypeAndValueType(dto.getAprType(), dto.getAprValueType());
 
-        // 2. APR Min/Max Validation
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
 
-        // 3. Cash APR Verification
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(),
                 dto.getCashAprMin(), dto.getCashAprMax());
 
-        // 4. Credit Line Validation
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
 
-        // 5. Date Validation
         validateDates(dto.getStartDate(), dto.getEndDate());
 
         log.info("All validations passed successfully");
@@ -214,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
     private void validateAprTypeAndValueType(String aprType, String aprValueType) {
         log.info("Validating APR type: {} and value type: {}", aprType, aprValueType);
 
-        // APR_TYPE = FIXED → APR_VALUE_TYPE must be SPECIFIC
+
         if ("FIXED".equalsIgnoreCase(aprType)) {
             if (!"SPECIFIC".equalsIgnoreCase(aprValueType)) {
                 log.error("APR type is FIXED but value type is not SPECIFIC: {}", aprValueType);
@@ -224,7 +199,6 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        // APR_TYPE = VARIABLE → APR_VALUE_TYPE must be RANGE
         if ("VARIABLE".equalsIgnoreCase(aprType)) {
             if (!"RANGE".equalsIgnoreCase(aprValueType)) {
                 log.error("APR type is VARIABLE but value type is not RANGE: {}", aprValueType);
@@ -240,7 +214,6 @@ public class ProductServiceImpl implements ProductService {
     private void validateAprMinMax(String aprValueType, BigDecimal min, BigDecimal max) {
         log.info("Validating APR min/max values");
 
-        // For SPECIFIC (FIXED), min must equal max
         if ("SPECIFIC".equalsIgnoreCase(aprValueType)) {
             if (min.compareTo(max) != 0) {
                 log.error("APR value type is SPECIFIC but min ({}) != max ({})", min, max);
@@ -250,7 +223,6 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        // For RANGE (VARIABLE), max must be greater than min
         if ("RANGE".equalsIgnoreCase(aprValueType)) {
             if (min.compareTo(max) >= 0) {
                 log.error("APR value type is RANGE but min ({}) >= max ({})", min, max);
@@ -267,7 +239,6 @@ public class ProductServiceImpl implements ProductService {
                                BigDecimal cashAprMin, BigDecimal cashAprMax) {
         log.info("Verifying Cash APR calculation");
 
-        // Verify Cash APR Min
         BigDecimal expectedCashAprMin = purchaseAprMin
                 .multiply(CASH_APR_MULTIPLIER)
                 .setScale(2, RoundingMode.HALF_UP);
@@ -283,7 +254,6 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        // Verify Cash APR Max
         BigDecimal expectedCashAprMax = purchaseAprMax
                 .multiply(CASH_APR_MULTIPLIER)
                 .setScale(2, RoundingMode.HALF_UP);
@@ -321,7 +291,6 @@ public class ProductServiceImpl implements ProductService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneWeekFromNow = now.plusWeeks(1);
 
-        // Validate start date is at least 1 week from now
         if (startDate.isBefore(oneWeekFromNow)) {
             log.error("Start date ({}) is before one week from now ({})", startDate, oneWeekFromNow);
             throw new InvalidRequestException(
@@ -330,7 +299,6 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        // Validate end date is after start date
         if (endDate.isBefore(startDate) || endDate.isEqual(startDate)) {
             log.error("End date ({}) is not after start date ({})", endDate, startDate);
             throw new InvalidRequestException(
@@ -342,7 +310,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String generateProductId(String productShtCd, String feeTypeShtCd, String rewardsTypeShtCd) {
-        // Format: PRODUCT-FEE-REWARDS-0000001
+
         String prefix = String.format("%s-%s-%s-",
                 productShtCd,
                 feeTypeShtCd,
@@ -358,7 +326,6 @@ public class ProductServiceImpl implements ProductService {
 
         if (latestProductId != null) {
             log.info("Found latest product ID: {}", latestProductId);
-            // Extract the last 7 digits and increment
             String sequencePart = latestProductId.substring(latestProductId.length() - 7);
             try {
                 nextSequence = Integer.parseInt(sequencePart) + 1;
