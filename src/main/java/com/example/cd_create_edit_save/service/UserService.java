@@ -1,7 +1,7 @@
 package com.example.cd_create_edit_save.service;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.UserOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.UserOutDTO;
 
 import java.util.List;
 

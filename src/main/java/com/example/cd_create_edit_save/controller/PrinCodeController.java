@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.cd_create_edit_save.constants.AppConstants;
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.PrinCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.PrinCodeOutDTO;
 import com.example.cd_create_edit_save.service.PrinCodeService;
 
 import java.util.List;

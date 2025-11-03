@@ -1,12 +1,12 @@
-package com.example.cd_create_edit_save.service.implementation;
+package com.example.cd_create_edit_save.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.RewardsTypeShortCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.RewardsTypeShortCodeOutDTO;
 import com.example.cd_create_edit_save.model.entity.RewardsTypeShortCode;
 import com.example.cd_create_edit_save.repository.RewardsTypeShortCodeRepository;
 import com.example.cd_create_edit_save.service.RewardsTypeShortCodeService;

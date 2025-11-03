@@ -1,8 +1,8 @@
 package com.example.cd_create_edit_save.controller;
 
 import com.example.cd_create_edit_save.constants.AppConstants;
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.ProductShortCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductShortCodeOutDTO;
 import com.example.cd_create_edit_save.service.ProductShortCodeService;
 
 import lombok.RequiredArgsConstructor;

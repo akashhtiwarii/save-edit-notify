@@ -5,13 +5,44 @@ import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Component;
 
+import com.example.cd_create_edit_save.enums.APRValueType;
 import com.example.cd_create_edit_save.exception.InvalidRequestException;
 import com.example.cd_create_edit_save.model.dto.in.ProductInDTO;
 
 @Component
 public class ProductValidatorService {
 
-	public void validDate(ProductInDTO dto) {
+	/**
+	 * Validates the product input details by performing multiple checks:
+	 *
+	 * @param dto the {@link ProductInDTO} object containing product input details
+	 * @throws InvalidRequestException if any validation rule fails
+	 */
+	public void validateProduct(ProductInDTO dto) {
+		validateApr(dto);
+		validateDate(dto);
+	}
+
+
+	public void validateApr(ProductInDTO dto) {
+
+		if (dto.getAprValueType().equals(APRValueType.SPECIFIC)) {
+
+			if (dto.getPurchaseAprMin().compareTo(dto.getPurchaseAprMax()) != 0
+					|| dto.getCashAprMin().compareTo(dto.getCashAprMax()) != 0) {
+				throw new InvalidRequestException(
+						"For Specific APR type, Purchase APR and Cash APR min and max values must be the same.");
+			}
+
+			if (dto.getPurchaseAprMin().compareTo(dto.getCashAprMin()) != 0
+					|| dto.getPurchaseAprMax().compareTo(dto.getCashAprMax()) != 0) {
+				throw new InvalidRequestException(
+						"For Specific APR type, Purchase APR and Cash APR values must be identical.");
+			}
+		}
+	}
+
+	public void validateDate(ProductInDTO dto) {
 
 		LocalDateTime start = dto.getStartDate();
 		LocalDateTime end = dto.getEndDate();

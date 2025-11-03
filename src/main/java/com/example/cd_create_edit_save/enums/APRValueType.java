@@ -12,10 +12,10 @@ public enum APRValueType {
 	/**
 	 * Represents a configuration where a single, fixed APR value is set.
 	 */
-	SPECIFIC_APR,
+	SPECIFIC,
 
 	/**
 	 * Represents a configuration where an APR range is defined.
 	 */
-	APR_RANGE
+	RANGE
 }

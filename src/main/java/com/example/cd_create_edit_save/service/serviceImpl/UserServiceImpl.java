@@ -1,11 +1,11 @@
-package com.example.cd_create_edit_save.service.implementation;
+package com.example.cd_create_edit_save.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.UserOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.UserOutDTO;
 import com.example.cd_create_edit_save.model.entity.User;
 import com.example.cd_create_edit_save.repository.UserRepository;
 import com.example.cd_create_edit_save.service.UserService;

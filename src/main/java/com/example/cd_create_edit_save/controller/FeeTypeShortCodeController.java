@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cd_create_edit_save.constants.AppConstants;
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.FeeTypeShortCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.FeeTypeShortCodeOutDTO;
 import com.example.cd_create_edit_save.service.FeeTypeShortCodeService;
 
 import java.util.List;

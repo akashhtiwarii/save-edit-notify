@@ -1,4 +1,4 @@
-package com.example.cd_create_edit_save.model.dto;
+package com.example.cd_create_edit_save.model.dto.outDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

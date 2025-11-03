@@ -2,8 +2,8 @@ package com.example.cd_create_edit_save.service;
 
 import java.util.List;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.ChaCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ChaCodeOutDTO;
 
 /**
  * Service interface for managing Channel Code operations. Defines business

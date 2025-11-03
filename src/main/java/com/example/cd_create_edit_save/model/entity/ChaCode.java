@@ -32,7 +32,7 @@ public class ChaCode {
 	private String description;
 
 	/**
-	 * The current status of the channel code (e.g., ACTIVE, INACTIVE).
+	 * The current status of the channel code.
 	 */
 	private String status;
 }

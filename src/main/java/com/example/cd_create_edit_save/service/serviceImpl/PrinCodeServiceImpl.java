@@ -1,12 +1,12 @@
-package com.example.cd_create_edit_save.service.implementation;
+package com.example.cd_create_edit_save.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.PrinCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.PrinCodeOutDTO;
 import com.example.cd_create_edit_save.model.entity.PrinCode;
 import com.example.cd_create_edit_save.repository.PrinCodeRepository;
 import com.example.cd_create_edit_save.service.PrinCodeService;

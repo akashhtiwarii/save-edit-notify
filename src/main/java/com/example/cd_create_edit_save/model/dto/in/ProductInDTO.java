@@ -56,12 +56,14 @@ public class ProductInDTO {
 	/**
 	 * The APR type for the product.
 	 */
+	@NotNull(message = "APR type must not be null")
 	@Enumerated(EnumType.STRING)
 	private AprType aprType;
 
 	/**
 	 * The APR value type for the product.
 	 */
+	@NotNull(message = "APR value type must not be null")
 	@Enumerated(EnumType.STRING)
 	private APRValueType aprValueType;
 
@@ -120,31 +122,31 @@ public class ProductInDTO {
 	 * The minimum deposit amount required. Must be a positive value.
 	 */
 	@Min(value = 0, message = "Deposit min must be at least 0")
-	private Integer depositMin;
+	private Integer SecurityDepositMin;
 
 	/**
 	 * The maximum deposit amount allowed. Must be a positive value.
 	 */
 	@Min(value = 0, message = "Deposit max must be at least 0")
-	private Integer depositMax;
+	private Integer SecurityDepositMax;
 
 	/**
 	 * The terms and conditions of the product. Maximum length: 5000 characters.
 	 */
 	@Size(max = 5000, message = "Terms and conditions must not exceed 5000 characters")
-	private String termsConditions;
+	private String termsConditionsLink;
 
 	/**
 	 * The cardholder agreement details. Maximum length: 5000 characters.
 	 */
 	@Size(max = 5000, message = "Cardholder agreement must not exceed 5000 characters")
-	private String cardholderAgreement;
+	private String cardholderAgreementLink;
 
 	/**
 	 * The URL or path to the card image. Maximum length: 500 characters.
 	 */
 	@Size(max = 500, message = "Card image path must not exceed 500 characters")
-	private String cardImage;
+	private String cardImageLink;
 
 	/**
 	 * The current status of the product. Maximum length: 50 characters.

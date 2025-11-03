@@ -2,8 +2,8 @@ package com.example.cd_create_edit_save.service;
 
 import java.util.List;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.FeeTypeShortCodeOutDTO;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.FeeTypeShortCodeOutDTO;
 
 /**
  * Service interface for FeeTypeShortCode operations.
