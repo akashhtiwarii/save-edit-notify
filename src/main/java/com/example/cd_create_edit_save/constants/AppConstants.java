@@ -24,9 +24,6 @@ public final class AppConstants {
 	public static final String CWS_PROD_CODES = "/cws-prod-codes";
 	public static final String API_V1_CWS_PROD = API_BASE_PATH + CWS_PROD_CODES;
 
-	public static final String PRODUCTS = "/products";
-	public static final String API_V1_PRODUCTS = API_BASE_PATH + PRODUCTS;
-
 	public static final String USERS = "/users";
 	public static final String API_V1_USERS= API_BASE_PATH + USERS;
 
