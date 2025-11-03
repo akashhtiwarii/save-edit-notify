@@ -2,7 +2,9 @@ package com.example.cd_create_edit_save.mapper;
 
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProductMapper {
 
     /**
@@ -22,30 +24,28 @@ public class ProductMapper {
                 .feeTypeShtCd(product.getFeeTypeShtCd())
                 .rewardsTypeShtCd(product.getRewardsTypeShtCd())
                 .aprType(product.getAprType())
-                .purchaseAprType(product.getPurchaseAprType())
+                .aprValueType(product.getAprValueType())
                 .purchaseAprMin(product.getPurchaseAprMin())
                 .purchaseAprMax(product.getPurchaseAprMax())
-                .cashAprType(product.getCashAprType())
                 .cashAprMin(product.getCashAprMin())
                 .cashAprMax(product.getCashAprMax())
                 .creditLineMin(product.getCreditLineMin())
                 .creditLineMax(product.getCreditLineMax())
-                .securityDepositValue(product.getSecurityDepositValue())
                 .securityDepositIndicator(product.getSecurityDepositIndicator())
-                .depositMin(product.getDepositMin())
-                .depositMax(product.getDepositMax())
-                .termsConditions(product.getTermsConditions())
-                .cardholderAgreement(product.getCardholderAgreement())
-                .cardImage(product.getCardImage())
+                .securityDepositMin(product.getSecurityDepositMin())
+                .securityDepositMax(product.getSecurityDepositMax())
+                .termsConditionsLink(product.getTermsConditionsLink())
+                .cardholderAgreementLink(product.getCardholderAgreementLink())
+                .cardImageLink(product.getCardImageLink())
                 .status(product.getStatus())
                 .createdBy(product.getCreatedBy())
                 .createdDatetime(product.getCreatedDatetime())
                 .reviewedBy(product.getReviewedBy())
                 .reviewedDatetime(product.getReviewedDatetime())
+                .reviewComments(product.getReviewComments())
                 .overrideBy(product.getOverrideBy())
                 .overrideDatetime(product.getOverrideDatetime())
                 .overrideJustification(product.getOverrideJustification())
-                .reviewComments(product.getReviewComments())
                 .prin(product.getPrin())
                 .cwsProductId(product.getCwsProductId())
                 .chaCode(product.getChaCode())
