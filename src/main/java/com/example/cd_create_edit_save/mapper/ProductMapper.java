@@ -127,10 +127,9 @@ public class ProductMapper {
                 .build();
     }
 
-
     private String buildBoardingIndicator(Boolean flag1, Boolean flag2, Boolean flag3, Boolean flag4, Boolean flag5,
                                           Boolean flag6, Boolean flag7, Boolean flag8, Boolean flag9, Boolean flag10,
-                                          Boolean upc) {
+                                          String upc) {
         List<String> indicators = new ArrayList<>();
 
         if (Boolean.TRUE.equals(flag1)) indicators.add("PC_FLAG1");
@@ -143,7 +142,10 @@ public class ProductMapper {
         if (Boolean.TRUE.equals(flag8)) indicators.add("PC_FLAG8");
         if (Boolean.TRUE.equals(flag9)) indicators.add("PC_FLAG9");
         if (Boolean.TRUE.equals(flag10)) indicators.add("PC_FLAG10");
-        if (Boolean.TRUE.equals(upc)) indicators.add("UPC");
+
+        if (upc != null && !upc.trim().isEmpty()) {
+            indicators.add(upc);
+        }
 
         return String.join(",", indicators);
     }

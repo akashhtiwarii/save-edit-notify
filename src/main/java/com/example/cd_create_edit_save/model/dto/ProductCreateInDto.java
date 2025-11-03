@@ -110,7 +110,10 @@ public class ProductCreateInDto {
     private Boolean pcFlag8;
     private Boolean pcFlag9;
     private Boolean pcFlag10;
-    private Boolean upc;
+
+    @NotNull(message = "UPC is required")
+    @Size(max = 50, message = "UPC code too long")
+    private String upc;
 
     @NotNull(message = "Start date is required")
     private LocalDateTime startDate;

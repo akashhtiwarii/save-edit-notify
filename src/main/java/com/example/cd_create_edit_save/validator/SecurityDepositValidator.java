@@ -18,7 +18,6 @@ public class SecurityDepositValidator implements ConstraintValidator<ValidSecuri
 
         if ("Y".equalsIgnoreCase(dto.getSecurityDepositIndicator())) {
 
-            // Check if securityDepositMin is provided
             if (dto.getSecurityDepositMin() == null) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
@@ -41,6 +40,27 @@ public class SecurityDepositValidator implements ConstraintValidator<ValidSecuri
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
                                 "Security deposit max must be greater than security deposit min")
+                        .addPropertyNode("securityDepositMax")
+                        .addConstraintViolation();
+                return false;
+            }
+        }
+
+
+        if ("N".equalsIgnoreCase(dto.getSecurityDepositIndicator())) {
+            if (dto.getSecurityDepositMin() != null) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                                "Security deposit min must be null when security deposit is not required")
+                        .addPropertyNode("securityDepositMin")
+                        .addConstraintViolation();
+                return false;
+            }
+
+            if (dto.getSecurityDepositMax() != null) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                                "Security deposit max must be null when security deposit is not required")
                         .addPropertyNode("securityDepositMax")
                         .addConstraintViolation();
                 return false;
