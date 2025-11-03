@@ -6,6 +6,7 @@ import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +66,31 @@ public class ProductController {
         log.info("Product update successful. Old ID: {}, New ID: {}", productId, responseData.getProductId());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * Get product by ID
+     *
+     * @param productId the product ID
+     * @return ResponseEntity containing product details
+     */
+    @GetMapping("/{productId}")
+    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> getProductById(
+            @PathVariable String productId) {
+
+        log.info("Received request to fetch product with ID: {}", productId);
+
+        ProductOutDto productOutDto = productService.getProductById(productId);
+
+        ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
+                .status("success")
+                .message("Product retrieved successfully")
+                .data(productOutDto)
+                .timestamp(Instant.now())
+                .build();
+
+        log.info("Successfully processed request for product ID: {}", productId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

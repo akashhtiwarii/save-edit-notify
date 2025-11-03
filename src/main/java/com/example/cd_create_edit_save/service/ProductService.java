@@ -3,6 +3,7 @@ package com.example.cd_create_edit_save.service;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 
 /**
  * Service interface for Product management operations
@@ -20,4 +21,6 @@ public interface ProductService {
     ProductCreateOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
 
     ProductCreateOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
+
+    ProductOutDto getProductById(String productId);
 }
