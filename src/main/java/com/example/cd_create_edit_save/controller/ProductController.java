@@ -1,6 +1,7 @@
 package com.example.cd_create_edit_save.controller;
 
 
+import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(AppConstants.PRODUCT_API_BASE_PATH)
 @RequiredArgsConstructor
 @Slf4j
 public class ProductController {
