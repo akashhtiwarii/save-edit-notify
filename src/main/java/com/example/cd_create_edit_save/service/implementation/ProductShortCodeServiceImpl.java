@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 /**
  * Implementation of ProductShortCodeService interface. Handles business logic
  * for product short code operations.
+ * 
+ * @author Krishna
+ * @version 1.0
  */
 @Service
 @RequiredArgsConstructor

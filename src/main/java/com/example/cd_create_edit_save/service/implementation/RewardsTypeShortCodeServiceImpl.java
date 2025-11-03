@@ -24,9 +24,8 @@ import java.util.stream.Collectors;
  * codes, including data retrieval and entity-to-DTO conversion.
  * </p>
  * 
- * @author System Generated
+ * @author Krishna
  * @version 1.0
- * @since 2025-10-29
  */
 @Slf4j
 @Service
@@ -37,15 +36,6 @@ public class RewardsTypeShortCodeServiceImpl implements RewardsTypeShortCodeServ
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * <p>
-	 * Implementation Details:
-	 * </p>
-	 * <ul>
-	 * <li>Fetches all rewards type short codes from the database</li>
-	 * <li>Converts entity objects to DTO objects using stream API</li>
-	 * <li>Logs the number of records retrieved</li>
-	 * </ul>
 	 * 
 	 * @return a list of {@link RewardsTypeShortCodeOutDTO} containing all rewards
 	 *         type short codes
