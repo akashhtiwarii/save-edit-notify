@@ -13,16 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ProductOutDto {
-
-    String ProductName;
-    String ProductShtCD;
+    String productName;
+    String shortCode;
     String fee_type;
-    String apr ; // range or specific
-    String status;
+    Double min_apr;
+    Double max_apr;// range or specific
+    String  status;
     LocalDateTime startDate;
     LocalDateTime endDate;
-
-
-
 
 }
