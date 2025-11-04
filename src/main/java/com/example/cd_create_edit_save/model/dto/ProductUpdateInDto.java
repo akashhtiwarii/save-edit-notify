@@ -130,7 +130,7 @@ public class ProductUpdateInDto {
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
-    @NotBlank(message = "Reviewer name is required")
+
     @Size(max = 255, message = "Reviewer name too long")
     private String reviewedBy;
 
