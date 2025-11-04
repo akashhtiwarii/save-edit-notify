@@ -36,13 +36,13 @@ public class ProductController {
         ProductCreateOutDto responseData = productService.createProduct(requestDto, createdBy);
 
         ApiResponseOutDto<ProductCreateOutDto> response = ApiResponseOutDto.<ProductCreateOutDto>builder()
-                .status("success")
-                .message("Product created successfully with ID: " + responseData.getProductId())
+                .status("SUCCESS")
+                .message("Product created Successfully with ID: " + responseData.getProductId())
                 .data(responseData)
                 .timestamp(Instant.now())
                 .build();
 
-        log.info("Product creation successful. Product ID: {}", responseData.getProductId());
+        log.info("Product creation Successful. Product ID: {}", responseData.getProductId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -58,13 +58,13 @@ public class ProductController {
         ProductCreateOutDto responseData = productService.updateProduct(productId, requestDto, updatedBy);
 
         ApiResponseOutDto<ProductCreateOutDto> response = ApiResponseOutDto.<ProductCreateOutDto>builder()
-                .status("success")
-                .message("Product updated successfully. Old ID: " + productId + ", New ID: " + responseData.getProductId())
+                .status("SUCCESS")
+                .message("Product updated Successfully. Old ID: " + productId + ", New ID: " + responseData.getProductId())
                 .data(responseData)
                 .timestamp(Instant.now())
                 .build();
 
-        log.info("Product update successful. Old ID: {}, New ID: {}", productId, responseData.getProductId());
+        log.info("Product update Successful. Old ID: {}, New ID: {}", productId, responseData.getProductId());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -84,8 +84,8 @@ public class ProductController {
         ProductOutDto productOutDto = productService.getProductById(productId);
 
         ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
-                .status("success")
-                .message("Product retrieved successfully")
+                .status("SUCCESS")
+                .message("Product retrieved SUCCESSfully")
                 .data(productOutDto)
                 .timestamp(Instant.now())
                 .build();

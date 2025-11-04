@@ -21,6 +21,4 @@ public interface ProductService {
     ProductCreateOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
 
     ProductCreateOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
-
-    ProductOutDto getProductById(String productId);
 }
