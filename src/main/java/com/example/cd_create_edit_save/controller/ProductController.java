@@ -3,10 +3,20 @@ package com.example.cd_create_edit_save.controller;
 
 import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.ProductOutDto;
+import com.example.cd_create_edit_save.constants.AppConstants;
+import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
+
+import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +24,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(AppConstants.PRODUCT_API_BASE_PATH)
+@RequiredArgsConstructor
+@Slf4j
 public class ProductController {
 
     @Autowired
@@ -57,6 +71,77 @@ public class ProductController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=products.csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(file);
+    }
+
+    private final ProductService productService;
+
+    @PostMapping
+    public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto>> createProduct(
+            @Valid @RequestBody ProductCreateInDto requestDto,
+            @RequestHeader(value = "X-Created-By", required = false, defaultValue = "SYSTEM") String createdBy) {
+
+        log.info("Received product creation request from user: {}", createdBy);
+
+        ProductCreateOutDto responseData = productService.createProduct(requestDto, createdBy);
+
+        com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto> response = com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto.<ProductCreateOutDto>builder()
+                .status("success")
+                .message("Product created successfully with ID: " + responseData.getProductId())
+                .data(responseData)
+                .timestamp(Instant.now())
+                .build();
+
+        log.info("Product creation successful. Product ID: {}", responseData.getProductId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @PutMapping("/{productId}")
+    public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto>> updateProduct(
+            @PathVariable String productId,
+            @Valid @RequestBody ProductUpdateInDto requestDto,
+            @RequestHeader(value = "X-Updated-By", required = false, defaultValue = "SYSTEM") String updatedBy) {
+
+        log.info("Received product update request for Product ID: {} from user: {}", productId, updatedBy);
+
+
+        ProductCreateOutDto responseData = productService.updateProduct(productId, requestDto, updatedBy);
+
+        com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto> response = com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto.<ProductCreateOutDto>builder()
+                .status("success")
+                .message("Product updated successfully. Old ID: " + productId + ", New ID: " + responseData.getProductId())
+                .data(responseData)
+                .timestamp(Instant.now())
+                .build();
+
+        log.info("Product update successful. Old ID: {}, New ID: {}", productId, responseData.getProductId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * Get product by ID
+     *
+     * @param productId the product ID
+     * @return ResponseEntity containing product details
+     */
+    @GetMapping("/{productId}")
+    public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto>> getProductById(
+            @PathVariable String productId) {
+
+        log.info("Received request to fetch product with ID: {}", productId);
+
+        com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto productOutDto = productService.getProductById(productId);
+
+        com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto> response = com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto.<com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto>builder()
+                .status("success")
+                .message("Product retrieved successfully")
+                .data(productOutDto)
+                .timestamp(Instant.now())
+                .build();
+
+        log.info("Successfully processed request for product ID: {}", productId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

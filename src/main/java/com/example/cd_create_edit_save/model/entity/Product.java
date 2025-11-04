@@ -36,6 +36,9 @@ public class Product {
     @Column(name = "APR_TYPE", length = 50)
     private String aprType;
 
+    @Column(name = "APR_VALUE_TYPE", length = 50)
+    private String aprValueType;
+
     @Column(name = "PURCHASE_APR_MIN", precision = 5, scale = 2)
     private BigDecimal purchaseAprMin;
 
@@ -57,20 +60,20 @@ public class Product {
     @Column(name = "SECURITY_DEPOSIT_INDICATOR", length = 1)
     private String securityDepositIndicator;
 
-    @Column(name = "DEPOSIT_MIN")
-    private Integer depositMin;
+    @Column(name = "SECURITY_DEPOSIT_MIN")
+    private Integer securityDepositMin;
 
-    @Column(name = "DEPOSIT_MAX")
-    private Integer depositMax;
+    @Column(name = "SECURITY_DEPOSIT_MAX")
+    private Integer securityDepositMax;
 
-    @Column(name = "TERMS_CONDITIONS", length = 5000)
-    private String termsConditions;
+    @Column(name = "TERMS_CONDITIONS_LINK", length = 5000)
+    private String termsConditionsLink;
 
-    @Column(name = "CARDHOLDER_AGREEMENT", length = 5000)
-    private String cardholderAgreement;
+    @Column(name = "CARDHOLDER_AGREEMENT_LINK", length = 5000)
+    private String cardholderAgreementLink;
 
-    @Column(name = "CARD_IMAGE", length = 500)
-    private String cardImage;
+    @Column(name = "CARD_IMAGE_LINK", length = 500)
+    private String cardImageLink;
 
     @Column(name = "STATUS", length = 50)
     private String status;
@@ -87,33 +90,42 @@ public class Product {
     @Column(name = "REVIEWED_DATETIME")
     private LocalDateTime reviewedDatetime;
 
+    @Column(name = "REVIEW_COMMENTS", length = 1000)
+    private String reviewComments;
+
     @Column(name = "OVERRIDE_BY", length = 100)
     private String overrideBy;
 
     @Column(name = "OVERRIDE_DATETIME")
     private LocalDateTime overrideDatetime;
 
-    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "BYTEA")
+    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "VARBINARY")
     private byte[] overrideJustification;
 
-    @Column(name = "REVIEW_COMMENTS", length = 1000)
-    private String reviewComments;
-
-    @Column(name = "PRIN")
+    @Column(name = "PRIN", length = 50)
     private String prin;
 
-    @Column(name = "CWS_PRODUCT_ID")
+    @Column(name = "CWS_PRODUCT_ID", length = 50)
     private String cwsProductId;
 
     @Column(name = "CHA_CODE", length = 50)
     private String chaCode;
 
-    @Column(name = "BOARDING_INDICATOR", columnDefinition = "text[]")
-    private String[] boardingIndicator;
+    @Column(name = "BOARDING_INDICATOR", columnDefinition = "NVARCHAR(MAX)")
+    private String boardingIndicator;
 
     @Column(name = "START_DATE")
     private LocalDateTime startDate;
 
     @Column(name = "END_DATE")
     private LocalDateTime endDate;
+
+    @Column(name = "TO_BE_APPROVED_BY", length = 255)
+    private String toBeApprovedBy;
+
+    @Column(name = "APPROVAL_PRIORITY_LEVEL", length = 50)
+    private String approvalPriorityLevel;
+
+    @Column(name = "COMMENTS_TO_APPROVER", length = 1000)
+    private String commentsToApprover;
 }
