@@ -88,7 +88,7 @@ public class ProductControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/{productId}", productId)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk()) // still returns 200 with null data
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("SUCCESS"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Product retrieved successfully"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").doesNotExist())

@@ -26,9 +26,9 @@ class ProductOutDtoTest {
         BigDecimal cashAprMin = new BigDecimal("12.5");
         BigDecimal cashAprMax = new BigDecimal("18.0");
 
-        String termsLink = "http://terms.com";
-        String agreementLink = "http://agreement.com";
-        String imageLink = "http://image.com";
+        String termsLink = "https://terms.com";
+        String agreementLink = "https://agreement.com";
+        String imageLink = "https://image.com";
 
         Integer creditLineMin = 1000;
         Integer creditLineMax = 5000;

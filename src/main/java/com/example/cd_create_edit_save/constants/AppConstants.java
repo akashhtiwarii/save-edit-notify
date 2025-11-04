@@ -5,7 +5,7 @@ package com.example.cd_create_edit_save.constants;
  */
 public final class AppConstants {
 
-	public static final String PRODUCT_API_BASE_PATH = "/api/v1/products";
+	public static final String PRODUCT_API_BASE_PATH = "/api/products";
 
 	public static final String PRODUCT_SHORT_CODES = "/product-short-codes";
 	public static final String API_V1_PRODUCT_SHORT_CODES = PRODUCT_API_BASE_PATH + PRODUCT_SHORT_CODES;
