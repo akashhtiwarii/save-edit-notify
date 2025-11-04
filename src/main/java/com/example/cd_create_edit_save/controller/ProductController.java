@@ -84,7 +84,7 @@ public class ProductController {
         ProductCreateOutDto productOutDto = productService.getProductById(productId);
 
         ApiResponseOutDto<ProductCreateOutDto> response = ApiResponseOutDto.<ProductCreateOutDto>builder()
-                .status("success")
+                .status("SUCCESS")
                 .message("Product retrieved successfully")
                 .data(productOutDto)
                 .timestamp(Instant.now())
