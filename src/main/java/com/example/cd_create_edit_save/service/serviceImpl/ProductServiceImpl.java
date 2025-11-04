@@ -56,11 +56,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy) {
         log.info("Starting product update for Product ID: {}", productId);
 
-        Product existingProduct = productRepository.findById(productId)
-                .orElseThrow(() -> {
-                    log.error("Product not found with ID: {}", productId);
-                    return new ResourceNotFoundException("Product not found with ID: " + productId);
-                });
+        Product existingProduct = productValidator.validateProductIdAndGetProduct(productId);
+
         log.info("Found existing product: {}", existingProduct.getProductId());
 
         productRequestValidator.validateNonEditableFields(existingProduct, requestDto);
