@@ -1,6 +1,5 @@
 package com.example.cd_create_edit_save.model.dto;
 
-import com.example.cd_create_edit_save.validator.ValidSecurityDeposit;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ValidSecurityDeposit
 public class ProductCreateInDto {
 
     @NotBlank(message = "Product short code is required")

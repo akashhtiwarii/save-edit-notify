@@ -1,6 +1,5 @@
 package com.example.cd_create_edit_save.model.dto;
 
-import com.example.cd_create_edit_save.validator.ValidSecurityDeposit;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ValidSecurityDeposit
 public class ProductUpdateInDto {
 
-    // NON-EDITABLE FIELDS (for validation only - will throw error if changed)
     @NotBlank(message = "Product short code is required")
     @Size(max = 3, message = "Product short code must be 3 characters")
     private String productShtCd;
@@ -31,7 +28,6 @@ public class ProductUpdateInDto {
     @Size(max = 2, message = "Rewards type short code must be 2 characters")
     private String rewardsTypeShtCd;
 
-    // EDITABLE FIELDS
     @NotBlank(message = "APR type is required")
     @Pattern(regexp = "^(FIXED|VARIABLE)$", message = "APR type must be either FIXED or VARIABLE")
     private String aprType;
