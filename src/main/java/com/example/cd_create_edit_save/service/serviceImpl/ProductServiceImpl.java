@@ -10,6 +10,7 @@ import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import com.example.cd_create_edit_save.repository.ProductRepository;
 import com.example.cd_create_edit_save.service.ProductService;
+import com.example.cd_create_edit_save.validator.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ProductValidator productValidator;
 
     private static final BigDecimal CASH_APR_MULTIPLIER = new BigDecimal("1.05");
     private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
@@ -348,20 +350,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductOutDto getProductById(String productId) {
+
         log.info("Fetching product with ID: {}", productId);
 
-        if (productId == null || productId.trim().isEmpty()) {
-            log.error("Invalid product ID provided: {}", productId);
-            throw new InvalidRequestException("Product ID cannot be null or empty");
-        }
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> {
-                    log.error("Product not found with ID: {}", productId);
-                    return new ResourceNotFoundException(
-                            String.format("Product not found with ID: %s", productId)
-                    );
-                });
+        Product product = productValidator.validateProductIdAndGetProduct(productId);
 
         log.info("Successfully retrieved product with ID: {}", productId);
 
