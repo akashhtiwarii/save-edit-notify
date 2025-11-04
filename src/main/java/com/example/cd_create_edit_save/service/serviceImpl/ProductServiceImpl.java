@@ -349,7 +349,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductOutDto getProductById(String productId) {
+    public ProductCreateOutDto getProductById(String productId) {
 
         log.info("Fetching product with ID: {}", productId);
 

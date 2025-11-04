@@ -76,14 +76,14 @@ public class ProductController {
      * @return ResponseEntity containing product details
      */
     @GetMapping("/{productId}")
-    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> getProductById(
+    public ResponseEntity<ApiResponseOutDto<ProductCreateOutDto>> getProductById(
             @PathVariable String productId) {
 
         log.info("Received request to fetch product with ID: {}", productId);
 
-        ProductOutDto productOutDto = productService.getProductById(productId);
+        ProductCreateOutDto productOutDto = productService.getProductById(productId);
 
-        ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
+        ApiResponseOutDto<ProductCreateOutDto> response = ApiResponseOutDto.<ProductCreateOutDto>builder()
                 .status("success")
                 .message("Product retrieved successfully")
                 .data(productOutDto)
