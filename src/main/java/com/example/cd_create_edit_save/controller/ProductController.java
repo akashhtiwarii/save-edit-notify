@@ -22,12 +22,13 @@ import java.util.Map;
 @RequestMapping("/api/products")
 public class ProductController {
 
-
     @Autowired
     private ProductService productService;
+    private Long offset;
+    private Long limit;
 
     @GetMapping("getProducts")
-    public ResponseEntity<ApiResponseOutDto<List<ProductOutDto>>> getProducts(@RequestParam(required = false) Long offset , @RequestParam(required = false) Long limit) {
+    public ResponseEntity<ApiResponseOutDto<List<ProductOutDto>>> getProducts(@RequestParam(required = false , defaultValue = "0L") Long offset , @RequestParam(required = false ) Long limit) {
         ApiResponseOutDto<List<ProductOutDto>> products = productService.getProducts(offset, limit);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
