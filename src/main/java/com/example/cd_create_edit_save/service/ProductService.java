@@ -2,7 +2,6 @@ package com.example.cd_create_edit_save.service;
 
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 
 /**
@@ -18,9 +17,9 @@ public interface ProductService {
      * @return ProductCreateOutDto containing the created product details
      * @throws com.example.cd_create_edit_save.exception.InvalidRequestException if validation fails
      */
-    ProductCreateOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
+    ProductOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
 
-    ProductCreateOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
+    ProductOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
 
-    ProductCreateOutDto getProductById(String productId);
+    ProductOutDto getProductById(String productId);
 }

@@ -5,7 +5,6 @@ import com.example.cd_create_edit_save.exception.ResourceNotFoundException;
 import com.example.cd_create_edit_save.mapper.ProductMapper;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import com.example.cd_create_edit_save.repository.ProductRepository;
@@ -34,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductCreateOutDto createProduct(ProductCreateInDto requestDto, String createdBy) {
+    public ProductOutDto createProduct(ProductCreateInDto requestDto, String createdBy) {
         log.info("Starting product creation for category: {}, fee: {}, rewards: {}",
                 requestDto.getProductShtCd(), requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
 
@@ -55,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct = productRepository.save(product);
             log.info("Product saved successfully with ID: {}", productId);
 
-            ProductCreateOutDto response = productMapper.toResponseDto(savedProduct);
+            ProductOutDto response = productMapper.toResponseDto(savedProduct);
 
             long endTime = System.currentTimeMillis();
             log.info("Product created successfully in {} ms. Product ID: {}", (endTime - startTime), productId);
@@ -73,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductCreateOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy) {
+    public ProductOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy) {
         log.info("Starting product update for Product ID: {}", productId);
 
         long startTime = System.currentTimeMillis();
@@ -105,7 +104,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct = productRepository.save(newProduct);
             log.info("Product version saved successfully with ID: {}", newProductId);
 
-            ProductCreateOutDto response = productMapper.toResponseDto(savedProduct);
+            ProductOutDto response = productMapper.toResponseDto(savedProduct);
 
             long endTime = System.currentTimeMillis();
             log.info("Product updated successfully in {} ms. Old ID: {}, New ID: {}",
@@ -349,7 +348,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductCreateOutDto getProductById(String productId) {
+    public ProductOutDto getProductById(String productId) {
 
         log.info("Fetching product with ID: {}", productId);
 

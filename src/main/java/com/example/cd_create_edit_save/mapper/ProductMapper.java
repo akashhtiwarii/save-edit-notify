@@ -2,7 +2,7 @@ package com.example.cd_create_edit_save.mapper;
 
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import org.springframework.stereotype.Component;
 
@@ -102,8 +102,8 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductCreateOutDto toResponseDto(Product entity) {
-        return ProductCreateOutDto.builder()
+    public ProductOutDto toResponseDto(Product entity) {
+        return ProductOutDto.builder()
                 .productId(entity.getProductId())
                 .productShtCd(entity.getProductShtCd())
                 .feeTypeShtCd(entity.getFeeTypeShtCd())
@@ -145,12 +145,12 @@ public class ProductMapper {
      * @param product the product entity
      * @return ProductCreateOutDto
      */
-    public ProductCreateOutDto toDto(Product product) {
+    public ProductOutDto toDto(Product product) {
         if (product == null) {
             return null;
         }
 
-        return ProductCreateOutDto.builder()
+        return ProductOutDto.builder()
                 .productId(product.getProductId())
                 .productShtCd(product.getProductShtCd())
                 .feeTypeShtCd(product.getFeeTypeShtCd())
