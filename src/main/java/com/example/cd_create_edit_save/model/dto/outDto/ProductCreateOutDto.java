@@ -48,6 +48,10 @@ public class ProductCreateOutDto {
     private String reviewedBy;
     private String reviewComments;
 
+    private String toBeApprovedBy;
+    private String approvalPriorityLevel;
+    private String commentsToApprover;
+
     private String createdBy;
     private LocalDateTime createdDatetime;
 }
