@@ -14,12 +14,4 @@ import com.example.cd_create_edit_save.model.entity.ChaCode;
  */
 @Repository
 public interface ChaCodeRepository extends JpaRepository<ChaCode, String> {
-
-	/**
-     * Checks whether a channel code exists in the database.
-     *
-     * @param chaCode the channel code to check
-     * @return true if the channel code exists, false otherwise
-     */
-    boolean existsByChaCode(String chaCode);
 }
