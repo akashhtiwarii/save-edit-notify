@@ -45,12 +45,20 @@ public class ProductCreateOutDto {
     private LocalDateTime endDate;
 
     private String status;
-    private String reviewedBy;
-    private String reviewComments;
+
 
     private String toBeApprovedBy;
     private String approvalPriorityLevel;
     private String commentsToApprover;
+
+    private String reviewedBy;
+    private LocalDateTime reviewedDatetime;
+    private String reviewComments;
+
+
+    private String overrideBy;
+    private LocalDateTime overrideDatetime;
+    private byte[] overrideJustification;
 
     private String createdBy;
     private LocalDateTime createdDatetime;
