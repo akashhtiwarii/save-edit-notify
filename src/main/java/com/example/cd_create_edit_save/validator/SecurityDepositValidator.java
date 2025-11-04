@@ -1,24 +1,43 @@
 package com.example.cd_create_edit_save.validator;
 
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
+import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class SecurityDepositValidator implements ConstraintValidator<ValidSecurityDeposit, ProductCreateInDto> {
+public class SecurityDepositValidator implements ConstraintValidator<ValidSecurityDeposit, Object> {
 
     @Override
-    public boolean isValid(ProductCreateInDto dto, ConstraintValidatorContext context) {
-        if (dto == null) {
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
+        if (value == null) {
             return true;
         }
 
-        if (dto.getSecurityDepositIndicator() == null) {
+        String securityDepositIndicator = null;
+        Integer securityDepositMin = null;
+        Integer securityDepositMax = null;
+
+        if (value instanceof ProductCreateInDto) {
+            ProductCreateInDto dto = (ProductCreateInDto) value;
+            securityDepositIndicator = dto.getSecurityDepositIndicator();
+            securityDepositMin = dto.getSecurityDepositMin();
+            securityDepositMax = dto.getSecurityDepositMax();
+        } else if (value instanceof ProductUpdateInDto) {
+            ProductUpdateInDto dto = (ProductUpdateInDto) value;
+            securityDepositIndicator = dto.getSecurityDepositIndicator();
+            securityDepositMin = dto.getSecurityDepositMin();
+            securityDepositMax = dto.getSecurityDepositMax();
+        } else {
             return true;
         }
 
-        if ("Y".equalsIgnoreCase(dto.getSecurityDepositIndicator())) {
+        if (securityDepositIndicator == null) {
+            return true;
+        }
 
-            if (dto.getSecurityDepositMin() == null) {
+        if ("Y".equalsIgnoreCase(securityDepositIndicator)) {
+
+            if (securityDepositMin == null) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
                                 "Security deposit min is required when security deposit is enabled")
@@ -27,7 +46,7 @@ public class SecurityDepositValidator implements ConstraintValidator<ValidSecuri
                 return false;
             }
 
-            if (dto.getSecurityDepositMax() == null) {
+            if (securityDepositMax == null) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
                                 "Security deposit max is required when security deposit is enabled")
@@ -36,7 +55,7 @@ public class SecurityDepositValidator implements ConstraintValidator<ValidSecuri
                 return false;
             }
 
-            if (dto.getSecurityDepositMin() >= dto.getSecurityDepositMax()) {
+            if (securityDepositMin >= securityDepositMax) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
                                 "Security deposit max must be greater than security deposit min")
@@ -46,9 +65,8 @@ public class SecurityDepositValidator implements ConstraintValidator<ValidSecuri
             }
         }
 
-
-        if ("N".equalsIgnoreCase(dto.getSecurityDepositIndicator())) {
-            if (dto.getSecurityDepositMin() != null) {
+        if ("N".equalsIgnoreCase(securityDepositIndicator)) {
+            if (securityDepositMin != null) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
                                 "Security deposit min must be null when security deposit is not required")
@@ -57,7 +75,7 @@ public class SecurityDepositValidator implements ConstraintValidator<ValidSecuri
                 return false;
             }
 
-            if (dto.getSecurityDepositMax() != null) {
+            if (securityDepositMax != null) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(
                                 "Security deposit max must be null when security deposit is not required")

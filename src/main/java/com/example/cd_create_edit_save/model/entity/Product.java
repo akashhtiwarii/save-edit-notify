@@ -99,7 +99,7 @@ public class Product {
     @Column(name = "OVERRIDE_DATETIME")
     private LocalDateTime overrideDatetime;
 
-    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "BYTEA")
+    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "VARBINARY")
     private byte[] overrideJustification;
 
     @Column(name = "PRIN", length = 50)
@@ -111,7 +111,7 @@ public class Product {
     @Column(name = "CHA_CODE", length = 50)
     private String chaCode;
 
-    @Column(name = "BOARDING_INDICATOR", columnDefinition = "TEXT")
+    @Column(name = "BOARDING_INDICATOR", columnDefinition = "NVARCHAR(MAX)")
     private String boardingIndicator;
 
     @Column(name = "START_DATE")
@@ -119,4 +119,13 @@ public class Product {
 
     @Column(name = "END_DATE")
     private LocalDateTime endDate;
+
+    @Column(name = "TO_BE_APPROVED_BY", length = 255)
+    private String toBeApprovedBy;
+
+    @Column(name = "APPROVAL_PRIORITY_LEVEL", length = 50)
+    private String approvalPriorityLevel;
+
+    @Column(name = "COMMENTS_TO_APPROVER", length = 1000)
+    private String commentsToApprover;
 }
