@@ -2,7 +2,15 @@ package com.example.cd_create_edit_save.service;
 
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
+
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Map;
+
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 
 /**
  * Service interface for Product management operations
@@ -19,7 +27,13 @@ public interface ProductService {
      */
     ProductOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
 
+    ApiResponseOutDto<List<ProductResponseOutDto>> getProducts(Long offset , Long Limit);
+
     ProductOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
 
+    ApiResponseOutDto<Map<String, Object>> getProductByParameters(String text, Double min_apr, Double max_apr, String status, Long offset, Long limit);
+
     ProductOutDto getProductById(String productId);
+    ByteArrayInputStream exportProductsToCsv();
+    ProductSummaryOutDTO getProductSummary();
 }

@@ -1,19 +1,46 @@
 package com.example.cd_create_edit_save.controller;
 
+
+import com.example.cd_create_edit_save.model.dto.ProductRequestInDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
+
+import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 import com.example.cd_create_edit_save.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+import java.util.Map;
 import java.time.Instant;
+
+import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCTS;
+import static com.example.cd_create_edit_save.constants.AppConstants.EXPORT_PRODUCTS;
+import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCTS_BY_PARAMETER;
+
 
 /**
  * {@code ProductController} is a REST controller responsible for handling product-related operations
@@ -51,18 +78,52 @@ public class ProductController {
      */
     private final ProductService productService;
 
-    /**
-     * Creates a new product in the system.
-     *
-     * @param requestDto the {@link ProductCreateInDto} containing product details to be created.
-     * @param createdBy  the identifier (user or system) who initiated the creation request.
-     *                   Defaults to "SYSTEM" if not provided.
-     * @return a {@link ResponseEntity} containing {@link ApiResponseOutDto} with
-     *         created product details and HTTP status {@code 201 (Created)}.
-     *
-     * @apiNote This endpoint validates input fields using {@link Valid}.
-     * @see ProductService#createProduct(ProductCreateInDto, String)
+    /**\
+     * Get Product List .
+     * @param offset
+     * @param limit
+     * @return List of productresponseout dto.
      */
+    @GetMapping(GET_PRODUCTS)
+    public ResponseEntity<ApiResponseOutDto<List<ProductResponseOutDto>>> getProducts(@RequestParam(required = false ) Long offset , @RequestParam(required = false ) Long limit) {
+        ApiResponseOutDto<List<ProductResponseOutDto>> products = productService.getProducts(offset, limit);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+
+    /**
+     * Get product list filtered by parameters.
+     * @param request productrequest dto.
+     * @return list or productresponseout dto.
+     */
+    @GetMapping(GET_PRODUCTS_BY_PARAMETER)
+    public ResponseEntity<ApiResponseOutDto<Map<String, Object>>> getProductsByParameters(
+            @Valid @RequestBody ProductRequestInDto request
+    ) {
+        ApiResponseOutDto<Map<String , Object>> products = productService.getProductByParameters(request.getText(),
+                request.getMin_apr(), request.getMax_apr(), request.getStatus(),
+                request.getOffset(), request.getLimit());
+        return new ResponseEntity<>(products, HttpStatus.OK);
+
+    }
+
+
+    /**
+     * Get csv for the product list.
+     * @return file.
+     */
+    @GetMapping(EXPORT_PRODUCTS)
+    public ResponseEntity<InputStreamResource> exportProductsToCsv() {
+        InputStreamResource file = new InputStreamResource(productService.exportProductsToCsv());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=products.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(file);
+    }
+
+
+
     @PostMapping
     public ResponseEntity<ApiResponseOutDto<ProductOutDto>> createProduct(
             @Valid @RequestBody ProductCreateInDto requestDto,
@@ -146,5 +207,33 @@ public class ProductController {
         log.info("Successfully processed request for product ID: {}", productId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ApiResponseOutDto<ProductSummaryOutDTO>> getProductSummary() {
+        log.info("Request to get Product Summary");
+        try {
+            ProductSummaryOutDTO summary = productService.getProductSummary();
+
+            ApiResponseOutDto<ProductSummaryOutDTO> response = ApiResponseOutDto.<ProductSummaryOutDTO>builder()
+                    .status("success")
+                    .message("Product summary retrieved successfully.")
+                    .data(summary)
+                    .timestamp(Instant.now())
+                    .build();
+
+            log.info("Successfully fetched Product Summary");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error retrieving Product Summary: {}", e.getMessage(), e);
+            ApiResponseOutDto<ProductSummaryOutDTO> errorResponse = ApiResponseOutDto.<ProductSummaryOutDTO>builder()
+                    .status("error")
+                    .message("Failed to retrieve product summary: " + e.getMessage())
+                    .timestamp(Instant.now())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 }
