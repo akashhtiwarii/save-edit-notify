@@ -1,6 +1,5 @@
 package com.example.cd_create_edit_save.model.dto.inDto;
 
-import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

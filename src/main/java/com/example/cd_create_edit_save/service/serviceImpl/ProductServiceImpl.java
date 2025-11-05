@@ -1,8 +1,8 @@
 package com.example.cd_create_edit_save.service.serviceImpl;
 
 import com.example.cd_create_edit_save.mapper.ProductMapper;
-import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
-import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import com.example.cd_create_edit_save.repository.ProductRepository;

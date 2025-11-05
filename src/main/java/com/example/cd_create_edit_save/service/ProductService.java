@@ -1,7 +1,7 @@
 package com.example.cd_create_edit_save.service;
 
-import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
-import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 
 /**
