@@ -11,14 +11,33 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class ApiResponseOutDto<T> {
+    /**
+     * To get success or error status or api request.
+     */
     private String status;
+    /**
+     * Message to get description of error or success message.
+     */
     private String message;
+
+    /**
+     *  Generic data .
+     */
     private T data;
+
+    /**
+     * Timestamp for the response.
+     */
     private Instant timestamp;
 
 
-
-    public static <T> ApiResponseOutDto<T> success(T data ) {
+    /**
+     * To send success status as reponse.
+     * @param data
+     * @param <T>
+     * @return
+     */
+    public static <T> ApiResponseOutDto<T> success( final T data ) {
         return ApiResponseOutDto.<T>builder()
                 .status("success")
                 .message("Data retrieved succesfully.")
@@ -27,7 +46,15 @@ public class ApiResponseOutDto<T> {
                 .build();
     }
 
-    public static <T> ApiResponseOutDto<T> success(T data , String msg) {
+    /**
+     * To send success status as response with custom message.
+     * @param data
+     * @param msg
+     * @param <T>
+     * @return
+     *
+     */
+    public static <T> ApiResponseOutDto<T> success( final T data , final String msg) {
         return ApiResponseOutDto.<T>builder()
                 .status("success")
                 .message(msg)
@@ -36,7 +63,14 @@ public class ApiResponseOutDto<T> {
                 .build();
     }
 
-    public static <T> ApiResponseOutDto<T> error(String message) {
+    /**
+     * To send error message as response.
+     * @param message
+     *  @param <T>
+     * @return
+     *
+     */
+    public static <T> ApiResponseOutDto<T> error(final String message) {
         return ApiResponseOutDto.<T>builder()
                 .status("error")
                 .message(message)

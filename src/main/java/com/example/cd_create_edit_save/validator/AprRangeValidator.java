@@ -6,19 +6,24 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class AprRangeValidator implements ConstraintValidator<AprRangeValid, ProductRequestInDto> {
 
+
+    /**
+     * To validate the apr range.
+     * @param dto
+     * @param context
+     * @return
+     */
     @Override
-    public boolean isValid(ProductRequestInDto dto, ConstraintValidatorContext context) {
+    public boolean isValid(final ProductRequestInDto dto, final ConstraintValidatorContext context) {
         if (dto == null) return true;
 
         Double minApr = dto.getMin_apr();
         Double maxApr = dto.getMax_apr();
 
-        // ✅ Only check when both values are provided
-        if (minApr != null && maxApr != null) {
+        if (minApr != null && maxApr != null){
             return minApr <= maxApr;
         }
 
         return true;
     }
 }
-
