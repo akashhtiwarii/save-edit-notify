@@ -38,8 +38,6 @@ class ProductValidatorTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // ==================== validateProductIdAndGetProduct Tests ====================
-
     @Test
     void testValidateProductIdAndGetProduct_Success() {
         Product product = new Product();
@@ -87,8 +85,6 @@ class ProductValidatorTest {
         assertTrue(ex.getMessage().contains("Product not found with ID: P123"));
         verify(productRepository).findById("P123");
     }
-
-    // ==================== validateProductCreateRequest Tests ====================
 
     @Test
     void testValidateProductCreateRequest_Success() {
@@ -189,8 +185,6 @@ class ProductValidatorTest {
         assertTrue(ex.getMessage().contains("CHA Code 'CHA01' does not exist"));
     }
 
-    // ==================== validateProductUpdateRequest Tests ====================
-
     @Test
     void testValidateProductUpdateRequest_Success() {
         ProductUpdateInDto dto = validUpdateDto();
@@ -204,8 +198,6 @@ class ProductValidatorTest {
         verify(chaCodeRepository).existsByChaCode("CHA01");
         verify(userRepository).existsByUsername("admin");
     }
-
-    // ==================== validateNonEditableFields Tests ====================
 
     @Test
     void testValidateNonEditableFields_Success() {
@@ -282,8 +274,6 @@ class ProductValidatorTest {
         assertTrue(ex.getMessage().contains("Attempted: TR"));
     }
 
-    // ==================== APR Type and Value Type Tests ====================
-
     @Test
     void testValidateAprTypeAndValueType_FixedAndSpecific_Success() {
         ProductUpdateInDto dto = validUpdateDto();
@@ -337,8 +327,6 @@ class ProductValidatorTest {
 
         assertEquals("When APR type is VARIABLE, APR value type must be RANGE", ex.getMessage());
     }
-
-    // ==================== APR Min/Max Tests ====================
 
     @Test
     void testValidateAprMinMax_SpecificWithEqualValues_Success() {
@@ -403,8 +391,6 @@ class ProductValidatorTest {
         assertEquals("For RANGE APR value type, Purchase APR Max must be greater than Min", ex.getMessage());
     }
 
-    // ==================== Cash APR Tests ====================
-
     @Test
     void testVerifyCashApr_CorrectCalculation_Success() {
         ProductUpdateInDto dto = validUpdateDto();
@@ -423,7 +409,7 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setPurchaseAprMin(BigDecimal.valueOf(10));
         dto.setPurchaseAprMax(BigDecimal.valueOf(10));
-        dto.setCashAprMin(BigDecimal.valueOf(11.00)); // Should be 10.50
+        dto.setCashAprMin(BigDecimal.valueOf(11.00));
         dto.setCashAprMax(BigDecimal.valueOf(10.50));
 
         setupUpdateCodeMocksAsValid();
@@ -440,7 +426,7 @@ class ProductValidatorTest {
         dto.setPurchaseAprMin(BigDecimal.valueOf(10));
         dto.setPurchaseAprMax(BigDecimal.valueOf(10));
         dto.setCashAprMin(BigDecimal.valueOf(10.50));
-        dto.setCashAprMax(BigDecimal.valueOf(11.00)); // Should be 10.50
+        dto.setCashAprMax(BigDecimal.valueOf(11.00));
 
         setupUpdateCodeMocksAsValid();
 
@@ -449,8 +435,6 @@ class ProductValidatorTest {
 
         assertTrue(ex.getMessage().contains("Cash APR Max is incorrect"));
     }
-
-    // ==================== Credit Line Tests ====================
 
     @Test
     void testValidateCreditLine_ValidRange_Success() {
@@ -490,8 +474,6 @@ class ProductValidatorTest {
 
         assertEquals("Credit line max must be greater than credit line min", ex.getMessage());
     }
-
-    // ==================== Security Deposit Tests ====================
 
     @Test
     void testValidateSecurityDeposit_IndicatorY_ValidRange_Success() {
@@ -607,8 +589,6 @@ class ProductValidatorTest {
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
 
-    // ==================== Date Validation Tests ====================
-
     @Test
     void testValidateDates_ValidDates_Success() {
         ProductUpdateInDto dto = validUpdateDto();
@@ -663,8 +643,6 @@ class ProductValidatorTest {
         assertEquals("End date must be after start date (not equal)", ex.getMessage());
     }
 
-    // ==================== Approver Validation Tests ====================
-
     @Test
     void testValidateApprover_ApproverExists_Success() {
         ProductUpdateInDto dto = validUpdateDto();
@@ -692,8 +670,6 @@ class ProductValidatorTest {
 
         assertEquals("Approver 'invalidUser' does not exist in the system. Please select a valid user.", ex.getMessage());
     }
-
-    // ==================== Helper Methods ====================
 
     private void setupAllCodeMocksAsValid() {
         when(productShortCodeRepository.existsByProductShortCode(anyString())).thenReturn(true);
