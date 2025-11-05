@@ -129,3 +129,4 @@ public class Product {
     @Column(name = "COMMENTS_TO_APPROVER", length = 1000)
     private String commentsToApprover;
 }
+

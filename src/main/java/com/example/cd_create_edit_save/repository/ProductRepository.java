@@ -4,9 +4,7 @@ import com.example.cd_create_edit_save.model.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.List;
-
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -21,11 +19,17 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      * @param prefix The product ID prefix (e.g., "GOL-AF-CB-")
      * @return Optional containing the latest product ID, or empty if none found
      */
-    @Query(value = "SELECT p.product_id FROM tbl_product p " +
-            "WHERE p.product_id LIKE :prefix || '%' " +
-            "ORDER BY p.product_id DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT TOP 1 p.PRODUCT_ID FROM TBL_PRODUCT p " +
+            "WHERE p.PRODUCT_ID LIKE :prefix + '%' " +
+            "ORDER BY p.PRODUCT_ID DESC", nativeQuery = true)
     Optional<String> findLatestProductIdByPrefix(@Param("prefix") String prefix);
 
+    /**
+     * Get productlist  from product table by joining with product short code table to get product name.
+     * @param offset
+     * @param limit
+     * @return
+     */
     @Query(value = """
     SELECT
         ps.PRD_SHT_CD AS shortCode,
@@ -45,10 +49,18 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 """, nativeQuery = true)
     List<Object[]> getProducts(@Param("offset") Long offset, @Param("limit") Long limit);
 
-
-
-
-
+    /**
+     * Gets product list by filtering product name , product shortcode from the  product short code table.
+     * Gets product list by filtering apr range and status from product table.
+     * Joins both lists to get the final list.
+     * @param text
+     * @param status
+     * @param purchaseAprMin
+     * @param purchaseAprMax
+     * @param limit
+     * @param offset
+     * @return
+     */
     @Query(value = """
         SELECT
             ps.PRD_SHT_CD AS shortCode,
@@ -95,10 +107,16 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             @Param("offset") Long offset
     );
 
-
-
-
-
+    /**
+     * Gets product list with filters .
+     * @param text
+     * @param status
+     * @param purchaseAprMin
+     * @param purchaseAprMax
+     * @param limit
+     * @param offset
+     * @return
+     */
     @Query(value = """
         SELECT
             ps.PRD_SHT_CD AS shortCode,
@@ -144,9 +162,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             @Param("offset") Long offset
     );
 
+    long count();  // For Total Products
+
+    long countByStatus(String status);     // For Active / Pending / Expired counts
 
 
 
 }
-
-

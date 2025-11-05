@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface AprRangeValid {
     /**
      * To check min and max apr range in the request.
-     * @return
+     * @return String
      */
     String message() default "Minimum APR cannot be greater than Maximum APR";
     Class<?>[] groups() default {};

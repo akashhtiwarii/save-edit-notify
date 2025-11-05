@@ -1,7 +1,7 @@
 package com.example.cd_create_edit_save.model.dto;
 
 
-import lombok.Data;
+import lombok.*;
 
 import com.example.cd_create_edit_save.validator.AprRangeValid;
 import jakarta.validation.constraints.*;
@@ -9,6 +9,10 @@ import lombok.Data;
 
 @Data
 @AprRangeValid
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductRequestInDto {
 
     @Size(max = 100, message = "Search text must not exceed 100 characters")
@@ -23,17 +27,14 @@ public class ProductRequestInDto {
     private Double max_apr;
 
     @Pattern(
-            regexp = "ACTIVE|INACTIVE|DISCONTINUED",
-            message = "Status must be one of: ACTIVE, INACTIVE, DISCONTINUED"
+            regexp = "PENDING|APPROVED|ACTIVE|EXPIRED|REJECTED",
+            message = "Status must be one of: PENDING, APPROVED, ACTIVE, EXPIRED, REJECTED"
     )
     private String status;
 
-    @Min(value = 0, message = "Offset must be greater than or equal to 0")
-    @Null
+    @PositiveOrZero(message = "Offset must be greater than or equal to 0")
     private Long offset;
 
-    @Min(value = 1, message = "Limit must be at least 1")
-    @Max(value = 1000, message = "Limit cannot exceed 1000")
-    @Null
+    @Positive(message = "Limit must be greater than 0")
     private Long limit;
 }
