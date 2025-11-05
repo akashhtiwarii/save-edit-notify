@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping(AppConstants.API_V1_PRODUCT_SHORT_CODES)
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ProductShortCodeController {
 
 	private final ProductShortCodeService productShortCodeService;
