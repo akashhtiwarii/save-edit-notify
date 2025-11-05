@@ -1,15 +1,14 @@
 package com.example.cd_create_edit_save.controller;
 
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.ProductRequestInDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -30,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.time.Instant;
 
+import static com.example.cd_create_edit_save.constants.AppConstants.*;
+
 @RestController
 @RequestMapping(AppConstants.PRODUCT_API_BASE_PATH)
 @RequiredArgsConstructor
@@ -38,32 +39,27 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
-    private Long offset;
-    private Long limit;
 
-    @GetMapping("getProducts")
-    public ResponseEntity<ApiResponseOutDto<List<ProductOutDto>>> getProducts(@RequestParam(required = false , defaultValue = "0L") Long offset , @RequestParam(required = false ) Long limit) {
-        ApiResponseOutDto<List<ProductOutDto>> products = productService.getProducts(offset, limit);
+    @GetMapping(GET_PRODUCTS)
+    public ResponseEntity<ApiResponseOutDto<List<ProductResponseOutDto>>> getProducts(@RequestParam(required = false ) Long offset , @RequestParam(required = false ) Long limit) {
+        ApiResponseOutDto<List<ProductResponseOutDto>> products = productService.getProducts(offset, limit);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
 
-    @GetMapping("getProductsByParameters")
-    public ResponseEntity<ApiResponseOutDto<Map<String , Object>>> getProductByParameters(
-            @RequestParam(required = false) String text,
-            @RequestParam(required = false) Double min_apr,
-            @RequestParam(required = false) Double max_apr,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) Long offset ,
-            @RequestParam(required = false) Long limit
+    @GetMapping(GET_PRODUCTS_BY_PARAMETER)
+    public ResponseEntity<ApiResponseOutDto<Map<String, Object>>> getProductsByParameters(
+            @Valid @RequestBody ProductRequestInDto request
     ) {
-        ApiResponseOutDto<Map<String , Object>> products = productService.getProductByParameters(text, min_apr, max_apr, status ,offset,limit);
+        ApiResponseOutDto<Map<String , Object>> products = productService.getProductByParameters(request.getText(),
+                request.getMin_apr(), request.getMax_apr(), request.getStatus(),
+                request.getOffset(), request.getLimit());
         return new ResponseEntity<>(products, HttpStatus.OK);
 
     }
 
 
-    @GetMapping("export")
+    @GetMapping(EXPORT_PRODUCTS)
     public ResponseEntity<InputStreamResource> exportProductsToCsv() {
         InputStreamResource file = new InputStreamResource(productService.exportProductsToCsv());
 
@@ -73,7 +69,7 @@ public class ProductController {
                 .body(file);
     }
 
-    private final ProductService productService;
+
 
     @PostMapping
     public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto>> createProduct(

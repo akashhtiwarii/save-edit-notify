@@ -29,6 +29,13 @@ public final class AppConstants {
 	public static final String USERS = "/users";
 	public static final String API_V1_USERS= PRODUCT_API_BASE_PATH + USERS;
 
+	public static final String GET_PRODUCTS = "/products" ;
+	public static final String GET_PRODUCTS_BY_PARAMETER = "/products-by-parameter";
+	public static final String EXPORT_PRODUCTS = "/export-products";
+
+   public static final Long MAX_LIMIT = 1000L;
+   public static final Long MIN_OFFSET = 0L;
+
 	private AppConstants() {
 	}
 }

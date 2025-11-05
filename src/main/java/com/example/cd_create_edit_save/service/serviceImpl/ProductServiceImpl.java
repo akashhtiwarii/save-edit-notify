@@ -2,22 +2,14 @@ package com.example.cd_create_edit_save.service.serviceImpl;
 
 import com.example.cd_create_edit_save.exception.InvalidRequestException;
 import com.example.cd_create_edit_save.exception.ResourceNotFoundException;
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
-import com.example.cd_create_edit_save.model.dto.ProductOutDto;
-import com.example.cd_create_edit_save.exception.InvalidRequestException;
-import com.example.cd_create_edit_save.exception.ResourceNotFoundException;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 import com.example.cd_create_edit_save.mapper.ProductMapper;
-import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
-import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
-import com.example.cd_create_edit_save.model.entity.Product;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import com.example.cd_create_edit_save.repository.ProductRepository;
-import com.example.cd_create_edit_save.repository.ProductShortCodeRepository;
 import com.example.cd_create_edit_save.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +32,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
+import static com.example.cd_create_edit_save.constants.AppConstants.MAX_LIMIT;
+import static com.example.cd_create_edit_save.constants.AppConstants.MIN_OFFSET;
+import static com.example.cd_create_edit_save.constants.CommonConstants.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -47,50 +43,38 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-    private final ProductRepository productRepository;
+
     private final ProductMapper productMapper;
 
     private static final BigDecimal CASH_APR_MULTIPLIER = new BigDecimal("1.05");
     private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
 
     @Override
-    public ApiResponseOutDto<List<ProductOutDto>> getProducts(Long offset, Long limit) {
+    public ApiResponseOutDto<List<ProductResponseOutDto>> getProducts(Long offset, Long limit) {
         log.info("Fetching products with offset={} and limit={}", offset, limit);
 
         try {
-            if (limit == null) limit = Long.MAX_VALUE;
+            if(offset == null) offset = MIN_OFFSET;
+            if (limit == null) limit = MAX_LIMIT;
 
             List<Object[]> resultList = productRepository.getProducts(offset, limit);
             log.debug("Fetched {} raw records from repository", resultList.size());
 
             if (resultList.isEmpty()) {
                 log.info("No products found for offset={} and limit={}", offset, limit);
-                return ApiResponseOutDto.success(Collections.emptyList());
+                return ApiResponseOutDto.success(Collections.emptyList() , EMPTY_PRODUCT_LIST);
             }
 
-            List<ProductOutDto> products = resultList.stream()
-                    .map(ProductOutDto::fromEntity)
+            List<ProductResponseOutDto> products = resultList.stream()
+                    .map(ProductResponseOutDto::fromEntity)
                     .collect(Collectors.toList());
-            log.debug("Mapped {} records to ProductOutDto", products.size());
-
-            ApiResponseOutDto<List<ProductOutDto>> response = ApiResponseOutDto.<List<ProductOutDto>>builder()
-                    .status("success")
-                    .message("Products retrieved successfully")
-                    .data(products)
-                    .timestamp(Instant.now())
-                    .build();
 
             log.info("Successfully retrieved {} products", products.size());
-            return response;
+            return ApiResponseOutDto.success(products , PRODUCT_LIST_RETRIEVED);
 
         } catch (Exception e) {
             log.error("Error retrieving products: {}", e.getMessage(), e);
-            return ApiResponseOutDto.<List<ProductOutDto>>builder()
-                    .status("error")
-                    .message("Error retrieving products: " + e.getMessage())
-                    .data(Collections.emptyList())
-                    .timestamp(Instant.now())
-                    .build();
+            return ApiResponseOutDto.error(PRODUCT_LIST_ERROR + e.getMessage());
         }
     }
 
@@ -102,43 +86,35 @@ public class ProductServiceImpl implements ProductService {
         try {
             if (text != null && text.trim().isEmpty()) text = null;
             if (status != null && status.trim().isEmpty()) status = null;
-            if (offset == null) offset = 0L;
-            if (limit == null) limit = Long.MAX_VALUE;
+            if (offset == null) offset = MIN_OFFSET;
+            if (limit == null) limit = MAX_LIMIT;
 
             List<Object[]> resultList = productRepository.findProductsFiltered(text, status, min_apr, max_apr, limit, offset);
             log.debug("Fetched {} filtered records from repository", resultList.size());
 
             long totalCount = 0L;
+
             if (resultList != null && !resultList.isEmpty() && resultList.get(0)[8] != null) {
                 totalCount = ((Number) resultList.get(0)[8]).longValue();
-            } else {
+            }
+            else {
                 log.debug("Total count missing in result; running count query...");
                 totalCount = ((Number) productRepository
-                        .findProductsFiltered(text, status, min_apr, max_apr, Long.MAX_VALUE, 0L)
+                        .findProductsFiltered(text, status, min_apr, max_apr, MAX_LIMIT, MIN_OFFSET)
                         .get(0)[8]).longValue();
             }
 
-            List<ProductOutDto> products = resultList.stream()
-                    .map(ProductOutDto::fromEntity)
+            List<ProductResponseOutDto> products = resultList.stream()
+                    .map(ProductResponseOutDto::fromEntity)
                     .collect(Collectors.toList());
 
             log.info("Filtered products retrieved: count={}, totalCount={}", products.size(), totalCount);
 
-            return ApiResponseOutDto.<Map<String, Object>>builder()
-                    .status("success")
-                    .message("Filtered products retrieved successfully. Total: " + totalCount)
-                    .data(Map.of("products", products, "totalCount", totalCount))
-                    .timestamp(Instant.now())
-                    .build();
+             return ApiResponseOutDto.success(Map.of("products", products, "totalCount", totalCount) , PRODUCT_LIST_RETRIEVED);
 
         } catch (Exception e) {
             log.error("Error retrieving filtered products: {}", e.getMessage(), e);
-            return ApiResponseOutDto.<Map<String, Object>>builder()
-                    .status("error")
-                    .message("Error retrieving filtered products: " + e.getMessage())
-                    .data(Collections.emptyMap())
-                    .timestamp(Instant.now())
-                    .build();
+            return ApiResponseOutDto.error(PRODUCT_LIST_ERROR + e.getMessage());
         }
     }
 
@@ -147,11 +123,11 @@ public class ProductServiceImpl implements ProductService {
         log.info("Starting CSV export for all products...");
 
         try {
-            List<Object[]> resultList = productRepository.getProducts(0L, Long.MAX_VALUE);
+            List<Object[]> resultList = productRepository.getProducts(MIN_OFFSET, MAX_LIMIT);
             log.debug("Fetched {} records for CSV export", resultList.size());
 
-            List<ProductOutDto> products = resultList.stream()
-                    .map(ProductOutDto::fromEntity)
+            List<ProductResponseOutDto> products = resultList.stream()
+                    .map(ProductResponseOutDto::fromEntity)
                     .collect(Collectors.toList());
 
             try (ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -159,10 +135,10 @@ public class ProductServiceImpl implements ProductService {
                          new PrintWriter(out),
                          CSVFormat.DEFAULT.withHeader(
                                  "Product Code", "Product Name", "Status", "Fee Type",
-                                 "Min APR", "Max APR", "Start Date", "End Date"
+                                 "Min Purchase APR", "Max Purchase APR", "Start Date", "End Date"
                          ))) {
 
-                for (ProductOutDto p : products) {
+                for (ProductResponseOutDto p : products) {
                     csvPrinter.printRecord(
                             p.getShortCode(),
                             p.getProductName(),
@@ -181,12 +157,12 @@ public class ProductServiceImpl implements ProductService {
 
             } catch (IOException e) {
                 log.error("Error writing CSV: {}", e.getMessage(), e);
-                throw new RuntimeException("Error writing CSV: " + e.getMessage(), e);
+                throw new RuntimeException(CSV_ERROR + e.getMessage(), e);
             }
 
         } catch (Exception e) {
             log.error("Error generating CSV file: {}", e.getMessage(), e);
-            throw new RuntimeException("Error generating CSV file: " + e.getMessage(), e);
+            throw new RuntimeException(CSV_ERROR + e.getMessage(), e);
         }
     }
 

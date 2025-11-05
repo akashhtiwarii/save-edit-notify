@@ -16,10 +16,21 @@ public class ApiResponseOutDto<T> {
     private T data;
     private Instant timestamp;
 
-    public static <T> ApiResponseOutDto<T> success(T data) {
+
+
+    public static <T> ApiResponseOutDto<T> success(T data ) {
         return ApiResponseOutDto.<T>builder()
                 .status("success")
-                .message("Request processed successfully")
+                .message("Data retrieved succesfully.")
+                .data(data)
+                .timestamp(Instant.now())
+                .build();
+    }
+
+    public static <T> ApiResponseOutDto<T> success(T data , String msg) {
+        return ApiResponseOutDto.<T>builder()
+                .status("success")
+                .message(msg)
                 .data(data)
                 .timestamp(Instant.now())
                 .build();

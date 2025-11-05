@@ -1,7 +1,7 @@
 package com.example.cd_create_edit_save.service;
 
-import com.example.cd_create_edit_save.model.dto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -25,7 +25,7 @@ public interface ProductService {
      * @throws com.example.cd_create_edit_save.exception.InvalidRequestException if validation fails
      */
     ProductCreateOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
-ApiResponseOutDto<List<ProductOutDto>> getProducts(Long offset , Long Limit);
+ApiResponseOutDto<List<ProductResponseOutDto>> getProducts(Long offset , Long Limit);
 
     ProductCreateOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
     ApiResponseOutDto<Map<String, Object>> getProductByParameters(String text, Double min_apr, Double max_apr, String status, Long offset, Long limit);
