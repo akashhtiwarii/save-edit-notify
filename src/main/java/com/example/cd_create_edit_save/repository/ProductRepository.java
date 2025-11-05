@@ -162,6 +162,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             @Param("offset") Long offset
     );
 
+    long count();  // For Total Products
+
+    long countByStatus(String status);     // For Active / Pending / Expired counts
 
 
 

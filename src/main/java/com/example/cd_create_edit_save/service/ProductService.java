@@ -9,6 +9,7 @@ import java.util.Map;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 
 /**
  * Service interface for Product management operations
@@ -33,4 +34,5 @@ public interface ProductService {
 
     ProductOutDto getProductById(String productId);
     ByteArrayInputStream exportProductsToCsv();
+    ProductSummaryOutDTO getProductSummary();
 }

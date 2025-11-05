@@ -2,6 +2,7 @@ package com.example.cd_create_edit_save.controller;
 
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 import com.example.cd_create_edit_save.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -20,7 +22,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.*;
 
 public class ProductControllerTest {
 
@@ -96,5 +100,40 @@ public class ProductControllerTest {
 
         verify(productService, times(1)).getProductById(productId);
     }
+
+    @Test
+    void testGetProductSummary_Success() {
+        // Arrange
+        ProductSummaryOutDTO mockSummary = new ProductSummaryOutDTO(100L, 60L, 30L, 10L);
+        when(productService.getProductSummary()).thenReturn(mockSummary);
+
+        // Act
+        ResponseEntity<ApiResponseOutDto<ProductSummaryOutDTO>> response = productController.getProductSummary();
+
+        // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("success", response.getBody().getStatus());
+        assertEquals("Product summary retrieved successfully.", response.getBody().getMessage());
+        assertEquals(mockSummary, response.getBody().getData());
+        verify(productService, times(1)).getProductSummary();
+    }
+
+    @Test
+    void testGetProductSummary_Exception() {
+        // Arrange
+        when(productService.getProductSummary()).thenThrow(new RuntimeException("DB Issue"));
+
+        // Act
+        ResponseEntity<ApiResponseOutDto<ProductSummaryOutDTO>> response = productController.getProductSummary();
+
+        // Assert
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("error", response.getBody().getStatus());
+        assertTrue(response.getBody().getMessage().contains("DB Issue"));
+        verify(productService, times(1)).getProductSummary();
+    }
+
 }
 

@@ -9,6 +9,7 @@ import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 import com.example.cd_create_edit_save.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -159,5 +160,33 @@ public class ProductController {
         log.info("Successfully processed request for product ID: {}", productId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ApiResponseOutDto<ProductSummaryOutDTO>> getProductSummary() {
+        log.info("Request to get Product Summary");
+        try {
+            ProductSummaryOutDTO summary = productService.getProductSummary();
+
+            ApiResponseOutDto<ProductSummaryOutDTO> response = ApiResponseOutDto.<ProductSummaryOutDTO>builder()
+                    .status("success")
+                    .message("Product summary retrieved successfully.")
+                    .data(summary)
+                    .timestamp(Instant.now())
+                    .build();
+
+            log.info("Successfully fetched Product Summary");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error retrieving Product Summary: {}", e.getMessage(), e);
+            ApiResponseOutDto<ProductSummaryOutDTO> errorResponse = ApiResponseOutDto.<ProductSummaryOutDTO>builder()
+                    .status("error")
+                    .message("Failed to retrieve product summary: " + e.getMessage())
+                    .timestamp(Instant.now())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 }

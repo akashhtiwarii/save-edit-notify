@@ -7,6 +7,7 @@ import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.mapper.ProductMapper;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 import com.example.cd_create_edit_save.model.entity.Product;
 import com.example.cd_create_edit_save.repository.ProductRepository;
 import com.example.cd_create_edit_save.service.ProductService;
@@ -253,5 +254,21 @@ public class ProductServiceImpl implements ProductService {
         log.info("Successfully retrieved product with ID: {}", productId);
 
         return productMapper.toDto(product);
+    }
+
+    @Override
+    public ProductSummaryOutDTO getProductSummary() {
+        log.info("Fetching product summary");
+        try {
+            long total = productRepository.count();
+            long active = productRepository.countByStatus("ACTIVE");
+            long pending = productRepository.countByStatus("PENDING_APPROVAL");
+            long expired = productRepository.countByStatus("EXPIRED");
+
+            return new ProductSummaryOutDTO(total, active, pending, expired);
+        } catch (Exception e) {
+            log.error("Error retrieving product summary: {}", e.getMessage(), e);
+            throw new RuntimeException("Error retrieving product summary", e);
+        }
     }
 }
