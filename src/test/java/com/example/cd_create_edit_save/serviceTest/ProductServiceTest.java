@@ -26,18 +26,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-
-@ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
     @Mock
     private ProductRepository productRepository;
-
-    @Mock
-    private ProductShortCodeRepository productShortCodeRepository;
 
     @InjectMocks
     private ProductServiceImpl productService;

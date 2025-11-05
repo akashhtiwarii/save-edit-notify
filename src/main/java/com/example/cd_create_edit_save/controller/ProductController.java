@@ -71,7 +71,7 @@ public class ProductController {
      * @param request the filtering parameters such as APR range, status, etc.
      * @return filtered list of products wrapped in {@link ApiResponseOutDto}
      */
-    @GetMapping(GET_PRODUCTS_BY_PARAMETER)
+    @PostMapping(GET_PRODUCTS_BY_PARAMETER)
     public ResponseEntity<ApiResponseOutDto<Map<String, Object>>> getProductsByParameters(
             @Valid @RequestBody ProductRequestInDto request) {
 
