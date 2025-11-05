@@ -1,6 +1,5 @@
 package com.example.cd_create_edit_save.model.dto;
 
-import com.example.cd_create_edit_save.validator.ValidSecurityDeposit;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ValidSecurityDeposit
 public class ProductUpdateInDto {
 
-    // NON-EDITABLE FIELDS (for validation only - will throw error if changed)
     @NotBlank(message = "Product short code is required")
     @Size(max = 3, message = "Product short code must be 3 characters")
     private String productShtCd;
@@ -31,7 +28,6 @@ public class ProductUpdateInDto {
     @Size(max = 2, message = "Rewards type short code must be 2 characters")
     private String rewardsTypeShtCd;
 
-    // EDITABLE FIELDS
     @NotBlank(message = "APR type is required")
     @Pattern(regexp = "^(FIXED|VARIABLE)$", message = "APR type must be either FIXED or VARIABLE")
     private String aprType;
@@ -90,6 +86,17 @@ public class ProductUpdateInDto {
     private Integer securityDepositMin;
     private Integer securityDepositMax;
 
+    @NotBlank(message = "To be approved by is required")
+    @Size(max = 255, message = "To be approved by name too long")
+    private String toBeApprovedBy;
+
+    @NotBlank(message = "Approval priority level is required")
+    @Pattern(regexp = "^(NORMAL PRIORITY|HIGH PRIORITY|LOW PRIORITY)$", message = "Priority level must be NORMAL PRIORITY, HIGH PRIORITY, or LOW PRIORITY")
+    private String approvalPriorityLevel;
+
+    @Size(max = 1000, message = "Comments to approver too long")
+    private String commentsToApprover;
+
     @NotBlank(message = "PRIN code is required")
     @Size(max = 50, message = "PRIN code too long")
     private String prin;
@@ -122,11 +129,4 @@ public class ProductUpdateInDto {
 
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
-
-    @NotBlank(message = "Reviewer name is required")
-    @Size(max = 255, message = "Reviewer name too long")
-    private String reviewedBy;
-
-    @Size(max = 1000, message = "Review comments too long")
-    private String reviewComments;
 }

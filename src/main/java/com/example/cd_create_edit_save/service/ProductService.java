@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 
 /**
@@ -24,10 +23,12 @@ public interface ProductService {
      * @return ProductCreateOutDto containing the created product details
      * @throws com.example.cd_create_edit_save.exception.InvalidRequestException if validation fails
      */
-    ProductCreateOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
-ApiResponseOutDto<List<ProductResponseOutDto>> getProducts(Long offset , Long Limit);
+    ProductOutDto createProduct(ProductCreateInDto requestDto, String createdBy);
 
-    ProductCreateOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
+    ApiResponseOutDto<List<ProductResponseOutDto>> getProducts(Long offset , Long Limit);
+
+    ProductOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy);
+
     ApiResponseOutDto<Map<String, Object>> getProductByParameters(String text, Double min_apr, Double max_apr, String status, Long offset, Long limit);
 
     ProductOutDto getProductById(String productId);

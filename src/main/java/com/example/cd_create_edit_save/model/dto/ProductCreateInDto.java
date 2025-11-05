@@ -1,6 +1,5 @@
 package com.example.cd_create_edit_save.model.dto;
 
-import com.example.cd_create_edit_save.validator.ValidSecurityDeposit;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ValidSecurityDeposit
 public class ProductCreateInDto {
 
     @NotBlank(message = "Product short code is required")
@@ -88,6 +86,17 @@ public class ProductCreateInDto {
     private Integer securityDepositMin;
     private Integer securityDepositMax;
 
+    @NotBlank(message = "To be approved by is required")
+    @Size(max = 255, message = "To be approved by name too long")
+    private String toBeApprovedBy;
+
+    @NotBlank(message = "Approval priority level is required")
+    @Pattern(regexp = "^(NORMAL PRIORITY|HIGH PRIORITY|LOW PRIORITY)$", message = "Priority level must be NORMAL PRIORITY, HIGH PRIORITY, or LOW PRIORITY")
+    private String approvalPriorityLevel;
+
+    @Size(max = 1000, message = "Comments to approver too long")
+    private String commentsToApprover;
+
     @NotBlank(message = "PRIN code is required")
     @Size(max = 50, message = "PRIN code too long")
     private String prin;
@@ -120,11 +129,4 @@ public class ProductCreateInDto {
 
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
-
-    @NotBlank(message = "Reviewer name is required")
-    @Size(max = 255, message = "Reviewer name too long")
-    private String reviewedBy;
-
-    @Size(max = 1000, message = "Review comments too long")
-    private String reviewComments;
 }

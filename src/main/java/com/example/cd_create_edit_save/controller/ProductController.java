@@ -8,7 +8,7 @@ import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
+import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -79,15 +79,15 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto>> createProduct(
+    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> createProduct(
             @Valid @RequestBody ProductCreateInDto requestDto,
             @RequestHeader(value = "X-Created-By", required = false, defaultValue = "SYSTEM") String createdBy) {
 
         log.info("Received product creation request from user: {}", createdBy);
 
-        ProductCreateOutDto responseData = productService.createProduct(requestDto, createdBy);
+        ProductOutDto responseData = productService.createProduct(requestDto, createdBy);
 
-        com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto> response = com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto.<ProductCreateOutDto>builder()
+        ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
                 .status("success")
                 .message("Product created successfully with ID: " + responseData.getProductId())
                 .data(responseData)
@@ -99,7 +99,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @PutMapping("/{productId}")
-    public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto>> updateProduct(
+    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> updateProduct(
             @PathVariable String productId,
             @Valid @RequestBody ProductUpdateInDto requestDto,
             @RequestHeader(value = "X-Updated-By", required = false, defaultValue = "SYSTEM") String updatedBy) {
@@ -107,9 +107,9 @@ public class ProductController {
         log.info("Received product update request for Product ID: {} from user: {}", productId, updatedBy);
 
 
-        ProductCreateOutDto responseData = productService.updateProduct(productId, requestDto, updatedBy);
+        ProductOutDto responseData = productService.updateProduct(productId, requestDto, updatedBy);
 
-        com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<ProductCreateOutDto> response = com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto.<ProductCreateOutDto>builder()
+        ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
                 .status("success")
                 .message("Product updated successfully. Old ID: " + productId + ", New ID: " + responseData.getProductId())
                 .data(responseData)
@@ -128,15 +128,15 @@ public class ProductController {
      * @return ResponseEntity containing product details
      */
     @GetMapping("/{productId}")
-    public ResponseEntity<com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto>> getProductById(
+    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> getProductById(
             @PathVariable String productId) {
 
         log.info("Received request to fetch product with ID: {}", productId);
 
-        com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto productOutDto = productService.getProductById(productId);
+        ProductOutDto productOutDto = productService.getProductById(productId);
 
-        com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto<com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto> response = com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto.<com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto>builder()
-                .status("success")
+        ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
+                .status("SUCCESS")
                 .message("Product retrieved successfully")
                 .data(productOutDto)
                 .timestamp(Instant.now())
@@ -146,5 +146,4 @@ public class ProductController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 }

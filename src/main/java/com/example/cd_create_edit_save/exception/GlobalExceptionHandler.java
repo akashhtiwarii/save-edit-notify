@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
                                                                          Object errorData) {
 
         ApiResponseOutDto<Object> response = ApiResponseOutDto.<Object>builder()
-                .status("failure")
+                .status("FAILURE")
                 .message(message)
                 .data(errorData)
                 .timestamp(Instant.now())

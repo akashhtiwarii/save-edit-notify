@@ -2,7 +2,6 @@ package com.example.cd_create_edit_save.mapper;
 
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ProductCreateOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import java.util.List;
 
 @Component
 public class ProductMapper {
+
 
     public Product toEntity(ProductCreateInDto dto, String generatedProductId, String createdBy) {
         String boardingIndicator = buildBoardingIndicator(
@@ -43,8 +43,12 @@ public class ProductMapper {
                 .status("PENDING")
                 .createdBy(createdBy)
                 .createdDatetime(LocalDateTime.now())
-                .reviewedBy(dto.getReviewedBy())
-                .reviewComments(dto.getReviewComments())
+                .toBeApprovedBy(dto.getToBeApprovedBy())
+                .approvalPriorityLevel(dto.getApprovalPriorityLevel())
+                .commentsToApprover(dto.getCommentsToApprover())
+                .reviewedBy(null)
+                .reviewedDatetime(null)
+                .reviewComments(null)
                 .prin(dto.getPrin())
                 .cwsProductId(dto.getCwsProductId())
                 .chaCode(dto.getChaCode())
@@ -80,11 +84,15 @@ public class ProductMapper {
                 .termsConditionsLink(dto.getTermsConditionsLink())
                 .cardholderAgreementLink(dto.getCardholderAgreementLink())
                 .cardImageLink(dto.getCardImageLink())
-                .status("PENDING")
+                .status("REVISION_PENDING")
                 .createdBy(updatedBy)
                 .createdDatetime(LocalDateTime.now())
-                .reviewedBy(dto.getReviewedBy())
-                .reviewComments(dto.getReviewComments())
+                .toBeApprovedBy(dto.getToBeApprovedBy())
+                .approvalPriorityLevel(dto.getApprovalPriorityLevel())
+                .commentsToApprover(dto.getCommentsToApprover())
+                .reviewedBy(null)
+                .reviewedDatetime(null)
+                .reviewComments(null)
                 .prin(dto.getPrin())
                 .cwsProductId(dto.getCwsProductId())
                 .chaCode(dto.getChaCode())
@@ -94,8 +102,8 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductCreateOutDto toResponseDto(Product entity) {
-        return ProductCreateOutDto.builder()
+    public ProductOutDto toResponseDto(Product entity) {
+        return ProductOutDto.builder()
                 .productId(entity.getProductId())
                 .productShtCd(entity.getProductShtCd())
                 .feeTypeShtCd(entity.getFeeTypeShtCd())
@@ -121,6 +129,9 @@ public class ProductMapper {
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .status(entity.getStatus())
+                .toBeApprovedBy(entity.getToBeApprovedBy())
+                .approvalPriorityLevel(entity.getApprovalPriorityLevel())
+                .commentsToApprover(entity.getCommentsToApprover())
                 .reviewedBy(entity.getReviewedBy())
                 .reviewComments(entity.getReviewComments())
                 .createdBy(entity.getCreatedBy())
@@ -129,10 +140,10 @@ public class ProductMapper {
     }
 
     /**
-     * Convert Product entity to ProductOutDto
+     * Convert Product entity to ProductCreateOutDto
      *
      * @param product the product entity
-     * @return ProductOutDto
+     * @return ProductCreateOutDto
      */
     public ProductOutDto toDto(Product product) {
         if (product == null) {
@@ -161,6 +172,9 @@ public class ProductMapper {
                 .status(product.getStatus())
                 .createdBy(product.getCreatedBy())
                 .createdDatetime(product.getCreatedDatetime())
+                .toBeApprovedBy(product.getToBeApprovedBy())
+                .approvalPriorityLevel(product.getApprovalPriorityLevel())
+                .commentsToApprover(product.getCommentsToApprover())
                 .reviewedBy(product.getReviewedBy())
                 .reviewedDatetime(product.getReviewedDatetime())
                 .reviewComments(product.getReviewComments())
