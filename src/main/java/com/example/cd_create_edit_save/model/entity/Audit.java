@@ -37,4 +37,7 @@ public class Audit {
 
     @Column(name = "NOTE", length = 500)
     private String note;
+
+    @Column(name = "ROLE", length = 50)
+    private String role;
 }
