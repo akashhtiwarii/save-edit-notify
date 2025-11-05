@@ -5,8 +5,7 @@ import com.example.cd_create_edit_save.exception.ResourceNotFoundException;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.entity.Product;
-import com.example.cd_create_edit_save.repository.ProductRepository;
-import com.example.cd_create_edit_save.repository.UserRepository;
+import com.example.cd_create_edit_save.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,6 +21,13 @@ public class ProductValidator {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final ProductShortCodeRepository productShortCodeRepository;
+    private final FeeTypeShortCodeRepository feeTypeShortCodeRepository;
+    private final RewardsTypeShortCodeRepository rewardsTypeShortCodeRepository;
+    private final PrinCodeRepository prinCodeRepository;
+    private final CwsProdCodeRepository cwsProdCodeRepository;
+    private final ChaCodeRepository chaCodeRepository;
+
     private static final BigDecimal CASH_APR_MULTIPLIER = new BigDecimal("1.05");
     private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
 
@@ -47,6 +53,12 @@ public class ProductValidator {
     public void validateProductCreateRequest(ProductCreateInDto dto) {
         log.info("Starting validation for product create request");
 
+        validateProductShtCode(dto.getProductShtCd());
+        validateFeeTypeShtCode(dto.getFeeTypeShtCd());
+        validateRewardsTypeShtCode(dto.getRewardsTypeShtCd());
+        validatePrinCode(dto.getPrin());
+        validateCwsProductCode(dto.getCwsProductId());
+        validateChaCode(dto.getChaCode());
         validateAprTypeAndValueType(dto.getAprType(), dto.getAprValueType());
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
@@ -64,6 +76,9 @@ public class ProductValidator {
     public void validateProductUpdateRequest(ProductUpdateInDto dto) {
         log.info("Starting validation for product update request");
 
+        validatePrinCode(dto.getPrin());
+        validateCwsProductCode(dto.getCwsProductId());
+        validateChaCode(dto.getChaCode());
         validateAprTypeAndValueType(dto.getAprType(), dto.getAprValueType());
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
@@ -76,7 +91,7 @@ public class ProductValidator {
     }
 
     /**
-     * Validate non-editable fields haven't changed
+     * Validate non-editable fields
      */
     public void validateNonEditableFields(Product existingProduct, ProductUpdateInDto requestDto) {
         log.info("Checking if non-editable fields have been modified");
@@ -109,6 +124,108 @@ public class ProductValidator {
         }
 
         log.info("Non-editable fields validation passed");
+    }
+
+    /**
+     * Validate Product Short Code exists in master data
+     */
+    private void validateProductShtCode(String productShtCd) {
+        log.info("Validating Product Short Code: {}", productShtCd);
+        boolean exists = productShortCodeRepository.existsByProductShortCode(productShtCd);
+
+        if (!exists) {
+            log.error("Product Short Code not found: {}", productShtCd);
+            throw new InvalidRequestException(
+                    "Product Short Code '" + productShtCd + "' does not exist in the system. Please select a valid product category."
+            );
+        }
+
+        log.info("Product Short Code validation passed");
+    }
+
+    /**
+     * Validate Fee Type Short Code exists in master data
+     */
+    private void validateFeeTypeShtCode(String feeTypeShtCd) {
+        log.info("Validating Fee Type Short Code: {}", feeTypeShtCd);
+        boolean exists = feeTypeShortCodeRepository.existsByFeeTypeShortCode(feeTypeShtCd);
+
+        if (!exists) {
+            log.error("Fee Type Short Code not found: {}", feeTypeShtCd);
+            throw new InvalidRequestException(
+                    "Fee Type Short Code '" + feeTypeShtCd + "' does not exist in the system. Please select a valid fee type."
+            );
+        }
+
+        log.info("Fee Type Short Code validation passed");
+    }
+
+    /**
+     * Validate Rewards Type Short Code exists in master data
+     */
+    private void validateRewardsTypeShtCode(String rewardsTypeShtCd) {
+        log.info("Validating Rewards Type Short Code: {}", rewardsTypeShtCd);
+        boolean exists = rewardsTypeShortCodeRepository.existsByRewardsTypeShortCode(rewardsTypeShtCd);
+
+        if (!exists) {
+            log.error("Rewards Type Short Code not found: {}", rewardsTypeShtCd);
+            throw new InvalidRequestException(
+                    "Rewards Type Short Code '" + rewardsTypeShtCd + "' does not exist in the system. Please select a valid rewards type."
+            );
+        }
+
+        log.info("Rewards Type Short Code validation passed");
+    }
+
+    /**
+     * Validate PRIN Code exists in master data
+     */
+    private void validatePrinCode(String prinCode) {
+        log.info("Validating PRIN Code: {}", prinCode);
+        boolean exists = prinCodeRepository.existsByPrinCode(prinCode);
+
+        if (!exists) {
+            log.error("PRIN Code not found: {}", prinCode);
+            throw new InvalidRequestException(
+                    "PRIN Code '" + prinCode + "' does not exist in the system. Please select a valid PRIN code."
+            );
+        }
+
+        log.info("PRIN Code validation passed");
+    }
+
+    /**
+     * Validate CWS Product Code exists in master data
+     */
+    private void validateCwsProductCode(String cwsProductId) {
+        log.info("Validating CWS Product Code: {}", cwsProductId);
+        boolean exists = cwsProdCodeRepository.existsByCwsProdCode(cwsProductId);
+
+        if (!exists) {
+            log.error("CWS Product Code not found: {}", cwsProductId);
+            throw new InvalidRequestException(
+                    "CWS Product Code '" + cwsProductId + "' does not exist in the system. Please select a valid CWS product Code."
+            );
+        }
+
+        log.info("CWS Product Code validation passed");
+    }
+
+    /**
+     * Validate CHA Code exists in master data
+     */
+    private void validateChaCode(String chaCode) {
+        log.info("Validating CHA Code: {}", chaCode);
+        boolean exists = chaCodeRepository.existsByChaCode(chaCode);
+
+        if (!exists) {
+            log.error("CHA Code not found {}", chaCode);
+            throw new InvalidRequestException(
+                    "CHA Code '" + chaCode + "' does not exist in the system. Please select a valid CHA code."
+            );
+        }
+
+        log.info("CHA Code validation passed");
     }
 
     /**
@@ -286,7 +403,6 @@ public class ProductValidator {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneWeekFromNow = now.plusWeeks(1);
 
-        // Start date must be at least 1 week from now
         if (startDate.isBefore(oneWeekFromNow)) {
             log.error("Start date ({}) is before one week from now ({})", startDate, oneWeekFromNow);
             throw new InvalidRequestException(
@@ -295,7 +411,6 @@ public class ProductValidator {
             );
         }
 
-        // End date must be AFTER start date (not equal)
         if (endDate.isBefore(startDate) || endDate.isEqual(startDate)) {
             log.error("End date ({}) is not after start date ({})", endDate, startDate);
             throw new InvalidRequestException(

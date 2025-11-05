@@ -129,10 +129,4 @@ public class ProductCreateInDto {
 
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
-
-    @Size(max = 255, message = "Reviewer name too long")
-    private String reviewedBy;
-
-    @Size(max = 1000, message = "Review comments too long")
-    private String reviewComments;
 }

@@ -1,6 +1,5 @@
 package com.example.cd_create_edit_save.service.serviceImpl;
 
-import com.example.cd_create_edit_save.exception.ResourceNotFoundException;
 import com.example.cd_create_edit_save.mapper.ProductMapper;
 import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,11 +20,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final ProductValidator productRequestValidator;
     private final ProductValidator productValidator;
-
-    private static final BigDecimal CASH_APR_MULTIPLIER = new BigDecimal("1.05");
-    private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
 
     @Override
     @Transactional
@@ -35,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Starting product creation for category: {}, fee: {}, rewards: {}",
                 requestDto.getProductShtCd(), requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
 
-        productRequestValidator.validateProductCreateRequest(requestDto);
+        productValidator.validateProductCreateRequest(requestDto);
 
         String productId = generateProductId(requestDto.getProductShtCd(),
                 requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
@@ -60,9 +53,9 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("Found existing product: {}", existingProduct.getProductId());
 
-        productRequestValidator.validateNonEditableFields(existingProduct, requestDto);
+        productValidator.validateNonEditableFields(existingProduct, requestDto);
 
-        productRequestValidator.validateProductUpdateRequest(requestDto);
+        productValidator.validateProductUpdateRequest(requestDto);
 
         String newProductId = generateProductId(requestDto.getProductShtCd(),
                 requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
