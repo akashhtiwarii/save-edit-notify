@@ -94,13 +94,7 @@ class ProductValidatorTest {
     void testValidateProductCreateRequest_Success() {
         ProductCreateInDto dto = validCreateDto();
 
-        when(productShortCodeRepository.existsByProductShortCode("GOL")).thenReturn(true);
-        when(feeTypeShortCodeRepository.existsByFeeTypeShortCode("AF")).thenReturn(true);
-        when(rewardsTypeShortCodeRepository.existsByRewardsTypeShortCode("CB")).thenReturn(true);
-        when(prinCodeRepository.existsByPrinCode("PRIN01")).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode("CWS01")).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode("CHA01")).thenReturn(true);
-        when(userRepository.existsByUsername("admin")).thenReturn(true);
+        setupAllCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductCreateRequest(dto));
 
@@ -201,10 +195,7 @@ class ProductValidatorTest {
     void testValidateProductUpdateRequest_Success() {
         ProductUpdateInDto dto = validUpdateDto();
 
-        when(prinCodeRepository.existsByPrinCode("PRIN01")).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode("CWS01")).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode("CHA01")).thenReturn(true);
-        when(userRepository.existsByUsername("admin")).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
 
@@ -299,10 +290,7 @@ class ProductValidatorTest {
         dto.setAprType("FIXED");
         dto.setAprValueType("SPECIFIC");
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -317,10 +305,7 @@ class ProductValidatorTest {
         dto.setCashAprMin(BigDecimal.valueOf(10.5));
         dto.setCashAprMax(BigDecimal.valueOf(15.75));
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -330,6 +315,8 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setAprType("FIXED");
         dto.setAprValueType("RANGE");
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -342,6 +329,8 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setAprType("VARIABLE");
         dto.setAprValueType("SPECIFIC");
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -358,11 +347,10 @@ class ProductValidatorTest {
         dto.setAprValueType("SPECIFIC");
         dto.setPurchaseAprMin(BigDecimal.valueOf(10));
         dto.setPurchaseAprMax(BigDecimal.valueOf(10));
+        dto.setCashAprMin(BigDecimal.valueOf(10.5));
+        dto.setCashAprMax(BigDecimal.valueOf(10.5));
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -374,6 +362,8 @@ class ProductValidatorTest {
         dto.setAprValueType("SPECIFIC");
         dto.setPurchaseAprMin(BigDecimal.valueOf(10));
         dto.setPurchaseAprMax(BigDecimal.valueOf(15));
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -389,6 +379,8 @@ class ProductValidatorTest {
         dto.setPurchaseAprMin(BigDecimal.valueOf(20));
         dto.setPurchaseAprMax(BigDecimal.valueOf(15));
 
+        setupUpdateCodeMocksAsValid();
+
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
 
@@ -402,6 +394,8 @@ class ProductValidatorTest {
         dto.setAprValueType("RANGE");
         dto.setPurchaseAprMin(BigDecimal.valueOf(15));
         dto.setPurchaseAprMax(BigDecimal.valueOf(15));
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -419,10 +413,7 @@ class ProductValidatorTest {
         dto.setCashAprMin(BigDecimal.valueOf(10.50));
         dto.setCashAprMax(BigDecimal.valueOf(10.50));
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -434,6 +425,8 @@ class ProductValidatorTest {
         dto.setPurchaseAprMax(BigDecimal.valueOf(10));
         dto.setCashAprMin(BigDecimal.valueOf(11.00)); // Should be 10.50
         dto.setCashAprMax(BigDecimal.valueOf(10.50));
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -449,6 +442,8 @@ class ProductValidatorTest {
         dto.setCashAprMin(BigDecimal.valueOf(10.50));
         dto.setCashAprMax(BigDecimal.valueOf(11.00)); // Should be 10.50
 
+        setupUpdateCodeMocksAsValid();
+
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
 
@@ -463,10 +458,7 @@ class ProductValidatorTest {
         dto.setCreditLineMin(1000);
         dto.setCreditLineMax(5000);
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -476,6 +468,8 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setCreditLineMin(5000);
         dto.setCreditLineMax(1000);
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -488,6 +482,8 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setCreditLineMin(1000);
         dto.setCreditLineMax(1000);
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -504,10 +500,7 @@ class ProductValidatorTest {
         dto.setSecurityDepositMin(200);
         dto.setSecurityDepositMax(500);
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -518,6 +511,8 @@ class ProductValidatorTest {
         dto.setSecurityDepositIndicator("Y");
         dto.setSecurityDepositMin(null);
         dto.setSecurityDepositMax(500);
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -532,6 +527,8 @@ class ProductValidatorTest {
         dto.setSecurityDepositMin(200);
         dto.setSecurityDepositMax(null);
 
+        setupUpdateCodeMocksAsValid();
+
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
 
@@ -544,6 +541,8 @@ class ProductValidatorTest {
         dto.setSecurityDepositIndicator("Y");
         dto.setSecurityDepositMin(500);
         dto.setSecurityDepositMax(200);
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -558,6 +557,8 @@ class ProductValidatorTest {
         dto.setSecurityDepositMin(500);
         dto.setSecurityDepositMax(500);
 
+        setupUpdateCodeMocksAsValid();
+
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
 
@@ -570,6 +571,8 @@ class ProductValidatorTest {
         dto.setSecurityDepositIndicator("N");
         dto.setSecurityDepositMin(200);
         dto.setSecurityDepositMax(null);
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -584,6 +587,8 @@ class ProductValidatorTest {
         dto.setSecurityDepositMin(null);
         dto.setSecurityDepositMax(500);
 
+        setupUpdateCodeMocksAsValid();
+
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
 
@@ -597,10 +602,7 @@ class ProductValidatorTest {
         dto.setSecurityDepositMin(null);
         dto.setSecurityDepositMax(null);
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -613,10 +615,7 @@ class ProductValidatorTest {
         dto.setStartDate(LocalDateTime.now().plusWeeks(2));
         dto.setEndDate(LocalDateTime.now().plusMonths(6));
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
@@ -626,6 +625,8 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setStartDate(LocalDateTime.now().plusDays(3));
         dto.setEndDate(LocalDateTime.now().plusMonths(6));
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -638,6 +639,8 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setStartDate(LocalDateTime.now().plusWeeks(3));
         dto.setEndDate(LocalDateTime.now().plusWeeks(2));
+
+        setupUpdateCodeMocksAsValid();
 
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
@@ -652,6 +655,8 @@ class ProductValidatorTest {
         dto.setStartDate(sameDate);
         dto.setEndDate(sameDate);
 
+        setupUpdateCodeMocksAsValid();
+
         InvalidRequestException ex = assertThrows(InvalidRequestException.class,
                 () -> productValidator.validateProductUpdateRequest(dto));
 
@@ -665,10 +670,7 @@ class ProductValidatorTest {
         ProductUpdateInDto dto = validUpdateDto();
         dto.setToBeApprovedBy("admin");
 
-        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
-        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
-        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
-        when(userRepository.existsByUsername("admin")).thenReturn(true);
+        setupUpdateCodeMocksAsValid();
 
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
 
@@ -692,6 +694,23 @@ class ProductValidatorTest {
     }
 
     // ==================== Helper Methods ====================
+
+    private void setupAllCodeMocksAsValid() {
+        when(productShortCodeRepository.existsByProductShortCode(anyString())).thenReturn(true);
+        when(feeTypeShortCodeRepository.existsByFeeTypeShortCode(anyString())).thenReturn(true);
+        when(rewardsTypeShortCodeRepository.existsByRewardsTypeShortCode(anyString())).thenReturn(true);
+        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
+        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
+        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
+        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+    }
+
+    private void setupUpdateCodeMocksAsValid() {
+        when(prinCodeRepository.existsByPrinCode(anyString())).thenReturn(true);
+        when(cwsProdCodeRepository.existsByCwsProdCode(anyString())).thenReturn(true);
+        when(chaCodeRepository.existsByChaCode(anyString())).thenReturn(true);
+        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+    }
 
     private ProductCreateInDto validCreateDto() {
         ProductCreateInDto dto = new ProductCreateInDto();
