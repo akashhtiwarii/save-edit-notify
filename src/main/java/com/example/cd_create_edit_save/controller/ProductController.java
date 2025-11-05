@@ -1,20 +1,14 @@
 package com.example.cd_create_edit_save.controller;
 
-
 import com.example.cd_create_edit_save.model.dto.ProductRequestInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
-import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.dto.ProductCreateInDto;
-
-import com.example.cd_create_edit_save.model.dto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductSummaryOutDTO;
 import com.example.cd_create_edit_save.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import jakarta.validation.Valid;
@@ -23,15 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -41,30 +27,18 @@ import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCT
 import static com.example.cd_create_edit_save.constants.AppConstants.EXPORT_PRODUCTS;
 import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCTS_BY_PARAMETER;
 
-
 /**
- * {@code ProductController} is a REST controller responsible for handling product-related operations
- * such as creation, update, and retrieval by product ID.
- * <p>
- * It provides endpoints under the base path defined in {@link AppConstants#PRODUCT_API_BASE_PATH}.
- * Each operation returns a structured API response wrapped in {@link ApiResponseOutDto}.
- * </p>
+ * REST controller that manages product-related operations such as
+ * creation, update, retrieval, filtering, and export.
  *
- * <p><b>Responsibilities:</b></p>
+ * <p>All endpoints are available under {@link AppConstants#PRODUCT_API_BASE_PATH}.</p>
+ *
+ * <p>Responsibilities:</p>
  * <ul>
- *     <li>Accept and validate product creation and update requests.</li>
+ *     <li>Handle incoming product API requests.</li>
  *     <li>Delegate business logic to {@link ProductService}.</li>
- *     <li>Return standardized success or error responses.</li>
+ *     <li>Return standardized API responses using {@link ApiResponseOutDto}.</li>
  * </ul>
- *
- * <p><b>Annotations:</b></p>
- * <ul>
- *     <li>{@link RestController} - Marks this class as a Spring REST controller.</li>
- *     <li>{@link RequestMapping} - Defines the base URL for all endpoints.</li>
- *     <li>{@link RequiredArgsConstructor} - Automatically generates a constructor for final fields.</li>
- *     <li>{@link Slf4j} - Enables logging via the SLF4J API.</li>
- * </ul>
- *
  */
 @RestController
 @RequestMapping(AppConstants.PRODUCT_API_BASE_PATH)
@@ -72,45 +46,46 @@ import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCT
 @Slf4j
 public class ProductController {
 
-    /**
-     * Service layer dependency responsible for handling business logic
-     * related to product creation, updating, and retrieval.
-     */
+    /** Service layer responsible for product business logic. */
     private final ProductService productService;
 
-    /**\
-     * Get Product List .
-     * @param offset
-     * @param limit
-     * @return List of productresponseout dto.
+    /**
+     * Retrieves a paginated list of all products.
+     *
+     * @param offset optional pagination offset
+     * @param limit  optional pagination limit
+     * @return list of products wrapped in {@link ApiResponseOutDto}
      */
     @GetMapping(GET_PRODUCTS)
-    public ResponseEntity<ApiResponseOutDto<List<ProductResponseOutDto>>> getProducts(@RequestParam(required = false ) Long offset , @RequestParam(required = false ) Long limit) {
+    public ResponseEntity<ApiResponseOutDto<List<ProductResponseOutDto>>> getProducts(
+            @RequestParam(required = false) Long offset,
+            @RequestParam(required = false) Long limit) {
+
         ApiResponseOutDto<List<ProductResponseOutDto>> products = productService.getProducts(offset, limit);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-
     /**
-     * Get product list filtered by parameters.
-     * @param request productrequest dto.
-     * @return list or productresponseout dto.
+     * Retrieves products filtered by provided parameters.
+     *
+     * @param request the filtering parameters such as APR range, status, etc.
+     * @return filtered list of products wrapped in {@link ApiResponseOutDto}
      */
     @GetMapping(GET_PRODUCTS_BY_PARAMETER)
     public ResponseEntity<ApiResponseOutDto<Map<String, Object>>> getProductsByParameters(
-            @Valid @RequestBody ProductRequestInDto request
-    ) {
-        ApiResponseOutDto<Map<String , Object>> products = productService.getProductByParameters(request.getText(),
-                request.getMin_apr(), request.getMax_apr(), request.getStatus(),
-                request.getOffset(), request.getLimit());
-        return new ResponseEntity<>(products, HttpStatus.OK);
+            @Valid @RequestBody ProductRequestInDto request) {
 
+        ApiResponseOutDto<Map<String, Object>> products = productService.getProductByParameters(
+                request.getText(), request.getMin_apr(), request.getMax_apr(),
+                request.getStatus(), request.getOffset(), request.getLimit());
+
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-
     /**
-     * Get csv for the product list.
-     * @return file.
+     * Exports all products to a CSV file for download.
+     *
+     * @return the CSV file as an {@link InputStreamResource}
      */
     @GetMapping(EXPORT_PRODUCTS)
     public ResponseEntity<InputStreamResource> exportProductsToCsv() {
@@ -122,8 +97,13 @@ public class ProductController {
                 .body(file);
     }
 
-
-
+    /**
+     * Creates a new product record.
+     *
+     * @param requestDto the product creation request data
+     * @param createdBy  the user or system initiating the creation
+     * @return details of the created product wrapped in {@link ApiResponseOutDto}
+     */
     @PostMapping
     public ResponseEntity<ApiResponseOutDto<ProductOutDto>> createProduct(
             @Valid @RequestBody ProductCreateInDto requestDto,
@@ -141,22 +121,16 @@ public class ProductController {
                 .build();
 
         log.info("Product creation successful. Product ID: {}", responseData.getProductId());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Updates an existing product identified by its ID.
      *
-     * @param productId  the unique identifier of the product to be updated.
-     * @param requestDto the {@link ProductUpdateInDto} containing updated product details.
-     * @param updatedBy  the identifier (user or system) who initiated the update request.
-     *                   Defaults to "SYSTEM" if not provided.
-     * @return a {@link ResponseEntity} containing {@link ApiResponseOutDto} with
-     *         updated product details and HTTP status {@code 200 (OK)}.
-     *
-     * @apiNote This endpoint validates input fields using {@link Valid}.
-     * @see ProductService#updateProduct(String, ProductUpdateInDto, String)
+     * @param productId  the ID of the product to be updated
+     * @param requestDto the updated product details
+     * @param updatedBy  the user or system initiating the update
+     * @return updated product details wrapped in {@link ApiResponseOutDto}
      */
     @PutMapping("/{productId}")
     public ResponseEntity<ApiResponseOutDto<ProductOutDto>> updateProduct(
@@ -176,23 +150,17 @@ public class ProductController {
                 .build();
 
         log.info("Product update successful. Old ID: {}, New ID: {}", productId, responseData.getProductId());
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
-     * Retrieves a product by its unique ID.
+     * Retrieves product details by product ID.
      *
-     * @param productId the unique identifier of the product to be retrieved.
-     * @return a {@link ResponseEntity} containing {@link ApiResponseOutDto} with
-     *         the product details and HTTP status {@code 200 (OK)}.
-     *
-     * @see ProductService#getProductById(String)
+     * @param productId the unique product identifier
+     * @return product details wrapped in {@link ApiResponseOutDto}
      */
     @GetMapping("/{productId}")
-    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> getProductById(
-            @PathVariable String productId) {
-
+    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> getProductById(@PathVariable String productId) {
         log.info("Received request to fetch product with ID: {}", productId);
 
         ProductOutDto productOutDto = productService.getProductById(productId);
@@ -205,10 +173,14 @@ public class ProductController {
                 .build();
 
         log.info("Successfully processed request for product ID: {}", productId);
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves summarized statistics or insights for all products.
+     *
+     * @return summary details wrapped in {@link ApiResponseOutDto}
+     */
     @GetMapping("/summary")
     public ResponseEntity<ApiResponseOutDto<ProductSummaryOutDTO>> getProductSummary() {
         log.info("Request to get Product Summary");
@@ -216,7 +188,7 @@ public class ProductController {
             ProductSummaryOutDTO summary = productService.getProductSummary();
 
             ApiResponseOutDto<ProductSummaryOutDTO> response = ApiResponseOutDto.<ProductSummaryOutDTO>builder()
-                    .status("success")
+                    .status("SUCCESS")
                     .message("Product summary retrieved successfully.")
                     .data(summary)
                     .timestamp(Instant.now())
@@ -227,8 +199,9 @@ public class ProductController {
 
         } catch (Exception e) {
             log.error("Error retrieving Product Summary: {}", e.getMessage(), e);
+
             ApiResponseOutDto<ProductSummaryOutDTO> errorResponse = ApiResponseOutDto.<ProductSummaryOutDTO>builder()
-                    .status("error")
+                    .status("FAILURE")
                     .message("Failed to retrieve product summary: " + e.getMessage())
                     .timestamp(Instant.now())
                     .build();
