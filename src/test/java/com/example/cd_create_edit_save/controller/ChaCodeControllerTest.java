@@ -59,7 +59,7 @@ public class ChaCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/cha-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/products/cha-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
@@ -78,7 +78,7 @@ public class ChaCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/cha-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/products/cha-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());

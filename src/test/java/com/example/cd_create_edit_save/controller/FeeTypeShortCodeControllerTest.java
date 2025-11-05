@@ -68,7 +68,7 @@ public class FeeTypeShortCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/fee-type-short-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/products/fee-type-short-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
@@ -87,7 +87,7 @@ public class FeeTypeShortCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/fee-type-short-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/products/fee-type-short-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());

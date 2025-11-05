@@ -66,7 +66,7 @@ public class CwsProdCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/cws-prod-codes")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/products/cws-prod-codes")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
@@ -85,7 +85,7 @@ public class CwsProdCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/cws-prod-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/products/cws-prod-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
