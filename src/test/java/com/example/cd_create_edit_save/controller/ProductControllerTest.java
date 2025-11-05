@@ -71,7 +71,7 @@ public class ProductControllerTest {
 
         when(productService.getProductById(productId)).thenReturn(mockProduct);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/{productId}", productId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/products/{productId}", productId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("SUCCESS"))
@@ -90,7 +90,7 @@ public class ProductControllerTest {
 
         when(productService.getProductById(productId)).thenReturn(null);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/{productId}", productId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/products/{productId}", productId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("SUCCESS"))
@@ -113,7 +113,7 @@ public class ProductControllerTest {
         // Assert
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("success", response.getBody().getStatus());
+        assertEquals("SUCCESS", response.getBody().getStatus());
         assertEquals("Product summary retrieved successfully.", response.getBody().getMessage());
         assertEquals(mockSummary, response.getBody().getData());
         verify(productService, times(1)).getProductSummary();
@@ -130,7 +130,7 @@ public class ProductControllerTest {
         // Assert
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("error", response.getBody().getStatus());
+        assertEquals("FAILURE", response.getBody().getStatus());
         assertTrue(response.getBody().getMessage().contains("DB Issue"));
         verify(productService, times(1)).getProductSummary();
     }

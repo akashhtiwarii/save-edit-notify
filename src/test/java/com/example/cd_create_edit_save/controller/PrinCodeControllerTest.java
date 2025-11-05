@@ -71,7 +71,7 @@ public class PrinCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/prin-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/prin-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
@@ -90,7 +90,7 @@ public class PrinCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/prin-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/prin-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());

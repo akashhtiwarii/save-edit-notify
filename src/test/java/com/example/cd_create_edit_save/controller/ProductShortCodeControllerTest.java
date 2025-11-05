@@ -68,7 +68,7 @@ public class ProductShortCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/product-short-codes")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/product-short-codes")
 
 				.accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
@@ -88,7 +88,7 @@ public class ProductShortCodeControllerTest {
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/product-short-codes").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/product-short-codes").accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
