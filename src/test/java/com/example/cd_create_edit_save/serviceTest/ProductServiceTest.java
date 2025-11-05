@@ -19,6 +19,8 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.example.cd_create_edit_save.constants.CommonConstants.CSV_ERROR;
+import static com.example.cd_create_edit_save.constants.CommonConstants.PRODUCT_LIST_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -95,13 +97,13 @@ class ProductServiceImplTest {
     // -------------------------------------------------------
     @Test
     void testGetProducts_Exception() {
-        when(productRepository.getProducts(anyLong(), anyLong())).thenThrow(new RuntimeException("Error retrieving products:"));
+        when(productRepository.getProducts(anyLong(), anyLong())).thenThrow(new RuntimeException(PRODUCT_LIST_ERROR));
 
         ApiResponseOutDto<List<ProductResponseOutDto>> response = productService.getProducts(0L, 10L);
 
         assertThat(response.getStatus()).isEqualTo("error");
-        assertThat(response.getMessage()).contains("Error retrieving products:");
-        assertThat(response.getData()).isEmpty();
+        assertThat(response.getMessage()).contains(PRODUCT_LIST_ERROR);
+        assertThat(response.getData()).isNull();
     }
 
 
@@ -184,7 +186,7 @@ class ProductServiceImplTest {
 
         assertThat(response.getStatus()).isEqualTo("error");
         assertThat(response.getMessage()).contains("DB failure");
-        assertThat(response.getData()).isEmpty();
+        assertThat(response.getData()).isNull();
     }
 
     // -------------------------------------------------------
@@ -213,13 +215,13 @@ class ProductServiceImplTest {
     // -------------------------------------------------------
     @Test
     void testExportProductsToCsv_Exception() {
-        when(productRepository.getProducts(anyLong(), anyLong())).thenThrow(new RuntimeException("DB read error"));
+        when(productRepository.getProducts(anyLong(), anyLong())).thenThrow(new RuntimeException(CSV_ERROR));
 
         RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
                 RuntimeException.class,
                 () -> productService.exportProductsToCsv()
         );
 
-        assertThat(exception.getMessage()).contains("Error generating CSV file");
+        assertThat(exception.getMessage()).contains(CSV_ERROR);
     }
 }
