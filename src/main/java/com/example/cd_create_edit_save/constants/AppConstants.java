@@ -31,7 +31,7 @@ public final class AppConstants {
 	/**
 	 * URL to get products list without any parameters included.
 	 */
-	public static final String GET_PRODUCTS = "/products" ;
+	public static final String GET_PRODUCTS = "/products";
 
 	/**
 	 * To get Product list with search , status or apr parameters.

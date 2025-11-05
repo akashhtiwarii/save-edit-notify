@@ -44,9 +44,14 @@ import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCT
 @Slf4j
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
+    /**\
+     * Get Product List .
+     * @param offset
+     * @param limit
+     * @return List of productresponseout dto.
+     */
     @GetMapping(GET_PRODUCTS)
     public ResponseEntity<ApiResponseOutDto<List<ProductResponseOutDto>>> getProducts(@RequestParam(required = false ) Long offset , @RequestParam(required = false ) Long limit) {
         ApiResponseOutDto<List<ProductResponseOutDto>> products = productService.getProducts(offset, limit);
@@ -54,6 +59,11 @@ public class ProductController {
     }
 
 
+    /**
+     * Get product list filtered by parameters.
+     * @param request productrequest dto.
+     * @return list or productresponseout dto.
+     */
     @GetMapping(GET_PRODUCTS_BY_PARAMETER)
     public ResponseEntity<ApiResponseOutDto<Map<String, Object>>> getProductsByParameters(
             @Valid @RequestBody ProductRequestInDto request
@@ -66,6 +76,10 @@ public class ProductController {
     }
 
 
+    /**
+     * Get csv for the product list.
+     * @return file.
+     */
     @GetMapping(EXPORT_PRODUCTS)
     public ResponseEntity<InputStreamResource> exportProductsToCsv() {
         InputStreamResource file = new InputStreamResource(productService.exportProductsToCsv());

@@ -24,6 +24,12 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "ORDER BY p.PRODUCT_ID DESC", nativeQuery = true)
     Optional<String> findLatestProductIdByPrefix(@Param("prefix") String prefix);
 
+    /**
+     * Get productlist  from product table by joining with product short code table to get product name.
+     * @param offset
+     * @param limit
+     * @return
+     */
     @Query(value = """
     SELECT
         ps.PRD_SHT_CD AS shortCode,
@@ -43,10 +49,18 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 """, nativeQuery = true)
     List<Object[]> getProducts(@Param("offset") Long offset, @Param("limit") Long limit);
 
-
-
-
-
+    /**
+     * Gets product list by filtering product name , product shortcode from the  product short code table.
+     * Gets product list by filtering apr range and status from product table.
+     * Joins both lists to get the final list.
+     * @param text
+     * @param status
+     * @param purchaseAprMin
+     * @param purchaseAprMax
+     * @param limit
+     * @param offset
+     * @return
+     */
     @Query(value = """
         SELECT
             ps.PRD_SHT_CD AS shortCode,
@@ -93,10 +107,16 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             @Param("offset") Long offset
     );
 
-
-
-
-
+    /**
+     * Gets product list with filters .
+     * @param text
+     * @param status
+     * @param purchaseAprMin
+     * @param purchaseAprMax
+     * @param limit
+     * @param offset
+     * @return
+     */
     @Query(value = """
         SELECT
             ps.PRD_SHT_CD AS shortCode,

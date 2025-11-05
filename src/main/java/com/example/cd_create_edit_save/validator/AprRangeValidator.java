@@ -11,7 +11,7 @@ public class AprRangeValidator implements ConstraintValidator<AprRangeValid, Pro
      * To validate the apr range.
      * @param dto
      * @param context
-     * @return
+     * @return boolean
      */
     @Override
     public boolean isValid(final ProductRequestInDto dto, final ConstraintValidatorContext context) {

@@ -35,9 +35,9 @@ public class ApiResponseOutDto<T> {
      * To send success status as reponse.
      * @param data
      * @param <T>
-     * @return
+     * @return sends success response.
      */
-    public static <T> ApiResponseOutDto<T> success( final T data ) {
+    public static <T> ApiResponseOutDto<T> success(final T data) {
         return ApiResponseOutDto.<T>builder()
                 .status("success")
                 .message("Data retrieved succesfully.")
@@ -51,10 +51,9 @@ public class ApiResponseOutDto<T> {
      * @param data
      * @param msg
      * @param <T>
-     * @return
-     *
+     * @return success reponse with custom message.
      */
-    public static <T> ApiResponseOutDto<T> success( final T data , final String msg) {
+    public static <T> ApiResponseOutDto<T> success(final T data , final String msg) {
         return ApiResponseOutDto.<T>builder()
                 .status("success")
                 .message(msg)
@@ -67,7 +66,7 @@ public class ApiResponseOutDto<T> {
      * To send error message as response.
      * @param message
      *  @param <T>
-     * @return
+     * @return error message
      *
      */
     public static <T> ApiResponseOutDto<T> error(final String message) {
