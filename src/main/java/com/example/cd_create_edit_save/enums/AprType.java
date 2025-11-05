@@ -8,8 +8,8 @@ public enum AprType {
 	/**
 	 * Represents an APR type where the rate remains constant over time.
 	 */
-	FIXED,
-
+	FIXES,
+	
 	/**
 	 * Represents an APR type where the rate can range.
 	 */
