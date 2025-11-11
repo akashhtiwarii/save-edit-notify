@@ -26,7 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping(AppConstants.API_V1_CWS_PROD)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Slf4j
 public class CwsProdCodeController {
 

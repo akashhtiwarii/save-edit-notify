@@ -43,7 +43,6 @@ import static com.example.cd_create_edit_save.constants.AppConstants.GET_PRODUCT
 @RestController
 @RequestMapping(AppConstants.PRODUCT_API_BASE_PATH)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Slf4j
 public class ProductController {
 
