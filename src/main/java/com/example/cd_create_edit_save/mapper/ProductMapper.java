@@ -155,40 +155,59 @@ public class ProductMapper {
                 .productShtCd(product.getProductShtCd())
                 .feeTypeShtCd(product.getFeeTypeShtCd())
                 .rewardsTypeShtCd(product.getRewardsTypeShtCd())
+
                 .aprType(product.getAprType())
                 .aprValueType(product.getAprValueType())
+                .feeValue(product.getFeeValue())
+
                 .purchaseAprMin(product.getPurchaseAprMin())
                 .purchaseAprMax(product.getPurchaseAprMax())
                 .cashAprMin(product.getCashAprMin())
                 .cashAprMax(product.getCashAprMax())
+
                 .creditLineMin(product.getCreditLineMin())
                 .creditLineMax(product.getCreditLineMax())
+
                 .securityDepositIndicator(product.getSecurityDepositIndicator())
                 .securityDepositMin(product.getSecurityDepositMin())
                 .securityDepositMax(product.getSecurityDepositMax())
+
                 .termsConditionsLink(product.getTermsConditionsLink())
                 .cardholderAgreementLink(product.getCardholderAgreementLink())
                 .cardImageLink(product.getCardImageLink())
+
                 .status(product.getStatus())
+
                 .createdBy(product.getCreatedBy())
                 .createdDatetime(product.getCreatedDatetime())
+                .updatedBy(product.getUpdatedBy())
+                .updatedDatetime(product.getUpdatedDatetime())
+
                 .toBeApprovedBy(product.getToBeApprovedBy())
-                .approvalPriorityLevel(product.getApprovalPriorityLevel())
                 .commentsToApprover(product.getCommentsToApprover())
+
                 .reviewedBy(product.getReviewedBy())
                 .reviewedDatetime(product.getReviewedDatetime())
                 .reviewComments(product.getReviewComments())
+
+                .requestType(product.getRequestType())
+                .requestedBy(product.getRequestedBy())
+                .requestDatetime(product.getRequestDatetime())
+
                 .overrideBy(product.getOverrideBy())
                 .overrideDatetime(product.getOverrideDatetime())
                 .overrideJustification(product.getOverrideJustification())
+
                 .prin(product.getPrin())
                 .cwsProductId(product.getCwsProductId())
                 .chaCode(product.getChaCode())
+
                 .boardingIndicator(product.getBoardingIndicator())
                 .startDate(product.getStartDate())
                 .endDate(product.getEndDate())
                 .build();
     }
+
 
     private String buildBoardingIndicator(Boolean flag1, Boolean flag2, Boolean flag3, Boolean flag4, Boolean flag5,
                                           Boolean flag6, Boolean flag7, Boolean flag8, Boolean flag9, Boolean flag10,
