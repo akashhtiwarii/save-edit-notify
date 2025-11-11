@@ -39,6 +39,9 @@ public class Product {
     @Column(name = "APR_VALUE_TYPE", length = 50)
     private String aprValueType;
 
+    @Column(name = "FEE_VALUE")
+    private Integer feeValue;
+
     @Column(name = "PURCHASE_APR_MIN", precision = 5, scale = 2)
     private BigDecimal purchaseAprMin;
 
@@ -84,6 +87,18 @@ public class Product {
     @Column(name = "CREATED_DATETIME")
     private LocalDateTime createdDatetime;
 
+    @Column(name = "UPDATED_BY", length = 255)
+    private String updatedBy;
+
+    @Column(name = "UPDATED_DATETIME")
+    private LocalDateTime updatedDatetime;
+
+    @Column(name = "TO_BE_APPROVED_BY", length = 255)
+    private String toBeApprovedBy;
+
+    @Column(name = "COMMENTS_TO_APPROVER", length = 1000)
+    private String commentsToApprover;
+
     @Column(name = "REVIEWED_BY", length = 255)
     private String reviewedBy;
 
@@ -93,13 +108,22 @@ public class Product {
     @Column(name = "REVIEW_COMMENTS", length = 1000)
     private String reviewComments;
 
+    @Column(name = "REQUEST_TYPE", length = 100)
+    private String requestType;
+
+    @Column(name = "REQUESTED_BY", length = 255)
+    private String requestedBy;
+
+    @Column(name = "REQUEST_DATETIME")
+    private LocalDateTime requestDatetime;
+
     @Column(name = "OVERRIDE_BY", length = 100)
     private String overrideBy;
 
     @Column(name = "OVERRIDE_DATETIME")
     private LocalDateTime overrideDatetime;
 
-    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "VARBINARY")
+    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "VARBINARY(MAX)")
     private byte[] overrideJustification;
 
     @Column(name = "PRIN", length = 50)
@@ -119,14 +143,4 @@ public class Product {
 
     @Column(name = "END_DATE")
     private LocalDateTime endDate;
-
-    @Column(name = "TO_BE_APPROVED_BY", length = 255)
-    private String toBeApprovedBy;
-
-    @Column(name = "APPROVAL_PRIORITY_LEVEL", length = 50)
-    private String approvalPriorityLevel;
-
-    @Column(name = "COMMENTS_TO_APPROVER", length = 1000)
-    private String commentsToApprover;
 }
-
