@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+import com.example.cd_create_edit_save.enums.FeeType;
+
 /**
  * Entity class representing Monthly Fee Values in the system.
  * <p>
@@ -21,13 +23,13 @@ import java.math.BigDecimal;
  * @author Krishna
  * @version 1.0
  */
-@Table(name = "monthly_fee_values")
+@Table(name = "fee_values")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MonthlyFeeValue {
+public class FeeValue {
 
 	/**
 	 * Unique identifier for the monthly fee value record.
@@ -50,4 +52,12 @@ public class MonthlyFeeValue {
 	@DecimalMin(value = "0.0", inclusive = true, message = "Amount must be greater than or equal to 0")
 	@Column(name = "amount", nullable = false, precision = 10, scale = 2)
 	private BigDecimal amount;
+
+	/**
+	 * Type of fee - either ANNUAL or MONTHLY. Cannot be null.
+	 */
+	@NotNull(message = "Fee type is required")
+	@Enumerated(EnumType.STRING)
+	@Column(name = "fee_type", nullable = false, length = 20)
+	private FeeType feeType;
 }

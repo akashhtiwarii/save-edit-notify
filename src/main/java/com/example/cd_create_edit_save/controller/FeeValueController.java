@@ -8,9 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.cd_create_edit_save.enums.FeeType;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
-import com.example.cd_create_edit_save.model.entity.MonthlyFeeValue;
-import com.example.cd_create_edit_save.service.MonthlyFeeValueService;
+import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
+import com.example.cd_create_edit_save.service.FeeValueService;
 
 import java.util.List;
 
@@ -21,28 +22,27 @@ import java.util.List;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/api/v1/monthly-fee-values")
+@RequestMapping("/monthly-fee-values")
 @RequiredArgsConstructor
 @Slf4j
 @Validated
-public class MonthlyFeeValueController {
+public class FeeValueController {
 
-	private final MonthlyFeeValueService monthlyFeeValueService;
+	private final FeeValueService monthlyFeeValueService;
 
 	/**
-	 * Retrieves all monthly fee values.
-	 * <p>
-	 * GET endpoint that returns a list of all monthly fee values in the system.
-	 * </p>
+	 * Retrieves fee values filtered by type. GET endpoint specifically for
+	 * filtering by fee type.
 	 * 
-	 * @return ResponseEntity containing list of all monthly fee values and HTTP 200
-	 *         OK status
+	 * @return ResponseEntity containing filtered list of fee values and HTTP 200 OK
+	 *         status
 	 */
-	@GetMapping
-	public ResponseEntity<ApiResponseOutDto<List<MonthlyFeeValue>>> getAllMonthlyFeeValues() {
+	@GetMapping("/type/{feeType}")
+	public ResponseEntity<ApiResponseOutDto<List<FeeValueOutDTO>>> getAllMonthlyFeeValues(
+			@PathVariable FeeType feeType) {
 		log.info("Received request to get all monthly fee values");
 
-		ApiResponseOutDto<List<MonthlyFeeValue>> response = monthlyFeeValueService.getAllMonthlyFeeValues();
+		ApiResponseOutDto<List<FeeValueOutDTO>> response = monthlyFeeValueService.getFeeValuesByType(feeType);
 		log.info("Successfully retrieved {} monthly fee values", response.getData().size());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
