@@ -64,13 +64,13 @@ public class ProductUpdateInDto {
     /** Minimum cash APR value. */
     @NotNull(message = "Cash APR min is required")
     @DecimalMin(value = "0.00", message = "Cash APR min must be >= 0")
-    @DecimalMax(value = "40.00", message = "Cash APR min must be <= 40.00")
+    @DecimalMax(value = "40.99", message = "Cash APR min must be <= 40.99")
     private BigDecimal cashAprMin;
 
     /** Maximum cash APR value. */
     @NotNull(message = "Cash APR max is required")
     @DecimalMin(value = "0.00", message = "Cash APR max must be >= 0")
-    @DecimalMax(value = "40.00", message = "Cash APR max must be <= 40.00")
+    @DecimalMax(value = "40.99", message = "Cash APR max must be <= 40.99")
     private BigDecimal cashAprMax;
 
     /** URL for terms and conditions document (must start with HTTPS). */

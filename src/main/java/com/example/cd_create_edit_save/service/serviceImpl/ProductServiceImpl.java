@@ -163,20 +163,26 @@ public class ProductServiceImpl implements ProductService {
         log.info("Starting product creation for category: {}, fee: {}, rewards: {}",
                 requestDto.getProductShtCd(), requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
 
-        productValidator.validateProductCreateRequest(requestDto);
+        try {
+            productValidator.validateProductCreateRequest(requestDto);
 
-        String productId = generateProductId(requestDto.getProductShtCd(),
-                requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
-        log.info("Generated product ID: {}", productId);
+            String productId = generateProductId(requestDto.getProductShtCd(),
+                    requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
+            log.info("Generated product ID: {}", productId);
 
-        Product product = productMapper.toEntity(requestDto, productId, createdBy);
-        Product savedProduct = productRepository.save(product);
-        log.info("Product saved successfully with ID: {}", productId);
+            Product product = productMapper.toEntity(requestDto, productId, createdBy);
+            Product savedProduct = productRepository.save(product);
+            log.info("Product saved successfully with ID: {}", productId);
 
-        ProductOutDto response = productMapper.toResponseDto(savedProduct);
-        log.info("Product created successfully. Product ID: {}", productId);
+            ProductOutDto response = productMapper.toResponseDto(savedProduct);
+            log.info("Product created successfully. Product ID: {}", productId);
 
-        return response;
+            return response;
+
+        } catch (Exception e) {
+            log.error("Error during product creation: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
@@ -184,26 +190,33 @@ public class ProductServiceImpl implements ProductService {
     public ProductOutDto updateProduct(String productId, ProductUpdateInDto requestDto, String updatedBy) {
         log.info("Starting product update for Product ID: {}", productId);
 
-        Product existingProduct = productValidator.validateProductIdAndGetProduct(productId);
+        try {
+            Product existingProduct = productValidator.validateProductIdAndGetProduct(productId);
+            log.info("Found existing product: {}", existingProduct.getProductId());
 
-        log.info("Found existing product: {}", existingProduct.getProductId());
+            productValidator.validateNonEditableFields(existingProduct, requestDto);
 
-        productValidator.validateNonEditableFields(existingProduct, requestDto);
+            productValidator.validateFieldChanges(existingProduct, requestDto);
 
-        productValidator.validateProductUpdateRequest(requestDto);
+            productValidator.validateProductUpdateRequest(requestDto);
 
-        String newProductId = generateProductId(requestDto.getProductShtCd(),
-                requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
-        log.info("Generated new product ID: {}", newProductId);
+            String newProductId = generateProductId(requestDto.getProductShtCd(),
+                    requestDto.getFeeTypeShtCd(), requestDto.getRewardsTypeShtCd());
+            log.info("Generated new product ID: {}", newProductId);
 
-        Product newProduct = productMapper.toEntity(requestDto, newProductId, updatedBy);
-        Product savedProduct = productRepository.save(newProduct);
-        log.info("Product version saved successfully with ID: {}", newProductId);
+            Product newProduct = productMapper.toEntity(requestDto, newProductId, updatedBy);
+            Product savedProduct = productRepository.save(newProduct);
+            log.info("Product version saved successfully with ID: {}", newProductId);
 
-        ProductOutDto response = productMapper.toResponseDto(savedProduct);
-        log.info("Product updated successfully. Old ID: {}, New ID: {}", productId, newProductId);
+            ProductOutDto response = productMapper.toResponseDto(savedProduct);
+            log.info("Product updated successfully. Old ID: {}, New ID: {}", productId, newProductId);
 
-        return response;
+            return response;
+
+        } catch (Exception e) {
+            log.error("Error during product update: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**

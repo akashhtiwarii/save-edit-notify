@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -28,8 +30,7 @@ public class ProductValidator {
     private final CwsProdCodeRepository cwsProdCodeRepository;
     private final ChaCodeRepository chaCodeRepository;
 
-    private static final BigDecimal CASH_APR_MULTIPLIER = new BigDecimal("1.05");
-    private static final BigDecimal TOLERANCE = new BigDecimal("0.01");
+    private static final BigDecimal CASH_APR_ADDITION = new BigDecimal("5.00");
 
     public Product validateProductIdAndGetProduct(String productId) {
         log.info("Validating product ID: {}", productId);
@@ -59,7 +60,6 @@ public class ProductValidator {
         validatePrinCode(dto.getPrin());
         validateCwsProductCode(dto.getCwsProductId());
         validateChaCode(dto.getChaCode());
-        validateAprTypeAndValueType(dto.getAprType(), dto.getAprValueType());
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
@@ -79,7 +79,6 @@ public class ProductValidator {
         validatePrinCode(dto.getPrin());
         validateCwsProductCode(dto.getCwsProductId());
         validateChaCode(dto.getChaCode());
-        validateAprTypeAndValueType(dto.getAprType(), dto.getAprValueType());
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
@@ -123,7 +122,197 @@ public class ProductValidator {
             );
         }
 
+        if (!existingProduct.getAprType().equals(requestDto.getAprType())) {
+            log.error("Attempt to change APR Type from {} to {}",
+                    existingProduct.getAprType(), requestDto.getAprType());
+            throw new InvalidRequestException(
+                    "APR Type cannot be changed. Original: " + existingProduct.getAprType() +
+                            ", Attempted: " + requestDto.getAprType()
+            );
+        }
+
         log.info("Non-editable fields validation passed");
+    }
+
+    /**
+     * Validate that meaningful changes were made (not just dates)
+     */
+    public void validateFieldChanges(Product existingProduct, ProductUpdateInDto requestDto) {
+        log.info("Validating field changes to determine if new version should be created");
+
+        boolean datesChanged = checkDatesChanged(existingProduct, requestDto);
+        boolean otherFieldsChanged = checkOtherFieldsChanged(existingProduct, requestDto);
+
+        // Case A: Nothing changed
+        if (!datesChanged && !otherFieldsChanged) {
+            log.error("No changes detected in the update request");
+            throw new InvalidRequestException(
+                    "No changes detected. Please modify at least one field to create a new version."
+            );
+        }
+
+        // Case B: Only dates changed
+        if (datesChanged && !otherFieldsChanged) {
+            log.error("Only dates were modified, no other fields changed");
+            throw new InvalidRequestException(
+                    "Cannot create new product version with only date changes. " +
+                            "Please update other fields along with dates, or keep the existing dates."
+            );
+        }
+
+        // Case C & D: Other fields changed (with or without dates) - allow to proceed
+        log.info("Valid field changes detected, proceeding with new version creation");
+    }
+
+    /**
+     * Check if dates have changed
+     */
+    private boolean checkDatesChanged(Product existing, ProductUpdateInDto dto) {
+        boolean startDateChanged = !existing.getStartDate().isEqual(dto.getStartDate());
+        boolean endDateChanged = !existing.getEndDate().isEqual(dto.getEndDate());
+
+        boolean datesChanged = startDateChanged || endDateChanged;
+        log.debug("Dates changed: {}", datesChanged);
+
+        return datesChanged;
+    }
+
+    /**
+     * Check if other editable fields (excluding dates) have changed
+     */
+    private boolean checkOtherFieldsChanged(Product existing, ProductUpdateInDto dto) {
+        boolean changed = false;
+
+        // APR Value Type
+        if (!existing.getAprValueType().equals(dto.getAprValueType())) {
+            log.debug("APR Value Type changed: {} -> {}", existing.getAprValueType(), dto.getAprValueType());
+            changed = true;
+        }
+
+        // Purchase APR
+        if (existing.getPurchaseAprMin().compareTo(dto.getPurchaseAprMin()) != 0) {
+            log.debug("Purchase APR Min changed: {} -> {}", existing.getPurchaseAprMin(), dto.getPurchaseAprMin());
+            changed = true;
+        }
+        if (existing.getPurchaseAprMax().compareTo(dto.getPurchaseAprMax()) != 0) {
+            log.debug("Purchase APR Max changed: {} -> {}", existing.getPurchaseAprMax(), dto.getPurchaseAprMax());
+            changed = true;
+        }
+
+        // Cash APR
+        if (existing.getCashAprMin().compareTo(dto.getCashAprMin()) != 0) {
+            log.debug("Cash APR Min changed");
+            changed = true;
+        }
+        if (existing.getCashAprMax().compareTo(dto.getCashAprMax()) != 0) {
+            log.debug("Cash APR Max changed");
+            changed = true;
+        }
+
+        // Credit Line
+        if (!existing.getCreditLineMin().equals(dto.getCreditLineMin())) {
+            log.debug("Credit Line Min changed: {} -> {}", existing.getCreditLineMin(), dto.getCreditLineMin());
+            changed = true;
+        }
+        if (!existing.getCreditLineMax().equals(dto.getCreditLineMax())) {
+            log.debug("Credit Line Max changed: {} -> {}", existing.getCreditLineMax(), dto.getCreditLineMax());
+            changed = true;
+        }
+
+        // Security Deposit
+        if (!existing.getSecurityDepositIndicator().equals(dto.getSecurityDepositIndicator())) {
+            log.debug("Security Deposit Indicator changed");
+            changed = true;
+        }
+        if (!safeEquals(existing.getSecurityDepositMin(), dto.getSecurityDepositMin())) {
+            log.debug("Security Deposit Min changed");
+            changed = true;
+        }
+        if (!safeEquals(existing.getSecurityDepositMax(), dto.getSecurityDepositMax())) {
+            log.debug("Security Deposit Max changed");
+            changed = true;
+        }
+
+        // Links
+        if (!existing.getTermsConditionsLink().equals(dto.getTermsConditionsLink())) {
+            log.debug("Terms & Conditions Link changed");
+            changed = true;
+        }
+        if (!existing.getCardholderAgreementLink().equals(dto.getCardholderAgreementLink())) {
+            log.debug("Cardholder Agreement Link changed");
+            changed = true;
+        }
+        if (!existing.getCardImageLink().equals(dto.getCardImageLink())) {
+            log.debug("Card Image Link changed");
+            changed = true;
+        }
+
+        // System Config
+        if (!existing.getPrin().equals(dto.getPrin())) {
+            log.debug("PRIN changed: {} -> {}", existing.getPrin(), dto.getPrin());
+            changed = true;
+        }
+        if (!existing.getCwsProductId().equals(dto.getCwsProductId())) {
+            log.debug("CWS Product ID changed: {} -> {}", existing.getCwsProductId(), dto.getCwsProductId());
+            changed = true;
+        }
+        if (!existing.getChaCode().equals(dto.getChaCode())) {
+            log.debug("CHA Code changed: {} -> {}", existing.getChaCode(), dto.getChaCode());
+            changed = true;
+        }
+
+        // Boarding Indicator (reconstruct from DTO to compare)
+        String newBoardingIndicator = buildBoardingIndicator(dto);
+        if (!existing.getBoardingIndicator().equals(newBoardingIndicator)) {
+            log.debug("Boarding Indicator changed");
+            changed = true;
+        }
+
+        // Approval fields
+        if (!existing.getToBeApprovedBy().equals(dto.getToBeApprovedBy())) {
+            log.debug("To Be Approved By changed");
+            changed = true;
+        }
+        if (!safeEquals(existing.getCommentsToApprover(), dto.getCommentsToApprover())) {
+            log.debug("Comments To Approver changed");
+            changed = true;
+        }
+
+        log.debug("Other fields changed: {}", changed);
+        return changed;
+    }
+
+    /**
+     * Safe equals for nullable fields
+     */
+    private boolean safeEquals(Object obj1, Object obj2) {
+        if (obj1 == null && obj2 == null) return true;
+        if (obj1 == null || obj2 == null) return false;
+        return obj1.equals(obj2);
+    }
+
+    /**
+     * Build boarding indicator string from DTO flags
+     */
+    private String buildBoardingIndicator(ProductUpdateInDto dto) {
+        List<String> indicators = new ArrayList<>();
+
+        if (Boolean.TRUE.equals(dto.getPcFlag1())) indicators.add("PC_FLAG1");
+        if (Boolean.TRUE.equals(dto.getPcFlag2())) indicators.add("PC_FLAG2");
+        if (Boolean.TRUE.equals(dto.getPcFlag3())) indicators.add("PC_FLAG3");
+        if (Boolean.TRUE.equals(dto.getPcFlag4())) indicators.add("PC_FLAG4");
+        if (Boolean.TRUE.equals(dto.getPcFlag5())) indicators.add("PC_FLAG5");
+        if (Boolean.TRUE.equals(dto.getPcFlag6())) indicators.add("PC_FLAG6");
+        if (Boolean.TRUE.equals(dto.getPcFlag7())) indicators.add("PC_FLAG7");
+        if (Boolean.TRUE.equals(dto.getPcFlag8())) indicators.add("PC_FLAG8");
+        if (Boolean.TRUE.equals(dto.getPcFlag9())) indicators.add("PC_FLAG9");
+        if (Boolean.TRUE.equals(dto.getPcFlag10())) indicators.add("PC_FLAG10");
+
+        if (dto.getUpc() != null && !dto.getUpc().trim().isEmpty()) {
+            indicators.add(dto.getUpc());
+        }
+
+        return String.join(",", indicators);
     }
 
     /**
@@ -229,34 +418,7 @@ public class ProductValidator {
     }
 
     /**
-     * Validate APR type and value type consistency
-     */
-    private void validateAprTypeAndValueType(String aprType, String aprValueType) {
-        log.info("Validating APR type: {} and value type: {}", aprType, aprValueType);
-
-        if ("FIXED".equalsIgnoreCase(aprType)) {
-            if (!"SPECIFIC".equalsIgnoreCase(aprValueType)) {
-                log.error("APR type is FIXED but value type is not SPECIFIC: {}", aprValueType);
-                throw new InvalidRequestException(
-                        "When APR type is FIXED, APR value type must be SPECIFIC"
-                );
-            }
-        }
-
-        if ("VARIABLE".equalsIgnoreCase(aprType)) {
-            if (!"RANGE".equalsIgnoreCase(aprValueType)) {
-                log.error("APR type is VARIABLE but value type is not RANGE: {}", aprValueType);
-                throw new InvalidRequestException(
-                        "When APR type is VARIABLE, APR value type must be RANGE"
-                );
-            }
-        }
-
-        log.info("APR type and value type validation passed");
-    }
-
-    /**
-     * Validate APR min and max values
+     * Validate APR min and max values based on value type
      */
     private void validateAprMinMax(String aprValueType, BigDecimal min, BigDecimal max) {
         log.info("Validating APR min/max values");
@@ -290,31 +452,27 @@ public class ProductValidator {
         log.info("Verifying Cash APR calculation");
 
         BigDecimal expectedCashAprMin = purchaseAprMin
-                .multiply(CASH_APR_MULTIPLIER)
+                .add(CASH_APR_ADDITION)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal diffMin = cashAprMin.subtract(expectedCashAprMin).abs();
-
-        if (diffMin.compareTo(TOLERANCE) > 0) {
+        if (cashAprMin.compareTo(expectedCashAprMin) != 0) {
             log.error("Cash APR Min is incorrect. Expected: {}, Received: {}",
                     expectedCashAprMin, cashAprMin);
             throw new InvalidRequestException(
-                    String.format("Cash APR Min is incorrect. Expected: %s (Purchase APR Min + 5%%), but received: %s",
+                    String.format("Cash APR Min must be exactly %s (Purchase APR Min + 5%%), but received: %s",
                             expectedCashAprMin, cashAprMin)
             );
         }
 
         BigDecimal expectedCashAprMax = purchaseAprMax
-                .multiply(CASH_APR_MULTIPLIER)
+                .add(CASH_APR_ADDITION)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal diffMax = cashAprMax.subtract(expectedCashAprMax).abs();
-
-        if (diffMax.compareTo(TOLERANCE) > 0) {
+        if (cashAprMax.compareTo(expectedCashAprMax) != 0) {
             log.error("Cash APR Max is incorrect. Expected: {}, Received: {}",
                     expectedCashAprMax, cashAprMax);
             throw new InvalidRequestException(
-                    String.format("Cash APR Max is incorrect. Expected: %s (Purchase APR Max + 5%%), but received: %s",
+                    String.format("Cash APR Max must be exactly %s (Purchase APR Max + 5%%), but received: %s",
                             expectedCashAprMax, cashAprMax)
             );
         }
