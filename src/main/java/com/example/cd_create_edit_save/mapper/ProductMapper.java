@@ -158,6 +158,7 @@ public class ProductMapper {
 
                 .aprType(product.getAprType())
                 .aprValueType(product.getAprValueType())
+
                 .feeValue(product.getFeeValue())
 
                 .purchaseAprMin(product.getPurchaseAprMin())
@@ -180,19 +181,17 @@ public class ProductMapper {
 
                 .createdBy(product.getCreatedBy())
                 .createdDatetime(product.getCreatedDatetime())
+
                 .updatedBy(product.getUpdatedBy())
                 .updatedDatetime(product.getUpdatedDatetime())
 
+                .requestType(product.getRequestType())
                 .toBeApprovedBy(product.getToBeApprovedBy())
                 .commentsToApprover(product.getCommentsToApprover())
 
                 .reviewedBy(product.getReviewedBy())
                 .reviewedDatetime(product.getReviewedDatetime())
                 .reviewComments(product.getReviewComments())
-
-                .requestType(product.getRequestType())
-                .requestedBy(product.getRequestedBy())
-                .requestDatetime(product.getRequestDatetime())
 
                 .overrideBy(product.getOverrideBy())
                 .overrideDatetime(product.getOverrideDatetime())

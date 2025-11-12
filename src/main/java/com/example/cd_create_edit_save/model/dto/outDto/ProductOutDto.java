@@ -48,16 +48,13 @@ public class ProductOutDto {
     private String updatedBy;
     private LocalDateTime updatedDatetime;
 
+    private String requestType;
     private String toBeApprovedBy;
     private String commentsToApprover;
 
     private String reviewedBy;
     private LocalDateTime reviewedDatetime;
     private String reviewComments;
-
-    private String requestType;
-    private String requestedBy;
-    private LocalDateTime requestDatetime;
 
     private String overrideBy;
     private LocalDateTime overrideDatetime;
