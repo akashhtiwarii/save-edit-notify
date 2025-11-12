@@ -5,8 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.cd_create_edit_save.enums.FeeType;
-import com.example.cd_create_edit_save.model.entity.FeeValue;
+import com.example.cd_create_edit_save.model.entity.FeeValues;
 
 /**
  * Repository interface for {@link FeeValue} entity.
@@ -15,7 +14,7 @@ import com.example.cd_create_edit_save.model.entity.FeeValue;
  * @version 1.0
  */
 @Repository
-public interface FeeValueRepository extends JpaRepository<FeeValue, Long> {
+public interface FeeValueRepository extends JpaRepository<FeeValues, Long> {
 
 	/**
 	 * Finds all fee values by fee type.
@@ -23,5 +22,5 @@ public interface FeeValueRepository extends JpaRepository<FeeValue, Long> {
 	 * @param feeType the type of fee (ANNUAL or MONTHLY)
 	 * @return a list of fee values matching the specified fee type
 	 */
-	List<FeeValue> findByFeeType(String feeType);
+	List<FeeValues> findByFeeType(String feeType);
 }

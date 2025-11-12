@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
-class FeeValueTest {
+class FeeValuesTest {
 
 	@Test
 	void testSettersAndGetters() {
-		FeeValue feeValue = new FeeValue();
+		FeeValues feeValue = new FeeValues();
 
 		assertNull(feeValue.getId());
 		Long id = 1L;
@@ -65,14 +65,14 @@ class FeeValueTest {
 		String updatedBy = "admin";
 		LocalDateTime updatedDatetime = LocalDateTime.now();
 
-		FeeValue feeValue1 = setUpFeeValue(id, description, feeType, feeAmount, createdBy, createdDatetime, updatedBy,
+		FeeValues feeValue1 = setUpFeeValue(id, description, feeType, feeAmount, createdBy, createdDatetime, updatedBy,
 				updatedDatetime);
 
 		assertEquals(feeValue1, feeValue1);
 		assertEquals(feeValue1.hashCode(), feeValue1.hashCode());
 		assertNotEquals(feeValue1, new Object());
 
-		FeeValue feeValue2 = setUpFeeValue(id, description, feeType, feeAmount, createdBy, createdDatetime, updatedBy,
+		FeeValues feeValue2 = setUpFeeValue(id, description, feeType, feeAmount, createdBy, createdDatetime, updatedBy,
 				updatedDatetime);
 		assertEquals(feeValue1, feeValue2);
 		assertEquals(feeValue1.hashCode(), feeValue2.hashCode());
@@ -117,8 +117,8 @@ class FeeValueTest {
 		assertNotEquals(feeValue1, feeValue2);
 		assertNotEquals(feeValue1.hashCode(), feeValue2.hashCode());
 
-		feeValue1 = new FeeValue();
-		feeValue2 = new FeeValue();
+		feeValue1 = new FeeValues();
+		feeValue2 = new FeeValues();
 		assertEquals(feeValue1, feeValue2);
 		assertEquals(feeValue1.hashCode(), feeValue2.hashCode());
 	}
@@ -134,7 +134,7 @@ class FeeValueTest {
 		String updatedBy = "admin";
 		LocalDateTime updatedDatetime = LocalDateTime.now();
 
-		FeeValue feeValue = FeeValue.builder().id(id).description(description).feeType(feeType).feeValue(feeAmount)
+		FeeValues feeValue = FeeValues.builder().id(id).description(description).feeType(feeType).feeValue(feeAmount)
 				.createdBy(createdBy).createdDatetime(createdDatetime).updatedBy(updatedBy)
 				.updatedDatetime(updatedDatetime).build();
 
@@ -159,7 +159,7 @@ class FeeValueTest {
 		String updatedBy = "admin";
 		LocalDateTime updatedDatetime = LocalDateTime.now();
 
-		FeeValue feeValue = new FeeValue(id, description, feeType, feeAmount, createdBy, createdDatetime, updatedBy,
+		FeeValues feeValue = new FeeValues(id, description, feeType, feeAmount, createdBy, createdDatetime, updatedBy,
 				updatedDatetime);
 
 		assertEquals(id, feeValue.getId());
@@ -174,7 +174,7 @@ class FeeValueTest {
 
 	@Test
 	void testNoArgsConstructor() {
-		FeeValue feeValue = new FeeValue();
+		FeeValues feeValue = new FeeValues();
 
 		assertNull(feeValue.getId());
 		assertNull(feeValue.getDescription());
@@ -186,9 +186,9 @@ class FeeValueTest {
 		assertNull(feeValue.getUpdatedDatetime());
 	}
 
-	private FeeValue setUpFeeValue(Long id, String description, String feeType, BigDecimal feeAmount, String createdBy,
+	private FeeValues setUpFeeValue(Long id, String description, String feeType, BigDecimal feeAmount, String createdBy,
 			LocalDateTime createdDatetime, String updatedBy, LocalDateTime updatedDatetime) {
-		FeeValue feeValue = new FeeValue();
+		FeeValues feeValue = new FeeValues();
 		feeValue.setId(id);
 		feeValue.setDescription(description);
 		feeValue.setFeeType(feeType);

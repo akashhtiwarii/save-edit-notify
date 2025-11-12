@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
-import com.example.cd_create_edit_save.enums.FeeType;
-
 class FeeValueOutDTOTest {
 
 	@Test
@@ -25,16 +23,15 @@ class FeeValueOutDTOTest {
 		assertEquals(feeValue, feeValueOutDTO.getFeeValue());
 
 		assertNull(feeValueOutDTO.getFeeType());
-		FeeType feeType = FeeType.MONTHLY;
-		feeValueOutDTO.setFeeType(feeType);
-		assertEquals(feeType, feeValueOutDTO.getFeeType());
+		feeValueOutDTO.setFeeType("MONTHLY");
+		assertEquals("MONTHLY", feeValueOutDTO.getFeeType());
 	}
 
 	@Test
 	void testEqualsAndHashCode() {
 		String description = "Monthly Maintenance Fee";
 		BigDecimal feeValue = new BigDecimal("25.50");
-		FeeType feeType = FeeType.MONTHLY;
+		String feeType = "MONTHLY";
 
 		FeeValueOutDTO fee1 = setUpFeeValueOutDTO(description, feeValue, feeType);
 
@@ -55,7 +52,7 @@ class FeeValueOutDTOTest {
 		assertNotEquals(fee1, fee2);
 		assertNotEquals(fee1.hashCode(), fee2.hashCode());
 
-		fee2 = setUpFeeValueOutDTO(description, feeValue, FeeType.ANNUAL);
+		fee2 = setUpFeeValueOutDTO(description, feeValue, "ANNUAL");
 		assertNotEquals(fee1, fee2);
 		assertNotEquals(fee1.hashCode(), fee2.hashCode());
 
@@ -69,7 +66,7 @@ class FeeValueOutDTOTest {
 	void testBuilder() {
 		String description = "Monthly Maintenance Fee";
 		BigDecimal feeValue = new BigDecimal("25.50");
-		FeeType feeType = FeeType.MONTHLY;
+		String feeType = "MONTHLY";
 
 		FeeValueOutDTO feeValueOutDTO = FeeValueOutDTO.builder().description(description).feeValue(feeValue)
 				.feeType(feeType).build();
@@ -83,7 +80,7 @@ class FeeValueOutDTOTest {
 	void testAllArgsConstructor() {
 		String description = "Monthly Maintenance Fee";
 		BigDecimal feeValue = new BigDecimal("25.50");
-		FeeType feeType = FeeType.MONTHLY;
+		String feeType = "MONTHLY";
 
 		FeeValueOutDTO feeValueOutDTO = new FeeValueOutDTO(description, feeValue, feeType);
 
@@ -101,7 +98,7 @@ class FeeValueOutDTOTest {
 		assertNull(feeValueOutDTO.getFeeType());
 	}
 
-	private FeeValueOutDTO setUpFeeValueOutDTO(String description, BigDecimal feeValue, FeeType feeType) {
+	private FeeValueOutDTO setUpFeeValueOutDTO(String description, BigDecimal feeValue, String feeType) {
 		FeeValueOutDTO feeValueOutDTO = new FeeValueOutDTO();
 		feeValueOutDTO.setDescription(description);
 		feeValueOutDTO.setFeeValue(feeValue);
