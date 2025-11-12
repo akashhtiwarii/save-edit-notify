@@ -42,7 +42,7 @@ public class FeeValueServiceImpl implements FeeValueService {
 		List<FeeValueOutDTO> monthlyFeeValueOutDTOs = feeValues.stream().map(this::mapToDTO)
 				.collect(Collectors.toList());
 		return ApiResponseOutDto.<List<FeeValueOutDTO>>builder().status("SUCCESS")
-				.message("Fee vlaue type retrieved successfully.").data(monthlyFeeValueOutDTOs).timestamp(Instant.now())
+				.message("Fee value type retrieved successfully.").data(monthlyFeeValueOutDTOs).timestamp(Instant.now())
 				.build();
 	}
 

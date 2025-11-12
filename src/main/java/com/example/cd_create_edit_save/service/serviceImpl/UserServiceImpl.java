@@ -54,6 +54,6 @@ public class UserServiceImpl implements UserService {
 	 */
 	private UserOutDTO convertToDTO(User user) {
 		return UserOutDTO.builder().userId(user.getUserId()).name(user.getFirstName() + " " + user.getLastName())
-				.role(user.getRole()).build();
+                .email(user.getEmail()).userName(user.getUsername()).role(user.getRole()).build();
 	}
 }
