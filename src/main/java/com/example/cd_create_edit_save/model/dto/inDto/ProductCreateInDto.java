@@ -118,9 +118,6 @@ public class ProductCreateInDto {
     private String toBeApprovedBy;
 
     /** Approval priority level (NORMAL PRIORITY, HIGH PRIORITY, or LOW PRIORITY). */
-    @NotBlank(message = "Approval priority level is required")
-    @Pattern(regexp = "^(NORMAL PRIORITY|HIGH PRIORITY|LOW PRIORITY)$",
-            message = "Priority level must be NORMAL PRIORITY, HIGH PRIORITY, or LOW PRIORITY")
     private String approvalPriorityLevel;
 
     /** Optional comments to the approver. */
