@@ -174,7 +174,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct = productRepository.save(product);
             log.info("Product saved successfully with ID: {}", productId);
 
-            ProductOutDto response = productMapper.toResponseDto(savedProduct);
+            ProductOutDto response = productMapper.toDto(savedProduct);
             log.info("Product created successfully. Product ID: {}", productId);
 
             return response;
@@ -208,7 +208,7 @@ public class ProductServiceImpl implements ProductService {
             Product savedProduct = productRepository.save(newProduct);
             log.info("Product version saved successfully with ID: {}", newProductId);
 
-            ProductOutDto response = productMapper.toResponseDto(savedProduct);
+            ProductOutDto response = productMapper.toDto(savedProduct);
             log.info("Product updated successfully. Old ID: {}, New ID: {}", productId, newProductId);
 
             return response;

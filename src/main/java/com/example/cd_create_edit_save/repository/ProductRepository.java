@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
      * @param prefix The product ID prefix (e.g., "GOL-AF-CB-")
      * @return Optional containing the latest product ID, or empty if none found
      */
-    @Query(value = "SELECT TOP 1 p.PRODUCT_ID FROM TBL_PRODUCT p " +
+    @Query(value = "SELECT TOP 1 p.PRODUCT_ID FROM product.TBL_PRODUCT p " +
             "WHERE p.PRODUCT_ID LIKE :prefix + '%' " +
             "ORDER BY p.PRODUCT_ID DESC", nativeQuery = true)
     Optional<String> findLatestProductIdByPrefix(@Param("prefix") String prefix);

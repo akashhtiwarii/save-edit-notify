@@ -29,6 +29,7 @@ public class ProductValidator {
     private final PrinCodeRepository prinCodeRepository;
     private final CwsProdCodeRepository cwsProdCodeRepository;
     private final ChaCodeRepository chaCodeRepository;
+    private final FeeValuesRepository feeValuesRepository;  // ✅ NEW
 
     private static final BigDecimal CASH_APR_ADDITION = new BigDecimal("5.00");
 
@@ -60,6 +61,7 @@ public class ProductValidator {
         validatePrinCode(dto.getPrin());
         validateCwsProductCode(dto.getCwsProductId());
         validateChaCode(dto.getChaCode());
+        validateFeeValue(dto.getFeeTypeShtCd(), dto.getFeeValue());  // ✅ NEW
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
@@ -79,6 +81,7 @@ public class ProductValidator {
         validatePrinCode(dto.getPrin());
         validateCwsProductCode(dto.getCwsProductId());
         validateChaCode(dto.getChaCode());
+        validateFeeValue(dto.getFeeTypeShtCd(), dto.getFeeValue());  // ✅ NEW
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
@@ -143,7 +146,6 @@ public class ProductValidator {
         boolean datesChanged = checkDatesChanged(existingProduct, requestDto);
         boolean otherFieldsChanged = checkOtherFieldsChanged(existingProduct, requestDto);
 
-        // Case A: Nothing changed
         if (!datesChanged && !otherFieldsChanged) {
             log.error("No changes detected in the update request");
             throw new InvalidRequestException(
@@ -151,7 +153,6 @@ public class ProductValidator {
             );
         }
 
-        // Case B: Only dates changed
         if (datesChanged && !otherFieldsChanged) {
             log.error("Only dates were modified, no other fields changed");
             throw new InvalidRequestException(
@@ -160,13 +161,9 @@ public class ProductValidator {
             );
         }
 
-        // Case C & D: Other fields changed (with or without dates) - allow to proceed
         log.info("Valid field changes detected, proceeding with new version creation");
     }
 
-    /**
-     * Check if dates have changed
-     */
     private boolean checkDatesChanged(Product existing, ProductUpdateInDto dto) {
         boolean startDateChanged = !existing.getStartDate().isEqual(dto.getStartDate());
         boolean endDateChanged = !existing.getEndDate().isEqual(dto.getEndDate());
@@ -177,29 +174,23 @@ public class ProductValidator {
         return datesChanged;
     }
 
-    /**
-     * Check if other editable fields (excluding dates) have changed
-     */
     private boolean checkOtherFieldsChanged(Product existing, ProductUpdateInDto dto) {
         boolean changed = false;
 
-        // APR Value Type
         if (!existing.getAprValueType().equals(dto.getAprValueType())) {
-            log.debug("APR Value Type changed: {} -> {}", existing.getAprValueType(), dto.getAprValueType());
+            log.debug("APR Value Type changed");
             changed = true;
         }
 
-        // Purchase APR
         if (existing.getPurchaseAprMin().compareTo(dto.getPurchaseAprMin()) != 0) {
-            log.debug("Purchase APR Min changed: {} -> {}", existing.getPurchaseAprMin(), dto.getPurchaseAprMin());
+            log.debug("Purchase APR Min changed");
             changed = true;
         }
         if (existing.getPurchaseAprMax().compareTo(dto.getPurchaseAprMax()) != 0) {
-            log.debug("Purchase APR Max changed: {} -> {}", existing.getPurchaseAprMax(), dto.getPurchaseAprMax());
+            log.debug("Purchase APR Max changed");
             changed = true;
         }
 
-        // Cash APR
         if (existing.getCashAprMin().compareTo(dto.getCashAprMin()) != 0) {
             log.debug("Cash APR Min changed");
             changed = true;
@@ -209,17 +200,15 @@ public class ProductValidator {
             changed = true;
         }
 
-        // Credit Line
         if (!existing.getCreditLineMin().equals(dto.getCreditLineMin())) {
-            log.debug("Credit Line Min changed: {} -> {}", existing.getCreditLineMin(), dto.getCreditLineMin());
+            log.debug("Credit Line Min changed");
             changed = true;
         }
         if (!existing.getCreditLineMax().equals(dto.getCreditLineMax())) {
-            log.debug("Credit Line Max changed: {} -> {}", existing.getCreditLineMax(), dto.getCreditLineMax());
+            log.debug("Credit Line Max changed");
             changed = true;
         }
 
-        // Security Deposit
         if (!existing.getSecurityDepositIndicator().equals(dto.getSecurityDepositIndicator())) {
             log.debug("Security Deposit Indicator changed");
             changed = true;
@@ -233,7 +222,6 @@ public class ProductValidator {
             changed = true;
         }
 
-        // Links
         if (!existing.getTermsConditionsLink().equals(dto.getTermsConditionsLink())) {
             log.debug("Terms & Conditions Link changed");
             changed = true;
@@ -247,28 +235,25 @@ public class ProductValidator {
             changed = true;
         }
 
-        // System Config
         if (!existing.getPrin().equals(dto.getPrin())) {
-            log.debug("PRIN changed: {} -> {}", existing.getPrin(), dto.getPrin());
+            log.debug("PRIN changed");
             changed = true;
         }
         if (!existing.getCwsProductId().equals(dto.getCwsProductId())) {
-            log.debug("CWS Product ID changed: {} -> {}", existing.getCwsProductId(), dto.getCwsProductId());
+            log.debug("CWS Product ID changed");
             changed = true;
         }
         if (!existing.getChaCode().equals(dto.getChaCode())) {
-            log.debug("CHA Code changed: {} -> {}", existing.getChaCode(), dto.getChaCode());
+            log.debug("CHA Code changed");
             changed = true;
         }
 
-        // Boarding Indicator (reconstruct from DTO to compare)
         String newBoardingIndicator = buildBoardingIndicator(dto);
         if (!existing.getBoardingIndicator().equals(newBoardingIndicator)) {
             log.debug("Boarding Indicator changed");
             changed = true;
         }
 
-        // Approval fields
         if (!existing.getToBeApprovedBy().equals(dto.getToBeApprovedBy())) {
             log.debug("To Be Approved By changed");
             changed = true;
@@ -278,22 +263,22 @@ public class ProductValidator {
             changed = true;
         }
 
+        // ✅ NEW: Check feeValue
+        if (!safeEquals(existing.getFeeValue(), dto.getFeeValue())) {
+            log.debug("Fee Value changed");
+            changed = true;
+        }
+
         log.debug("Other fields changed: {}", changed);
         return changed;
     }
 
-    /**
-     * Safe equals for nullable fields
-     */
     private boolean safeEquals(Object obj1, Object obj2) {
         if (obj1 == null && obj2 == null) return true;
         if (obj1 == null || obj2 == null) return false;
         return obj1.equals(obj2);
     }
 
-    /**
-     * Build boarding indicator string from DTO flags
-     */
     private String buildBoardingIndicator(ProductUpdateInDto dto) {
         List<String> indicators = new ArrayList<>();
 
@@ -315,9 +300,6 @@ public class ProductValidator {
         return String.join(",", indicators);
     }
 
-    /**
-     * Validate Product Short Code exists in master data
-     */
     private void validateProductShtCode(String productShtCd) {
         log.info("Validating Product Short Code: {}", productShtCd);
         boolean exists = productShortCodeRepository.existsByProductShortCode(productShtCd);
@@ -325,16 +307,13 @@ public class ProductValidator {
         if (!exists) {
             log.error("Product Short Code not found: {}", productShtCd);
             throw new InvalidRequestException(
-                    "Product Short Code '" + productShtCd + "' does not exist in the system. Please select a valid product category."
+                    "Product Short Code '" + productShtCd + "' does not exist in the system."
             );
         }
 
         log.info("Product Short Code validation passed");
     }
 
-    /**
-     * Validate Fee Type Short Code exists in master data
-     */
     private void validateFeeTypeShtCode(String feeTypeShtCd) {
         log.info("Validating Fee Type Short Code: {}", feeTypeShtCd);
         boolean exists = feeTypeShortCodeRepository.existsByFeeTypeShortCode(feeTypeShtCd);
@@ -342,16 +321,13 @@ public class ProductValidator {
         if (!exists) {
             log.error("Fee Type Short Code not found: {}", feeTypeShtCd);
             throw new InvalidRequestException(
-                    "Fee Type Short Code '" + feeTypeShtCd + "' does not exist in the system. Please select a valid fee type."
+                    "Fee Type Short Code '" + feeTypeShtCd + "' does not exist in the system."
             );
         }
 
         log.info("Fee Type Short Code validation passed");
     }
 
-    /**
-     * Validate Rewards Type Short Code exists in master data
-     */
     private void validateRewardsTypeShtCode(String rewardsTypeShtCd) {
         log.info("Validating Rewards Type Short Code: {}", rewardsTypeShtCd);
         boolean exists = rewardsTypeShortCodeRepository.existsByRewardsTypeShortCode(rewardsTypeShtCd);
@@ -359,16 +335,13 @@ public class ProductValidator {
         if (!exists) {
             log.error("Rewards Type Short Code not found: {}", rewardsTypeShtCd);
             throw new InvalidRequestException(
-                    "Rewards Type Short Code '" + rewardsTypeShtCd + "' does not exist in the system. Please select a valid rewards type."
+                    "Rewards Type Short Code '" + rewardsTypeShtCd + "' does not exist in the system."
             );
         }
 
         log.info("Rewards Type Short Code validation passed");
     }
 
-    /**
-     * Validate PRIN Code exists in master data
-     */
     private void validatePrinCode(String prinCode) {
         log.info("Validating PRIN Code: {}", prinCode);
         boolean exists = prinCodeRepository.existsByPrinCode(prinCode);
@@ -376,16 +349,13 @@ public class ProductValidator {
         if (!exists) {
             log.error("PRIN Code not found: {}", prinCode);
             throw new InvalidRequestException(
-                    "PRIN Code '" + prinCode + "' does not exist in the system. Please select a valid PRIN code."
+                    "PRIN Code '" + prinCode + "' does not exist in the system."
             );
         }
 
         log.info("PRIN Code validation passed");
     }
 
-    /**
-     * Validate CWS Product Code exists in master data
-     */
     private void validateCwsProductCode(String cwsProductId) {
         log.info("Validating CWS Product Code: {}", cwsProductId);
         boolean exists = cwsProdCodeRepository.existsByCwsProdCode(cwsProductId);
@@ -393,24 +363,21 @@ public class ProductValidator {
         if (!exists) {
             log.error("CWS Product Code not found: {}", cwsProductId);
             throw new InvalidRequestException(
-                    "CWS Product Code '" + cwsProductId + "' does not exist in the system. Please select a valid CWS product Code."
+                    "CWS Product Code '" + cwsProductId + "' does not exist in the system."
             );
         }
 
         log.info("CWS Product Code validation passed");
     }
 
-    /**
-     * Validate CHA Code exists in master data
-     */
     private void validateChaCode(String chaCode) {
         log.info("Validating CHA Code: {}", chaCode);
         boolean exists = chaCodeRepository.existsByChaCode(chaCode);
 
         if (!exists) {
-            log.error("CHA Code not found {}", chaCode);
+            log.error("CHA Code not found: {}", chaCode);
             throw new InvalidRequestException(
-                    "CHA Code '" + chaCode + "' does not exist in the system. Please select a valid CHA code."
+                    "CHA Code '" + chaCode + "' does not exist in the system."
             );
         }
 
@@ -418,8 +385,44 @@ public class ProductValidator {
     }
 
     /**
-     * Validate APR min and max values based on value type
+     * ✅ NEW: Validate fee value based on fee type
      */
+    private void validateFeeValue(String feeTypeShtCd, Integer feeValue) {
+        log.info("Validating fee value for fee type: {}", feeTypeShtCd);
+
+        if ("NF".equalsIgnoreCase(feeTypeShtCd)) {
+            // NONE fee type - fee value must be null
+            if (feeValue != null) {
+                log.error("Fee value must be null for NONE fee type");
+                throw new InvalidRequestException(
+                        "Fee value must be null when fee type is NONE"
+                );
+            }
+        } else if ("AF".equalsIgnoreCase(feeTypeShtCd) || "MF".equalsIgnoreCase(feeTypeShtCd)) {
+            // ANNUAL or MONTHLY - fee value is required
+            if (feeValue == null) {
+                log.error("Fee value is required for {} fee type", feeTypeShtCd);
+                throw new InvalidRequestException(
+                        "Fee value is required for " +
+                                (feeTypeShtCd.equals("AF") ? "ANNUAL" : "MONTHLY") + " fee type"
+                );
+            }
+
+            // Validate fee value exists in database
+            String feeType = feeTypeShtCd.equals("AF") ? "ANNUAL" : "MONTHLY";
+            boolean feeValueExists = feeValuesRepository.existsByFeeValueAndFeeType(feeValue, feeType);
+
+            if (!feeValueExists) {
+                log.error("Fee value {} does not exist in database for fee type {}", feeValue, feeType);
+                throw new InvalidRequestException(
+                        "Fee value " + feeValue + " does not exist in the system for " + feeType + " fee type"
+                );
+            }
+        }
+
+        log.info("Fee value validation passed");
+    }
+
     private void validateAprMinMax(String aprValueType, BigDecimal min, BigDecimal max) {
         log.info("Validating APR min/max values");
 
@@ -444,9 +447,6 @@ public class ProductValidator {
         log.info("APR min/max validation passed");
     }
 
-    /**
-     * Verify cash APR calculation (Purchase APR + 5%)
-     */
     private void verifyCashApr(BigDecimal purchaseAprMin, BigDecimal purchaseAprMax,
                                BigDecimal cashAprMin, BigDecimal cashAprMax) {
         log.info("Verifying Cash APR calculation");
@@ -480,9 +480,6 @@ public class ProductValidator {
         log.info("Cash APR verification passed");
     }
 
-    /**
-     * Validate credit line min and max
-     */
     private void validateCreditLine(Integer min, Integer max) {
         log.info("Validating credit line min: {}, max: {}", min, max);
 
@@ -496,11 +493,6 @@ public class ProductValidator {
         log.info("Credit line validation passed");
     }
 
-    /**
-     * Validate security deposit configuration
-     * - If indicator = 'Y', min and max are required and max > min
-     * - If indicator = 'N', min and max must be null
-     */
     private void validateSecurityDeposit(String indicator, Integer min, Integer max) {
         log.info("Validating security deposit: indicator={}, min={}, max={}", indicator, min, max);
 
@@ -550,11 +542,6 @@ public class ProductValidator {
         log.info("Security deposit validation passed");
     }
 
-    /**
-     * Validate start and end dates
-     * - Start date must be at least 1 week from today
-     * - End date must be AFTER start date (not equal)
-     */
     private void validateDates(LocalDateTime startDate, LocalDateTime endDate) {
         log.info("Validating start date: {}, end date: {}", startDate, endDate);
 
@@ -579,9 +566,6 @@ public class ProductValidator {
         log.info("Date validation passed");
     }
 
-    /**
-     * Validate that the approver exists in the user table
-     */
     private void validateApprover(String toBeApprovedBy) {
         log.info("Validating approver: {}", toBeApprovedBy);
 
@@ -590,7 +574,7 @@ public class ProductValidator {
         if (!approverExists) {
             log.error("Approver not found in user table: {}", toBeApprovedBy);
             throw new InvalidRequestException(
-                    "Approver '" + toBeApprovedBy + "' does not exist in the system. Please select a valid user."
+                    "Approver '" + toBeApprovedBy + "' does not exist in the system."
             );
         }
 
