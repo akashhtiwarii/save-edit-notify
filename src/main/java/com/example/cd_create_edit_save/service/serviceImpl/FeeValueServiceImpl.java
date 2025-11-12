@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.cd_create_edit_save.enums.FeeType;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
-import com.example.cd_create_edit_save.model.entity.FeeValue;
+import com.example.cd_create_edit_save.model.entity.FeeValues;
 import com.example.cd_create_edit_save.repository.FeeValueRepository;
 import com.example.cd_create_edit_save.service.FeeValueService;
 
@@ -37,7 +36,7 @@ public class FeeValueServiceImpl implements FeeValueService {
 	@Override
 	public ApiResponseOutDto<List<FeeValueOutDTO>> getFeeValuesByType(String feeType) {
 
-		List<FeeValue> feeValues = monthlyFeeValueRepository.findByFeeType(feeType);
+		List<FeeValues> feeValues = monthlyFeeValueRepository.findByFeeType(feeType);
 
 		List<FeeValueOutDTO> monthlyFeeValueOutDTOs = feeValues.stream().map(this::mapToDTO)
 				.collect(Collectors.toList());
@@ -52,7 +51,7 @@ public class FeeValueServiceImpl implements FeeValueService {
 	 * @param entity the {@link FeeValue} entity to convert
 	 * @return a corresponding {@link FeeValueOutDTO} instance
 	 */
-	private FeeValueOutDTO mapToDTO(FeeValue entity) {
+	private FeeValueOutDTO mapToDTO(FeeValues entity) {
 		return FeeValueOutDTO.builder().description(entity.getDescription()).feeValue(entity.getFeeValue())
 				.feeType(entity.getFeeType()).build();
 	}

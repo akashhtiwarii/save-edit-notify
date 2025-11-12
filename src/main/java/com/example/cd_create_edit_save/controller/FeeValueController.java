@@ -39,7 +39,7 @@ public class FeeValueController {
 	 */
 	@GetMapping("/type/{feeType}")
 	public ResponseEntity<ApiResponseOutDto<List<FeeValueOutDTO>>> getAllMonthlyFeeValues(
-			@PathVariable String feeType) {
+			@PathVariable("feeType") String feeType) {
 		log.info("Received request to get all monthly fee values");
 
 		ApiResponseOutDto<List<FeeValueOutDTO>> response = monthlyFeeValueService.getFeeValuesByType(feeType);
