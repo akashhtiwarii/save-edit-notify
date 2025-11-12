@@ -28,6 +28,9 @@ public final class AppConstants {
 	public static final String USERS = "/users";
 	public static final String API_V1_USERS= PRODUCT_API_BASE_PATH + USERS;
 
+	public static final String FEE_VALUES = "/fee-values";
+	public static final String API_FEE_VALUES= PRODUCT_API_BASE_PATH + FEE_VALUES;
+
 	/**
 	 * URL to get products list without any parameters included.
 	 */
