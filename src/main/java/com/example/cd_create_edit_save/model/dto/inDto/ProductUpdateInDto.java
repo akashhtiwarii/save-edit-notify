@@ -117,11 +117,7 @@ public class ProductUpdateInDto {
     @Size(max = 255, message = "To be approved by name too long")
     private String toBeApprovedBy;
 
-    /** Approval priority level (NORMAL PRIORITY, HIGH PRIORITY, or LOW PRIORITY). */
-    @NotBlank(message = "Approval priority level is required")
-    @Pattern(regexp = "^(NORMAL PRIORITY|HIGH PRIORITY|LOW PRIORITY)$",
-            message = "Priority level must be NORMAL PRIORITY, HIGH PRIORITY, or LOW PRIORITY")
-    private String approvalPriorityLevel;
+    private Integer feeValue;
 
     /** Optional comments to the approver. */
     @Size(max = 1000, message = "Comments to approver too long")
