@@ -1,5 +1,6 @@
 package com.example.cd_create_edit_save.model.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,19 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-
 /**
  * Represents a user entity mapped to the database table {@code TBL_USER}.
- * 
- * @author Krishna
- * @version 1.0
  */
 @Entity
 @Table(name = "TBL_USER")
@@ -62,7 +52,7 @@ public class User {
     private String email;
 
     /**
-     * Role assigned to the user (e.g., ADMIN, USER).
+     * Role assigned to the user (e.g., ADMIN, MANAGER, EDITOR).
      */
     @Column(name = "ROLE", nullable = false, length = 50)
     private String role;
@@ -78,28 +68,37 @@ public class User {
      */
     @Builder.Default
     @Column(name = "STATUS", length = 50)
-    private String status = "INACTIVE";
+    private String status = "ACTIVE";
 
     /**
-     * Timestamp when the record was created.
+     * The user who created this record.
      */
-    @Builder.Default
-    @Column(name = "CREATED_AT", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "CREATED_BY", length = 255)
+    private String createdBy;
 
     /**
-     * Timestamp when the record was last updated.
+     * The timestamp when this record was created.
      */
-    @Builder.Default
-    @Column(name = "UPDATED_AT")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column(name = "CREATED_DATETIME")
+    private LocalDateTime createdDatetime;
 
     /**
-     * Automatically updates the {@code updatedAt} field
-     * whenever the entity is modified.
+     * The user who last updated this record.
+     */
+    @Column(name = "UPDATED_BY", length = 255)
+    private String updatedBy;
+
+    /**
+     * The timestamp when this record was last updated.
+     */
+    @Column(name = "UPDATED_DATETIME")
+    private LocalDateTime updatedDatetime;
+
+    /**
+     * Automatically updates {@code updatedDatetime} before entity update.
      */
     @PreUpdate
     public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedDatetime = LocalDateTime.now();
     }
 }

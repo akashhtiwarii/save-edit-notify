@@ -44,7 +44,7 @@ public class ProductMapper {
                 .createdBy(createdBy)
                 .createdDatetime(LocalDateTime.now())
                 .toBeApprovedBy(dto.getToBeApprovedBy())
-                .approvalPriorityLevel(dto.getApprovalPriorityLevel())
+                .feeValue(dto.getFeeValue())
                 .commentsToApprover(dto.getCommentsToApprover())
                 .reviewedBy(null)
                 .reviewedDatetime(null)
@@ -88,7 +88,7 @@ public class ProductMapper {
                 .createdBy(updatedBy)
                 .createdDatetime(LocalDateTime.now())
                 .toBeApprovedBy(dto.getToBeApprovedBy())
-                .approvalPriorityLevel(dto.getApprovalPriorityLevel())
+                .feeValue(dto.getFeeValue())
                 .commentsToApprover(dto.getCommentsToApprover())
                 .reviewedBy(null)
                 .reviewedDatetime(null)
@@ -130,7 +130,7 @@ public class ProductMapper {
                 .endDate(entity.getEndDate())
                 .status(entity.getStatus())
                 .toBeApprovedBy(entity.getToBeApprovedBy())
-                .approvalPriorityLevel(entity.getApprovalPriorityLevel())
+                .feeValue(entity.getFeeValue())
                 .commentsToApprover(entity.getCommentsToApprover())
                 .reviewedBy(entity.getReviewedBy())
                 .reviewComments(entity.getReviewComments())
@@ -155,40 +155,58 @@ public class ProductMapper {
                 .productShtCd(product.getProductShtCd())
                 .feeTypeShtCd(product.getFeeTypeShtCd())
                 .rewardsTypeShtCd(product.getRewardsTypeShtCd())
+
                 .aprType(product.getAprType())
                 .aprValueType(product.getAprValueType())
+
+                .feeValue(product.getFeeValue())
+
                 .purchaseAprMin(product.getPurchaseAprMin())
                 .purchaseAprMax(product.getPurchaseAprMax())
                 .cashAprMin(product.getCashAprMin())
                 .cashAprMax(product.getCashAprMax())
+
                 .creditLineMin(product.getCreditLineMin())
                 .creditLineMax(product.getCreditLineMax())
+
                 .securityDepositIndicator(product.getSecurityDepositIndicator())
                 .securityDepositMin(product.getSecurityDepositMin())
                 .securityDepositMax(product.getSecurityDepositMax())
+
                 .termsConditionsLink(product.getTermsConditionsLink())
                 .cardholderAgreementLink(product.getCardholderAgreementLink())
                 .cardImageLink(product.getCardImageLink())
+
                 .status(product.getStatus())
+
                 .createdBy(product.getCreatedBy())
                 .createdDatetime(product.getCreatedDatetime())
+
+                .updatedBy(product.getUpdatedBy())
+                .updatedDatetime(product.getUpdatedDatetime())
+
+                .requestType(product.getRequestType())
                 .toBeApprovedBy(product.getToBeApprovedBy())
-                .approvalPriorityLevel(product.getApprovalPriorityLevel())
                 .commentsToApprover(product.getCommentsToApprover())
+
                 .reviewedBy(product.getReviewedBy())
                 .reviewedDatetime(product.getReviewedDatetime())
                 .reviewComments(product.getReviewComments())
+
                 .overrideBy(product.getOverrideBy())
                 .overrideDatetime(product.getOverrideDatetime())
                 .overrideJustification(product.getOverrideJustification())
+
                 .prin(product.getPrin())
                 .cwsProductId(product.getCwsProductId())
                 .chaCode(product.getChaCode())
+
                 .boardingIndicator(product.getBoardingIndicator())
                 .startDate(product.getStartDate())
                 .endDate(product.getEndDate())
                 .build();
     }
+
 
     private String buildBoardingIndicator(Boolean flag1, Boolean flag2, Boolean flag3, Boolean flag4, Boolean flag5,
                                           Boolean flag6, Boolean flag7, Boolean flag8, Boolean flag9, Boolean flag10,

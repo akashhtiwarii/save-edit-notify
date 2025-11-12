@@ -26,7 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping(AppConstants.API_V1_FEE_TYPE_SHORT_CODES)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class FeeTypeShortCodeController {
 
 	private final FeeTypeShortCodeService feeTypeShortCodeService;

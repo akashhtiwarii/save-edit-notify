@@ -25,7 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping(AppConstants.API_V1_CHA_CODES)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Slf4j
 public class ChaCodeController {
 
