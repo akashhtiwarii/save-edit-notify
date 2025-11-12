@@ -37,7 +37,7 @@ public class Product {
     private String aprValueType;
 
     @Column(name = "FEE_VALUE")
-    private Integer feeValue;
+    private BigDecimal feeValue;
 
     @Column(name = "PURCHASE_APR_MIN")
     private BigDecimal purchaseAprMin;

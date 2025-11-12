@@ -114,7 +114,7 @@ public class ProductController {
         ProductOutDto responseData = productService.createProduct(requestDto, createdBy);
 
         ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
-                .status("success")
+                .status("SUCCESS")
                 .message("Product created successfully with ID: " + responseData.getProductId())
                 .data(responseData)
                 .timestamp(Instant.now())
@@ -143,7 +143,7 @@ public class ProductController {
         ProductOutDto responseData = productService.updateProduct(productId, requestDto, updatedBy);
 
         ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
-                .status("success")
+                .status("SUCCESS")
                 .message("Product updated successfully. Old ID: " + productId + ", New ID: " + responseData.getProductId())
                 .data(responseData)
                 .timestamp(Instant.now())

@@ -22,7 +22,7 @@ public class ProductOutDto {
     private String aprType;
     private String aprValueType;
 
-    private Integer feeValue;
+    private BigDecimal feeValue;
 
     private BigDecimal purchaseAprMin;
     private BigDecimal purchaseAprMax;

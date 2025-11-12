@@ -117,7 +117,7 @@ public class ProductUpdateInDto {
     @Size(max = 255, message = "To be approved by name too long")
     private String toBeApprovedBy;
 
-    private Integer feeValue;
+    private BigDecimal feeValue;
 
     /** Optional comments to the approver. */
     @Size(max = 1000, message = "Comments to approver too long")

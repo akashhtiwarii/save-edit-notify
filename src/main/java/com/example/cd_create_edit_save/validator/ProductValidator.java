@@ -387,7 +387,7 @@ public class ProductValidator {
     /**
      * ✅ NEW: Validate fee value based on fee type
      */
-    private void validateFeeValue(String feeTypeShtCd, Integer feeValue) {
+    private void validateFeeValue(String feeTypeShtCd,BigDecimal feeValue) {
         log.info("Validating fee value for fee type: {}", feeTypeShtCd);
 
         if ("NF".equalsIgnoreCase(feeTypeShtCd)) {
