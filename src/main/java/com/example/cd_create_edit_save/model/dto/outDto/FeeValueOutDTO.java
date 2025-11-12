@@ -22,12 +22,12 @@ public class FeeValueOutDTO {
 	/**
 	 * Name of the flag associated with this monthly fee.
 	 */
-	private String flagName;
+	private String description;
 
 	/**
 	 * Monthly fee amount in decimal format.
 	 */
-	private BigDecimal amount;
+	private BigDecimal feeValue;
 
 	/**
 	 * Type of fee - either ANNUAL or MONTHLY.

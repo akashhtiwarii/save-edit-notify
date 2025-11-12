@@ -23,17 +23,17 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class FeeValueServiceImpl implements FeeValueService {
 
 	private final FeeValueRepository monthlyFeeValueRepository;
 
 	/**
-	 * {@inheritDoc}
+	 * Retrieves all fee values filtered by fee type.
 	 * 
-	 * @param feeType the type of fee to filter by
+	 * @param feeType the type of fee (ANNUAL or MONTHLY)
 	 * @return a list of fee values matching the specified fee type
 	 */
+	@Transactional(readOnly = true)
 	@Override
 	public ApiResponseOutDto<List<FeeValueOutDTO>> getFeeValuesByType(FeeType feeType) {
 
@@ -53,8 +53,8 @@ public class FeeValueServiceImpl implements FeeValueService {
 	 * @return a corresponding {@link FeeValueOutDTO} instance
 	 */
 	private FeeValueOutDTO mapToDTO(FeeValue entity) {
-		return FeeValueOutDTO.builder().flagName(entity.getFlagName()).amount(entity.getAmount())
-				.feeType(entity.getFeeType()).build();
+		return FeeValueOutDTO.builder().description(entity.getDescription()).feeValue(entity.getFeeValue())
+				.feeType(FeeType.valueOf(entity.getFeeType())).build();
 	}
 
 }

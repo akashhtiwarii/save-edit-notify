@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.enums.FeeType;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
@@ -22,7 +23,7 @@ import java.util.List;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/monthly-fee-values")
+@RequestMapping(AppConstants.API_FEE_VALUES)
 @RequiredArgsConstructor
 @Slf4j
 @Validated

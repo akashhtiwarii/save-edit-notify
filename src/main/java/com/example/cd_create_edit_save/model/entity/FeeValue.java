@@ -9,21 +9,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import com.example.cd_create_edit_save.enums.FeeType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
- * Entity class representing Monthly Fee Values in the system.
- * <p>
- * This entity stores information about monthly fees associated with different
- * flags. Each record contains a flag name and its corresponding monthly fee
- * amount.
- * </p>
+ * Entity class representing Fee Values in the system.
  * 
  * @author Krishna
  * @version 1.0
  */
-@Table(name = "fee_values")
+@Table(name = "TBL_FEE_VALUES")
 @Entity
 @Data
 @NoArgsConstructor
@@ -32,32 +29,61 @@ import com.example.cd_create_edit_save.enums.FeeType;
 public class FeeValue {
 
 	/**
-	 * Unique identifier for the monthly fee value record.
+	 * Unique identifier for the fee value record. Auto-generated using database
+	 * identity strategy.
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ID")
 	private Long id;
 
 	/**
-	 * Name of the flag associated with this monthly fee.
+	 * Description of the fee. Cannot be null or blank.
 	 */
-	@NotBlank(message = "Flag name is required")
-	@Column(name = "flag_name", nullable = false, length = 100)
-	private String flagName;
+	@NotBlank(message = "Description is required")
+	@Column(name = "DESCRIPTION", nullable = false)
+	private String description;
 
 	/**
-	 * Monthly fee amount in decimal format. Must be a positive value (>= 0).
+	 * Type of fee - represents the category or classification of the fee. Cannot be
+	 * null or blank.
 	 */
-	@NotNull(message = "Amount is required")
-	@DecimalMin(value = "0.0", inclusive = true, message = "Amount must be greater than or equal to 0")
-	@Column(name = "amount", nullable = false, precision = 10, scale = 2)
-	private BigDecimal amount;
+	@NotBlank(message = "Fee type is required")
+	@Column(name = "FEE_TYPE", nullable = false)
+	private String feeType;
 
 	/**
-	 * Type of fee - either ANNUAL or MONTHLY. Cannot be null.
+	 * Fee amount in decimal format. Must be a positive value (>= 0).
 	 */
-	@NotNull(message = "Fee type is required")
-	@Enumerated(EnumType.STRING)
-	@Column(name = "fee_type", nullable = false, length = 20)
-	private FeeType feeType;
+	@NotNull(message = "Fee value is required")
+	@DecimalMin(value = "0.0", inclusive = true, message = "Fee value must be greater than or equal to 0")
+	@Column(name = "FEE_VALUE", nullable = false)
+	private BigDecimal feeValue;
+
+	/**
+	 * Username or identifier of the user who created this record.
+	 */
+	@Column(name = "CREATED_BY")
+	private String createdBy;
+
+	/**
+	 * Timestamp when the record was created. Automatically set on insert.
+	 */
+	@CreationTimestamp
+	@Column(name = "CREATED_DATETIME", nullable = false, updatable = false)
+	private LocalDateTime createdDatetime;
+
+	/**
+	 * Username or identifier of the user who last updated this record.
+	 */
+	@Column(name = "UPDATED_BY")
+	private String updatedBy;
+
+	/**
+	 * Timestamp when the record was last updated. Automatically updated on
+	 * modification.
+	 */
+	@UpdateTimestamp
+	@Column(name = "UPDATED_DATETIME", nullable = false)
+	private LocalDateTime updatedDatetime;
 }
