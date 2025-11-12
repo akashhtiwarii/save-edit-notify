@@ -32,5 +32,5 @@ public class FeeValueOutDTO {
 	/**
 	 * Type of fee - either ANNUAL or MONTHLY.
 	 */
-	private FeeType feeType;
+	private String feeType;
 }
