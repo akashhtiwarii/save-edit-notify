@@ -20,7 +20,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  * @author Krishna
  * @version 1.0
  */
-@Table(name = "TBL_FEE_VALUES")
+@Table(name = "TBL_FEE_VALUES", schema = "product")
 @Entity
 @Data
 @NoArgsConstructor

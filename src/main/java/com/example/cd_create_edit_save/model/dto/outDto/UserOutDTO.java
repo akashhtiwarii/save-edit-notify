@@ -32,4 +32,14 @@ public class UserOutDTO {
 	 * Role assigned to the user (e.g., ADMIN, USER).
 	 */
 	private String role;
+
+    /**
+     * User name of the user.
+     */
+    private String userName;
+
+    /**
+     * Email of the user.
+     */
+    private String email;
 }

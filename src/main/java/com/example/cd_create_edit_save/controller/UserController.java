@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppConstants.API_V1_USERS)
-@CrossOrigin(origins = "*")
 public class UserController {
 
 	private final UserService userService;

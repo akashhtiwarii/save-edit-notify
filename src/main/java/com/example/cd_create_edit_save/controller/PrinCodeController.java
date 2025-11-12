@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping(AppConstants.API_V1_PRIN_CODES)
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 public class PrinCodeController {
 
 	private final PrinCodeService prinCodeService;

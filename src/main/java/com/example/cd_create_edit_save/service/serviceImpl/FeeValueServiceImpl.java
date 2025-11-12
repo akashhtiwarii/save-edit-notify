@@ -35,14 +35,14 @@ public class FeeValueServiceImpl implements FeeValueService {
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public ApiResponseOutDto<List<FeeValueOutDTO>> getFeeValuesByType(FeeType feeType) {
+	public ApiResponseOutDto<List<FeeValueOutDTO>> getFeeValuesByType(String feeType) {
 
 		List<FeeValue> feeValues = monthlyFeeValueRepository.findByFeeType(feeType);
 
 		List<FeeValueOutDTO> monthlyFeeValueOutDTOs = feeValues.stream().map(this::mapToDTO)
 				.collect(Collectors.toList());
 		return ApiResponseOutDto.<List<FeeValueOutDTO>>builder().status("SUCCESS")
-				.message("Fee vlaue type retrieved successfully.").data(monthlyFeeValueOutDTOs).timestamp(Instant.now())
+				.message("Fee value type retrieved successfully.").data(monthlyFeeValueOutDTOs).timestamp(Instant.now())
 				.build();
 	}
 
@@ -54,7 +54,7 @@ public class FeeValueServiceImpl implements FeeValueService {
 	 */
 	private FeeValueOutDTO mapToDTO(FeeValue entity) {
 		return FeeValueOutDTO.builder().description(entity.getDescription()).feeValue(entity.getFeeValue())
-				.feeType(FeeType.valueOf(entity.getFeeType())).build();
+				.feeType(entity.getFeeType()).build();
 	}
 
 }

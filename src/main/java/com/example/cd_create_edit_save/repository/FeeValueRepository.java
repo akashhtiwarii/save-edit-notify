@@ -23,5 +23,5 @@ public interface FeeValueRepository extends JpaRepository<FeeValue, Long> {
 	 * @param feeType the type of fee (ANNUAL or MONTHLY)
 	 * @return a list of fee values matching the specified fee type
 	 */
-	List<FeeValue> findByFeeType(FeeType feeType);
+	List<FeeValue> findByFeeType(String feeType);
 }

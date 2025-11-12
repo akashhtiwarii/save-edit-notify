@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.cd_create_edit_save.constants.AppConstants;
-import com.example.cd_create_edit_save.enums.FeeType;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
 import com.example.cd_create_edit_save.service.FeeValueService;
@@ -40,7 +39,7 @@ public class FeeValueController {
 	 */
 	@GetMapping("/type/{feeType}")
 	public ResponseEntity<ApiResponseOutDto<List<FeeValueOutDTO>>> getAllMonthlyFeeValues(
-			@PathVariable FeeType feeType) {
+			@PathVariable String feeType) {
 		log.info("Received request to get all monthly fee values");
 
 		ApiResponseOutDto<List<FeeValueOutDTO>> response = monthlyFeeValueService.getFeeValuesByType(feeType);

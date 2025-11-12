@@ -1,9 +1,6 @@
 package com.example.cd_create_edit_save.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,15 +10,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "TBL_PRODUCT")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "TBL_PRODUCT", schema = "product")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Product {
 
     @Id
-    @Column(name = "PRODUCT_ID", length = 50)
+    @Column(name = "PRODUCT_ID", length = 50, nullable = false)
     private String productId;
 
     @Column(name = "PRODUCT_SHT_CD", length = 3, nullable = false)
@@ -39,16 +36,19 @@ public class Product {
     @Column(name = "APR_VALUE_TYPE", length = 50)
     private String aprValueType;
 
-    @Column(name = "PURCHASE_APR_MIN", precision = 5, scale = 2)
+    @Column(name = "FEE_VALUE")
+    private Integer feeValue;
+
+    @Column(name = "PURCHASE_APR_MIN")
     private BigDecimal purchaseAprMin;
 
-    @Column(name = "PURCHASE_APR_MAX", precision = 5, scale = 2)
+    @Column(name = "PURCHASE_APR_MAX")
     private BigDecimal purchaseAprMax;
 
-    @Column(name = "CASH_APR_MIN", precision = 5, scale = 2)
+    @Column(name = "CASH_APR_MIN")
     private BigDecimal cashAprMin;
 
-    @Column(name = "CASH_APR_MAX", precision = 5, scale = 2)
+    @Column(name = "CASH_APR_MAX")
     private BigDecimal cashAprMax;
 
     @Column(name = "CREDIT_LINE_MIN")
@@ -66,10 +66,10 @@ public class Product {
     @Column(name = "SECURITY_DEPOSIT_MAX")
     private Integer securityDepositMax;
 
-    @Column(name = "TERMS_CONDITIONS_LINK", length = 5000)
+    @Column(name = "TERMS_CONDITIONS_LINK", length = 500)
     private String termsConditionsLink;
 
-    @Column(name = "CARDHOLDER_AGREEMENT_LINK", length = 5000)
+    @Column(name = "CARDHOLDER_AGREEMENT_LINK", length = 500)
     private String cardholderAgreementLink;
 
     @Column(name = "CARD_IMAGE_LINK", length = 500)
@@ -84,13 +84,28 @@ public class Product {
     @Column(name = "CREATED_DATETIME")
     private LocalDateTime createdDatetime;
 
+    @Column(name = "UPDATED_BY", length = 255)
+    private String updatedBy;
+
+    @Column(name = "UPDATED_DATETIME")
+    private LocalDateTime updatedDatetime;
+
+    @Column(name = "REQUEST_TYPE", length = 100)
+    private String requestType;
+
+    @Column(name = "TO_BE_APPROVED_BY", length = 255)
+    private String toBeApprovedBy;
+
+    @Column(name = "COMMENTS_TO_APPROVER", length = 500)
+    private String commentsToApprover;
+
     @Column(name = "REVIEWED_BY", length = 255)
     private String reviewedBy;
 
     @Column(name = "REVIEWED_DATETIME")
     private LocalDateTime reviewedDatetime;
 
-    @Column(name = "REVIEW_COMMENTS", length = 1000)
+    @Column(name = "REVIEW_COMMENTS", length = 500)
     private String reviewComments;
 
     @Column(name = "OVERRIDE_BY", length = 100)
@@ -99,7 +114,8 @@ public class Product {
     @Column(name = "OVERRIDE_DATETIME")
     private LocalDateTime overrideDatetime;
 
-    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "VARBINARY")
+    @Lob
+    @Column(name = "OVERRIDE_JUSTIFICATION", columnDefinition = "VARBINARY(MAX)")
     private byte[] overrideJustification;
 
     @Column(name = "PRIN", length = 50)
@@ -119,14 +135,4 @@ public class Product {
 
     @Column(name = "END_DATE")
     private LocalDateTime endDate;
-
-    @Column(name = "TO_BE_APPROVED_BY", length = 255)
-    private String toBeApprovedBy;
-
-    @Column(name = "APPROVAL_PRIORITY_LEVEL", length = 50)
-    private String approvalPriorityLevel;
-
-    @Column(name = "COMMENTS_TO_APPROVER", length = 1000)
-    private String commentsToApprover;
 }
-
