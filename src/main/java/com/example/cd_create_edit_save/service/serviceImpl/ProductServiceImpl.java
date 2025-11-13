@@ -307,17 +307,21 @@ public class ProductServiceImpl implements ProductService {
         productValidator.validateApprover(dto.getApprover());
         log.debug("Validated approver '{}' for Product ID: {}", dto.getApprover(), productId);
 
-        productMapper.mapDateChangeFields(product, dto, newStart, newEnd, "SYSTEM");
+        // ✅ Capture returned object
+        Product updatedProduct = productMapper.mapDateChangeFields(product, dto, newStart, newEnd, "SYSTEM");
         log.debug("Mapped new date fields and metadata into product entity for Product ID: {}", productId);
 
-        productRepository.save(product);
+        // ✅ Save updated entity and capture result
+        Product savedProduct = productRepository.save(updatedProduct);
         log.info("Product dates updated and saved successfully for Product ID: {}", productId);
 
-        ProductOutDto response = productMapper.toDto(product);
+        // ✅ Return mapped DTO
+        ProductOutDto response = productMapper.toDto(savedProduct);
         log.debug("Mapped updated product entity to DTO for Product ID: {}", productId);
 
         return response;
     }
+
 
 
 }

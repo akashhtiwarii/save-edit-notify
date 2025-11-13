@@ -4,6 +4,7 @@ import com.example.cd_create_edit_save.exception.InvalidRequestException;
 import com.example.cd_create_edit_save.exception.ResourceNotFoundException;
 import com.example.cd_create_edit_save.mapper.ProductMapper;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductDateUpdateInDTO;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
@@ -17,6 +18,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -61,8 +63,10 @@ class ProductServiceImplTest {
     private LocalDateTime endDate;
     private List<Object[]> mockProductList;
     private List<Object[]> getproductList;
-    private Object[] mockData ;
-    Object[] mock ;
+    private Object[] mockData;
+    private Object[] mock;
+    private ProductDateUpdateInDTO dateUpdateDto;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -89,7 +93,6 @@ class ProductServiceImplTest {
                 .securityDepositMin(200)
                 .securityDepositMax(500)
                 .toBeApprovedBy("jdoe")
-                .approvalPriorityLevel("HIGH PRIORITY")
                 .commentsToApprover("Please review urgently")
                 .prin("PRIN001")
                 .cwsProductId("CWS-001")
@@ -120,7 +123,6 @@ class ProductServiceImplTest {
                 .securityDepositMin(null)
                 .securityDepositMax(null)
                 .toBeApprovedBy("jsmith")
-                .approvalPriorityLevel("NORMAL PRIORITY")
                 .commentsToApprover("Standard review")
                 .prin("PRIN002")
                 .cwsProductId("CWS-002")
@@ -139,6 +141,8 @@ class ProductServiceImplTest {
         product.setRewardsTypeShtCd("CB");
         product.setStatus("PENDING");
         product.setCreatedBy("admin");
+        product.setStartDate(startDate);
+        product.setEndDate(endDate);
 
         existingProduct = new Product();
         existingProduct.setProductId("GOL-AF-CB-0000001");
@@ -154,33 +158,43 @@ class ProductServiceImplTest {
                 .rewardsTypeShtCd("CB")
                 .status("PENDING")
                 .createdBy("admin")
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
 
         mockProductList = new ArrayList<>();
         getproductList = new ArrayList<>();
         mockData = new Object[]{
                 1L, "P001", "Gold Product", "ACTIVE", "FIXED", 10.0, 25.0,
-                new Date(), 6L // totalCount (index 9 actually)
+                new Date(), 6L
         };
 
         mock = new Object[]{
-                "P001", "Gold Product",  "FIXED", "ACTIVE",
-                LocalDateTime.now(),LocalDateTime.now() , 10.0, 25.0, // totalCount (index 9 actually)
+                "P001", "Gold Product", "FIXED", "ACTIVE",
+                LocalDateTime.now(), LocalDateTime.now(), 10.0, 25.0,
         };
         mockProductList.add(mockData);
         getproductList.add(mock);
 
+        dateUpdateDto = ProductDateUpdateInDTO.builder()
+                .newStartDate("2025-12-01")
+                .newStartTime("10:00:00")
+                .newEndDate("2026-06-01")
+                .newEndTime("23:59:59")
+                .reasonForDateChange("CAMPAIGN_SCHEDULE_CHANGE")
+                .additionalNotes("Updating dates due to marketing campaign change")
+                .approver("jdoe")
+                .build();
     }
 
     @Test
     void testCreateProduct_Success() {
-        // Arrange
         String createdBy = "admin";
         doNothing().when(productValidator).validateProductCreateRequest(createRequestDto);
         when(productRepository.findLatestProductIdByPrefix("GOL-AF-CB-")).thenReturn(Optional.empty());
         when(productMapper.toEntity(createRequestDto, "GOL-AF-CB-0000001", createdBy)).thenReturn(product);
         when(productRepository.save(product)).thenReturn(product);
-        when(productMapper.toResponseDto(product)).thenReturn(productOutDto);
+        when(productMapper.toDto(product)).thenReturn(productOutDto);
 
         ProductOutDto result = productService.createProduct(createRequestDto, createdBy);
 
@@ -196,12 +210,11 @@ class ProductServiceImplTest {
         verify(productRepository, times(1)).findLatestProductIdByPrefix("GOL-AF-CB-");
         verify(productMapper, times(1)).toEntity(createRequestDto, "GOL-AF-CB-0000001", createdBy);
         verify(productRepository, times(1)).save(product);
-        verify(productMapper, times(1)).toResponseDto(product);
+        verify(productMapper, times(1)).toDto(product);
     }
 
     @Test
     void testCreateProduct_WithExistingProducts_GeneratesNextSequence() {
-
         String createdBy = "admin";
         Product newProduct = new Product();
         newProduct.setProductId("GOL-AF-CB-0000003");
@@ -215,7 +228,7 @@ class ProductServiceImplTest {
                 .thenReturn(Optional.of("GOL-AF-CB-0000002"));
         when(productMapper.toEntity(createRequestDto, "GOL-AF-CB-0000003", createdBy)).thenReturn(newProduct);
         when(productRepository.save(newProduct)).thenReturn(newProduct);
-        when(productMapper.toResponseDto(newProduct)).thenReturn(newProductOutDto);
+        when(productMapper.toDto(newProduct)).thenReturn(newProductOutDto);
 
         ProductOutDto result = productService.createProduct(createRequestDto, createdBy);
 
@@ -228,7 +241,6 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidProductShortCode() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("Product Short Code 'XXX' does not exist in the system"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
@@ -246,7 +258,6 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidFeeTypeCode() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("Fee Type Short Code 'XX' does not exist in the system"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
@@ -263,7 +274,6 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidAprTypeValueTypeCombination() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("When APR type is FIXED, APR value type must be SPECIFIC"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
@@ -279,11 +289,9 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidCashAprCalculation() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("Cash APR Min is incorrect. Expected: 11.03 (Purchase APR Min + 5%), but received: 11.00"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
-
 
         InvalidRequestException exception = assertThrows(
                 InvalidRequestException.class,
@@ -296,11 +304,9 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidSecurityDeposit() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("Security deposit min is required when security deposit is enabled"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
-
 
         InvalidRequestException exception = assertThrows(
                 InvalidRequestException.class,
@@ -313,11 +319,9 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidDates() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("Start date must be at least one week from today"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
-
 
         InvalidRequestException exception = assertThrows(
                 InvalidRequestException.class,
@@ -330,11 +334,9 @@ class ProductServiceImplTest {
 
     @Test
     void testCreateProduct_ValidationFails_InvalidApprover() {
-
         String createdBy = "admin";
         doThrow(new InvalidRequestException("Approver 'invalid_user' does not exist in the system"))
                 .when(productValidator).validateProductCreateRequest(createRequestDto);
-
 
         InvalidRequestException exception = assertThrows(
                 InvalidRequestException.class,
@@ -345,10 +347,8 @@ class ProductServiceImplTest {
         verify(productValidator, times(1)).validateProductCreateRequest(createRequestDto);
     }
 
-
     @Test
     void testUpdateProduct_Success() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
         Product newVersionProduct = new Product();
@@ -365,14 +365,14 @@ class ProductServiceImplTest {
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doNothing().when(productValidator).validateNonEditableFields(existingProduct, updateRequestDto);
+        doNothing().when(productValidator).validateFieldChanges(existingProduct, updateRequestDto);
         doNothing().when(productValidator).validateProductUpdateRequest(updateRequestDto);
         when(productRepository.findLatestProductIdByPrefix("GOL-AF-CB-"))
                 .thenReturn(Optional.of("GOL-AF-CB-0000001"));
         when(productMapper.toEntity(updateRequestDto, "GOL-AF-CB-0000002", updatedBy))
                 .thenReturn(newVersionProduct);
         when(productRepository.save(newVersionProduct)).thenReturn(newVersionProduct);
-        when(productMapper.toResponseDto(newVersionProduct)).thenReturn(updatedProductOutDto);
-
+        when(productMapper.toDto(newVersionProduct)).thenReturn(updatedProductOutDto);
 
         ProductOutDto result = productService.updateProduct(productId, updateRequestDto, updatedBy);
 
@@ -382,6 +382,7 @@ class ProductServiceImplTest {
 
         verify(productValidator, times(1)).validateProductIdAndGetProduct(productId);
         verify(productValidator, times(1)).validateNonEditableFields(existingProduct, updateRequestDto);
+        verify(productValidator, times(1)).validateFieldChanges(existingProduct, updateRequestDto);
         verify(productValidator, times(1)).validateProductUpdateRequest(updateRequestDto);
         verify(productRepository, times(1)).findLatestProductIdByPrefix("GOL-AF-CB-");
         verify(productRepository, times(1)).save(newVersionProduct);
@@ -389,13 +390,11 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_ProductNotFound() {
-
         String productId = "INVALID-ID";
         String updatedBy = "admin";
 
         when(productValidator.validateProductIdAndGetProduct(productId))
                 .thenThrow(new ResourceNotFoundException("Product not found with ID: " + productId));
-
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
@@ -411,10 +410,9 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_AttemptToChangeProductShortCode() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
-        updateRequestDto.setProductShtCd("PLU"); // Attempting to change
+        updateRequestDto.setProductShtCd("PLU");
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doThrow(new InvalidRequestException("Product Short Code cannot be changed. Original: GOL, Attempted: PLU"))
@@ -434,10 +432,9 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_AttemptToChangeFeeTypeCode() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
-        updateRequestDto.setFeeTypeShtCd("MF"); // Attempting to change
+        updateRequestDto.setFeeTypeShtCd("MF");
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doThrow(new InvalidRequestException("Fee Type Short Code cannot be changed. Original: AF, Attempted: MF"))
@@ -456,7 +453,7 @@ class ProductServiceImplTest {
     void testUpdateProduct_AttemptToChangeRewardsTypeCode() {
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
-        updateRequestDto.setRewardsTypeShtCd("TR"); // Attempting to change
+        updateRequestDto.setRewardsTypeShtCd("TR");
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doThrow(new InvalidRequestException("Rewards Type Short Code cannot be changed. Original: CB, Attempted: TR"))
@@ -473,12 +470,12 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_ValidationFails_InvalidPrinCode() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doNothing().when(productValidator).validateNonEditableFields(existingProduct, updateRequestDto);
+        doNothing().when(productValidator).validateFieldChanges(existingProduct, updateRequestDto);
         doThrow(new InvalidRequestException("PRIN Code 'PRINXXX' does not exist in the system"))
                 .when(productValidator).validateProductUpdateRequest(updateRequestDto);
 
@@ -494,12 +491,12 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_ValidationFails_InvalidCwsProductCode() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doNothing().when(productValidator).validateNonEditableFields(existingProduct, updateRequestDto);
+        doNothing().when(productValidator).validateFieldChanges(existingProduct, updateRequestDto);
         doThrow(new InvalidRequestException("CWS Product Code 'CWS-XXX' does not exist in the system"))
                 .when(productValidator).validateProductUpdateRequest(updateRequestDto);
 
@@ -514,12 +511,12 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_ValidationFails_InvalidChaCode() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doNothing().when(productValidator).validateNonEditableFields(existingProduct, updateRequestDto);
+        doNothing().when(productValidator).validateFieldChanges(existingProduct, updateRequestDto);
         doThrow(new InvalidRequestException("CHA Code 'CHA-XXX' does not exist in the system"))
                 .when(productValidator).validateProductUpdateRequest(updateRequestDto);
 
@@ -534,12 +531,12 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_ValidationFails_InvalidCreditLine() {
-
         String productId = "GOL-AF-CB-0000001";
         String updatedBy = "admin";
 
         when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(existingProduct);
         doNothing().when(productValidator).validateNonEditableFields(existingProduct, updateRequestDto);
+        doNothing().when(productValidator).validateFieldChanges(existingProduct, updateRequestDto);
         doThrow(new InvalidRequestException("Credit line max must be greater than credit line min"))
                 .when(productValidator).validateProductUpdateRequest(updateRequestDto);
 
@@ -554,7 +551,6 @@ class ProductServiceImplTest {
 
     @Test
     void testUpdateProduct_EmptyProductId() {
-
         String productId = "";
         String updatedBy = "admin";
 
@@ -632,18 +628,16 @@ class ProductServiceImplTest {
         verify(productValidator, times(1)).validateProductIdAndGetProduct(missingProductId);
         verify(productMapper, never()).toDto(any());
     }
+
     @Test
     void testGetProductSummary_Success() {
-        // Arrange
         when(productRepository.count()).thenReturn(100L);
         when(productRepository.countByStatus("ACTIVE")).thenReturn(60L);
         when(productRepository.countByStatus("PENDING_APPROVAL")).thenReturn(30L);
         when(productRepository.countByStatus("EXPIRED")).thenReturn(10L);
 
-        // Act
         ProductSummaryOutDTO summary = productService.getProductSummary();
 
-        // Assert
         assertNotNull(summary);
         assertEquals(100L, summary.getTotalProducts());
         assertEquals(60L, summary.getActiveProducts());
@@ -655,17 +649,14 @@ class ProductServiceImplTest {
 
     @Test
     void testGetProductSummary_Exception() {
-        // Arrange
         when(productRepository.count()).thenThrow(new RuntimeException("Database error"));
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> productService.getProductSummary());
         assertTrue(exception.getMessage().contains("Error retrieving product summary"));
     }
 
     @Test
     void testGetProducts_Success() {
-
         when(productRepository.getProducts(anyLong(), anyLong())).thenReturn(mockProductList);
 
         try (MockedStatic<ProductResponseOutDto> mocked = mockStatic(ProductResponseOutDto.class)) {
@@ -696,9 +687,8 @@ class ProductServiceImplTest {
         assertThat(response.getData()).isNull();
     }
 
-
     @Test
-    void testGetProducts_EmptyList(){
+    void testGetProducts_EmptyList() {
         when(productRepository.getProducts(anyLong(), anyLong())).thenReturn(List.of());
 
         ApiResponseOutDto<List<ProductResponseOutDto>> response = productService.getProducts(0L, 10L);
@@ -709,7 +699,6 @@ class ProductServiceImplTest {
 
     @Test
     void testGetProductByParameters_Success() {
-
         when(productRepository.findProductsFiltered(
                 anyString(), anyString(), any(), any(), anyLong(), anyLong()))
                 .thenReturn(mockProductList);
@@ -736,8 +725,6 @@ class ProductServiceImplTest {
 
     @Test
     void testGetProductByParameters_WithNullParams() {
-
-
         try (MockedStatic<ProductResponseOutDto> mocked = mockStatic(ProductResponseOutDto.class)) {
             ProductResponseOutDto dto = new ProductResponseOutDto();
             dto.setProductName("Gold Product");
@@ -756,7 +743,6 @@ class ProductServiceImplTest {
         }
     }
 
-
     @Test
     void testGetProductByParameters_Exception() {
         when(productRepository.findProductsFiltered(
@@ -771,7 +757,6 @@ class ProductServiceImplTest {
         assertThat(response.getData()).isNull();
     }
 
-
     @Test
     void testExportProductsToCsv_Success() throws IOException {
         when(productRepository.getProducts(anyLong(), anyLong())).thenReturn(getproductList);
@@ -780,7 +765,6 @@ class ProductServiceImplTest {
 
         assertThat(inputStream).isNotNull();
 
-        // Parse CSV content
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
              CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader)) {
 
@@ -789,7 +773,6 @@ class ProductServiceImplTest {
             assertThat(records.get(0).get("Product Name")).isEqualTo("Gold Product");
         }
     }
-
 
     @Test
     void testExportProductsToCsv_Exception() {
@@ -802,4 +785,273 @@ class ProductServiceImplTest {
 
         assertThat(exception.getMessage()).contains(CSV_ERROR);
     }
+
+    @Test
+    void testUpdateProductDates_Success() {
+        String productId = "GOL-AF-CB-0000001";
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2025, 12, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2026, 6, 1, 23, 59, 59);
+
+        Product updatedProduct = new Product();
+        updatedProduct.setProductId(productId);
+        updatedProduct.setStartDate(newStartDateTime);
+        updatedProduct.setEndDate(newEndDateTime);
+        updatedProduct.setStatus("ACTIVE");
+
+        ProductOutDto expectedOutput = ProductOutDto.builder()
+                .productId(productId)
+                .productShtCd("AB1")
+                .feeTypeShtCd("FT")
+                .rewardsTypeShtCd("RW")
+                .aprType("Variable")
+                .aprValueType("Percent")
+                .feeValue(new BigDecimal("2.00"))
+                .purchaseAprMin(new BigDecimal("5.0"))
+                .purchaseAprMax(new BigDecimal("15.0"))
+                .cashAprMin(new BigDecimal("10.0"))
+                .cashAprMax(new BigDecimal("20.0"))
+                .status("ACTIVE")
+                .startDate(newStartDateTime)
+                .endDate(newEndDateTime)
+                .overrideJustification("builder".getBytes())
+                .createdDatetime(LocalDateTime.now())
+                .build();
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doNothing().when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        doNothing().when(productValidator).validateApprover(dateUpdateDto.getApprover());
+        when(productMapper.mapDateChangeFields(eq(product), eq(dateUpdateDto), eq(newStartDateTime), eq(newEndDateTime), eq("SYSTEM")))
+                .thenReturn(product);
+        when(productRepository.save(product)).thenReturn(updatedProduct);
+        when(productMapper.toDto(updatedProduct)).thenReturn(expectedOutput);
+
+        ProductOutDto result = productService.updateProductDates(productId, dateUpdateDto);
+
+        assertEquals(productId, result.getProductId());
+        assertEquals(newStartDateTime, result.getStartDate());
+        assertEquals(newEndDateTime, result.getEndDate());
+
+        verify(productValidator, times(1)).validateProductIdAndGetProduct(productId);
+        verify(productValidator, times(1)).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        verify(productValidator, times(1)).validateApprover(dateUpdateDto.getApprover());
+        verify(productMapper, times(1)).mapDateChangeFields(eq(product), eq(dateUpdateDto), eq(newStartDateTime), eq(newEndDateTime), eq("SYSTEM"));
+        verify(productRepository, times(1)).save(product);
+        verify(productMapper, times(1)).toDto(updatedProduct);
+    }
+
+    @Test
+    void testUpdateProductDates_ProductNotFound() {
+        String productId = "INVALID-ID";
+
+        when(productValidator.validateProductIdAndGetProduct(productId))
+                .thenThrow(new ResourceNotFoundException("Product not found with ID: " + productId));
+
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> productService.updateProductDates(productId, dateUpdateDto)
+        );
+
+        assertEquals("Product not found with ID: INVALID-ID", exception.getMessage());
+        verify(productValidator, times(1)).validateProductIdAndGetProduct(productId);
+        verify(productValidator, never()).validateDateChange(any(), any(), any());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateProductDates_ValidationFails_NoDatesChanged() {
+        String productId = "GOL-AF-CB-0000001";
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2025, 12, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2026, 6, 1, 23, 59, 59);
+
+        product.setStartDate(newStartDateTime);
+        product.setEndDate(newEndDateTime);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doThrow(new InvalidRequestException("No changes detected in start or end dates."))
+                .when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+
+        InvalidRequestException exception = assertThrows(
+                InvalidRequestException.class,
+                () -> productService.updateProductDates(productId, dateUpdateDto)
+        );
+
+        assertEquals("No changes detected in start or end dates.", exception.getMessage());
+        verify(productValidator, times(1)).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateProductDates_ValidationFails_EndDateBeforeStartDate() {
+        String productId = "GOL-AF-CB-0000001";
+
+        ProductDateUpdateInDTO invalidDto = ProductDateUpdateInDTO.builder()
+                .newStartDate("2026-06-01")
+                .newStartTime("10:00:00")
+                .newEndDate("2025-12-01")
+                .newEndTime("23:59:59")
+                .reasonForDateChange("CAMPAIGN_SCHEDULE_CHANGE")
+                .approver("jdoe")
+                .build();
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2026, 6, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2025, 12, 1, 23, 59, 59);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doThrow(new InvalidRequestException("End date and time cannot be before start date and time."))
+                .when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+
+        InvalidRequestException exception = assertThrows(
+                InvalidRequestException.class,
+                () -> productService.updateProductDates(productId, invalidDto)
+        );
+
+        assertEquals("End date and time cannot be before start date and time.", exception.getMessage());
+        verify(productValidator, times(1)).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateProductDates_ValidationFails_StartDateInPast() {
+        String productId = "GOL-AF-CB-0000001";
+
+        ProductDateUpdateInDTO pastDateDto = ProductDateUpdateInDTO.builder()
+                .newStartDate("2020-01-01")
+                .newStartTime("10:00:00")
+                .newEndDate("2025-12-01")
+                .newEndTime("23:59:59")
+                .reasonForDateChange("CAMPAIGN_SCHEDULE_CHANGE")
+                .approver("jdoe")
+                .build();
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2020, 1, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2025, 12, 1, 23, 59, 59);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doThrow(new InvalidRequestException("Start date cannot be in the past."))
+                .when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+
+        InvalidRequestException exception = assertThrows(
+                InvalidRequestException.class,
+                () -> productService.updateProductDates(productId, pastDateDto)
+        );
+
+        assertEquals("Start date cannot be in the past.", exception.getMessage());
+        verify(productValidator, times(1)).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateProductDates_ValidationFails_InvalidApprover() {
+        String productId = "GOL-AF-CB-0000001";
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2025, 12, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2026, 6, 1, 23, 59, 59);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doNothing().when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        doThrow(new InvalidRequestException("Approver 'invalid_user' does not exist in the system."))
+                .when(productValidator).validateApprover(dateUpdateDto.getApprover());
+
+        InvalidRequestException exception = assertThrows(
+                InvalidRequestException.class,
+                () -> productService.updateProductDates(productId, dateUpdateDto)
+        );
+
+        assertEquals("Approver 'invalid_user' does not exist in the system.", exception.getMessage());
+        verify(productValidator, times(1)).validateApprover(dateUpdateDto.getApprover());
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateProductDates_VerifyMapperCalled() {
+        String productId = "GOL-AF-CB-0000001";
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2025, 12, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2026, 6, 1, 23, 59, 59);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doNothing().when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        doNothing().when(productValidator).validateApprover(dateUpdateDto.getApprover());
+        when(productMapper.mapDateChangeFields(eq(product), eq(dateUpdateDto), eq(newStartDateTime), eq(newEndDateTime), eq("SYSTEM")))
+                .thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
+        when(productMapper.toDto(product)).thenReturn(productOutDto);
+
+        productService.updateProductDates(productId, dateUpdateDto);
+
+        ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
+        ArgumentCaptor<ProductDateUpdateInDTO> dtoCaptor = ArgumentCaptor.forClass(ProductDateUpdateInDTO.class);
+        ArgumentCaptor<LocalDateTime> startCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        ArgumentCaptor<LocalDateTime> endCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        ArgumentCaptor<String> updatedByCaptor = ArgumentCaptor.forClass(String.class);
+
+        verify(productMapper, times(1)).mapDateChangeFields(
+                productCaptor.capture(),
+                dtoCaptor.capture(),
+                startCaptor.capture(),
+                endCaptor.capture(),
+                updatedByCaptor.capture()
+        );
+
+        assertEquals(product, productCaptor.getValue());
+        assertEquals(dateUpdateDto, dtoCaptor.getValue());
+        assertEquals(newStartDateTime, startCaptor.getValue());
+        assertEquals(newEndDateTime, endCaptor.getValue());
+        assertEquals("SYSTEM", updatedByCaptor.getValue());
+    }
+
+    @Test
+    void testUpdateProductDates_VerifyRepositorySave() {
+        String productId = "GOL-AF-CB-0000001";
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2025, 12, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2026, 6, 1, 23, 59, 59);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doNothing().when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        doNothing().when(productValidator).validateApprover(dateUpdateDto.getApprover());
+        when(productMapper.mapDateChangeFields(any(), any(), any(), any(), any())).thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
+        when(productMapper.toDto(product)).thenReturn(productOutDto);
+
+        productService.updateProductDates(productId, dateUpdateDto);
+
+        ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
+        verify(productRepository, times(1)).save(productCaptor.capture());
+
+        assertEquals(product, productCaptor.getValue());
+    }
+
+    @Test
+    void testUpdateProductDates_WithDifferentReason() {
+        String productId = "GOL-AF-CB-0000001";
+
+        ProductDateUpdateInDTO executiveOrderDto = ProductDateUpdateInDTO.builder()
+                .newStartDate("2025-12-01")
+                .newStartTime("10:00:00")
+                .newEndDate("2026-06-01")
+                .newEndTime("23:59:59")
+                .reasonForDateChange("EXECUTIVE_ORDER")
+                .additionalNotes("Executive decision to change dates")
+                .approver("jdoe")
+                .build();
+
+        LocalDateTime newStartDateTime = LocalDateTime.of(2025, 12, 1, 10, 0, 0);
+        LocalDateTime newEndDateTime = LocalDateTime.of(2026, 6, 1, 23, 59, 59);
+
+        when(productValidator.validateProductIdAndGetProduct(productId)).thenReturn(product);
+        doNothing().when(productValidator).validateDateChange(eq(product), eq(newStartDateTime), eq(newEndDateTime));
+        doNothing().when(productValidator).validateApprover(executiveOrderDto.getApprover());
+        when(productMapper.mapDateChangeFields(any(), any(), any(), any(), any())).thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
+        when(productMapper.toDto(product)).thenReturn(productOutDto);
+
+        ProductOutDto result = productService.updateProductDates(productId, executiveOrderDto);
+
+        assertNotNull(result);
+        verify(productMapper, times(1)).mapDateChangeFields(eq(product), eq(executiveOrderDto), any(), any(), eq("SYSTEM"));
+    }
+
 }

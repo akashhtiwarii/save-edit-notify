@@ -14,7 +14,7 @@ import com.example.cd_create_edit_save.model.dto.outDto.CwsProdCodeOutDTO;
 import com.example.cd_create_edit_save.model.entity.CwsProdCode;
 import com.example.cd_create_edit_save.repository.CwsProdCodeRepository;
 
-class CwsProdCodeServiceImplementationTest {
+class CwsProdCodeServiceImplTest {
 
 	@Mock
 	private CwsProdCodeRepository cwsProdCodeRepository;
@@ -22,7 +22,7 @@ class CwsProdCodeServiceImplementationTest {
 	@InjectMocks
 	private CwsProdCodeServiceImpl cwsProdCodeService;
 
-	public CwsProdCodeServiceImplementationTest() {
+	public CwsProdCodeServiceImplTest() {
 		MockitoAnnotations.openMocks(this);
 	}
 

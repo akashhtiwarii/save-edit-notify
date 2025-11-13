@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.example.cd_create_edit_save.repository.FeeValuesRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,7 +22,7 @@ import com.example.cd_create_edit_save.model.entity.FeeValues;
 class FeeValuesServiceImplTest {
 
 	@Mock
-	private FeeValueRepository monthlyFeeValueRepository;
+	private FeeValuesRepository monthlyFeeValueRepository;
 
 	@InjectMocks
 	private FeeValuesServiceImpl feeValueService;
