@@ -17,17 +17,16 @@ import org.mockito.MockitoAnnotations;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
 import com.example.cd_create_edit_save.model.entity.FeeValues;
-import com.example.cd_create_edit_save.repository.FeeValueRepository;
 
-class FeeValueServiceImplTest {
+class FeeValuesServiceImplTest {
 
 	@Mock
 	private FeeValueRepository monthlyFeeValueRepository;
 
 	@InjectMocks
-	private FeeValueServiceImpl feeValueService;
+	private FeeValuesServiceImpl feeValueService;
 
-	public FeeValueServiceImplTest() {
+	public FeeValuesServiceImplTest() {
 		MockitoAnnotations.openMocks(this);
 	}
 

@@ -29,7 +29,7 @@ public class ProductValidator {
     private final PrinCodeRepository prinCodeRepository;
     private final CwsProdCodeRepository cwsProdCodeRepository;
     private final ChaCodeRepository chaCodeRepository;
-    private final FeeValuesRepository feeValuesRepository;  // ✅ NEW
+    private final FeeValuesRepository feeValuesRepository;
 
     private static final BigDecimal CASH_APR_ADDITION = new BigDecimal("5.00");
 

@@ -2,7 +2,6 @@ package com.example.cd_create_edit_save.service;
 
 import java.util.List;
 
-import com.example.cd_create_edit_save.enums.FeeType;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
 
@@ -12,7 +11,7 @@ import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
  * @author Krishna
  * @version 1.0
  */
-public interface FeeValueService {
+public interface FeeValuesService {
 
 	/**
 	 * Retrieves all fee values filtered by fee type.

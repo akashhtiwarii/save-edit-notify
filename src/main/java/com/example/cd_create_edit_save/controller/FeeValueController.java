@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.cd_create_edit_save.constants.AppConstants;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
-import com.example.cd_create_edit_save.service.FeeValueService;
+import com.example.cd_create_edit_save.service.FeeValuesService;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import java.util.List;
 @Validated
 public class FeeValueController {
 
-	private final FeeValueService monthlyFeeValueService;
+	private final FeeValuesService monthlyFeeValuesService;
 
 	/**
 	 * Retrieves fee values filtered by type. GET endpoint specifically for
@@ -42,7 +42,7 @@ public class FeeValueController {
 			@PathVariable("feeType") String feeType) {
 		log.info("Received request to get all monthly fee values");
 
-		ApiResponseOutDto<List<FeeValueOutDTO>> response = monthlyFeeValueService.getFeeValuesByType(feeType);
+		ApiResponseOutDto<List<FeeValueOutDTO>> response = monthlyFeeValuesService.getFeeValuesByType(feeType);
 		log.info("Successfully retrieved {} monthly fee values", response.getData().size());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

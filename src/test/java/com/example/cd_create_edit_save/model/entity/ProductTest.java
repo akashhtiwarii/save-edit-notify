@@ -20,7 +20,7 @@ class ProductTest {
         String rewardsTypeShtCd = "RW";
         String aprType = "Fixed";
         String aprValueType = "Percentage";
-        Integer feeValue = 200;
+        BigDecimal feeValue = BigDecimal.valueOf(200.00);
         BigDecimal purchaseAprMin = new BigDecimal("10.50");
         BigDecimal purchaseAprMax = new BigDecimal("15.75");
         BigDecimal cashAprMin = new BigDecimal("5.25");
@@ -173,7 +173,7 @@ class ProductTest {
                 .rewardsTypeShtCd("RW")
                 .aprType("Fixed")
                 .aprValueType("Percentage")
-                .feeValue(200)
+                .feeValue(BigDecimal.valueOf(200.00))
                 .purchaseAprMin(new BigDecimal("10.00"))
                 .purchaseAprMax(new BigDecimal("15.00"))
                 .cashAprMin(new BigDecimal("5.00"))

@@ -22,14 +22,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
-import com.example.cd_create_edit_save.service.FeeValueService;
+import com.example.cd_create_edit_save.service.FeeValuesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class FeeValueControllerTest {
 
 	@Mock
-	private FeeValueService monthlyFeeValueService;
+	private FeeValuesService monthlyFeeValuesService;
 
 	@InjectMocks
 	private FeeValueController feeValueController;
@@ -80,7 +80,7 @@ public class FeeValueControllerTest {
 		mockResponse.setMessage("Fee vlaue type retrieved successfully.");
 		mockResponse.setTimestamp(Instant.now());
 
-		when(monthlyFeeValueService.getFeeValuesByType("MONTHLY")).thenReturn(mockResponse);
+		when(monthlyFeeValuesService.getFeeValuesByType("MONTHLY")).thenReturn(mockResponse);
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
@@ -90,7 +90,7 @@ public class FeeValueControllerTest {
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
 
-		verify(monthlyFeeValueService, times(1)).getFeeValuesByType("MONTHLY");
+		verify(monthlyFeeValuesService, times(1)).getFeeValuesByType("MONTHLY");
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class FeeValueControllerTest {
 		mockResponse.setMessage("Fee vlaue type retrieved successfully.");
 		mockResponse.setTimestamp(Instant.now());
 
-		when(monthlyFeeValueService.getFeeValuesByType("ANNUAL")).thenReturn(mockResponse);
+		when(monthlyFeeValuesService.getFeeValuesByType("ANNUAL")).thenReturn(mockResponse);
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
@@ -111,7 +111,7 @@ public class FeeValueControllerTest {
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
 
-		verify(monthlyFeeValueService, times(1)).getFeeValuesByType("ANNUAL");
+		verify(monthlyFeeValuesService, times(1)).getFeeValuesByType("ANNUAL");
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class FeeValueControllerTest {
 		mockResponse.setMessage("Fee vlaue type retrieved successfully.");
 		mockResponse.setTimestamp(Instant.now());
 
-		when(monthlyFeeValueService.getFeeValuesByType("MONTHLY")).thenReturn(mockResponse);
+		when(monthlyFeeValuesService.getFeeValuesByType("MONTHLY")).thenReturn(mockResponse);
 
 		String expectedOutputJSON = objectMapper.writeValueAsString(mockResponse);
 
@@ -132,6 +132,6 @@ public class FeeValueControllerTest {
 				.andExpect(MockMvcResultMatchers.content().json(expectedOutputJSON))
 				.andDo(MockMvcResultHandlers.print());
 
-		verify(monthlyFeeValueService, times(1)).getFeeValuesByType("MONTHLY");
+		verify(monthlyFeeValuesService, times(1)).getFeeValuesByType("MONTHLY");
 	}
 }

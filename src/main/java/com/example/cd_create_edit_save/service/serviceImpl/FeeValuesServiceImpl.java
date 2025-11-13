@@ -1,5 +1,6 @@
 package com.example.cd_create_edit_save.service.serviceImpl;
 
+import com.example.cd_create_edit_save.repository.FeeValuesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,24 +8,23 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.FeeValueOutDTO;
 import com.example.cd_create_edit_save.model.entity.FeeValues;
-import com.example.cd_create_edit_save.repository.FeeValueRepository;
-import com.example.cd_create_edit_save.service.FeeValueService;
+import com.example.cd_create_edit_save.service.FeeValuesService;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link FeeValueService} interface.
+ * Implementation of {@link FeeValuesService} interface.
  * 
  * @author Krishna
  * @version 1.0
  */
 @Service
 @RequiredArgsConstructor
-public class FeeValueServiceImpl implements FeeValueService {
+public class FeeValuesServiceImpl implements FeeValuesService {
 
-	private final FeeValueRepository monthlyFeeValueRepository;
+	private final FeeValuesRepository monthlyFeeValueRepository;
 
 	/**
 	 * Retrieves all fee values filtered by fee type.
@@ -46,9 +46,9 @@ public class FeeValueServiceImpl implements FeeValueService {
 	}
 
 	/**
-	 * Maps an {@link FeeValue} entity to an {@link FeeValueOutDTO}.
+	 * Maps an {@link FeeValues} entity to an {@link FeeValueOutDTO}.
 	 *
-	 * @param entity the {@link FeeValue} entity to convert
+	 * @param entity the {@link FeeValues} entity to convert
 	 * @return a corresponding {@link FeeValueOutDTO} instance
 	 */
 	private FeeValueOutDTO mapToDTO(FeeValues entity) {
