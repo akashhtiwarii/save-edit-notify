@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-import com.example.cd_create_edit_save.enums.FeeType;
-
 /**
  * Data Transfer Object (DTO) for transferring monthly fee value data between
  * the API layer and service or persistence layers.
