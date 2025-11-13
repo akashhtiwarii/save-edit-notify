@@ -582,7 +582,7 @@ public class ProductValidator {
         log.info("Date validation passed");
     }
 
-    private void validateApprover(String toBeApprovedBy) {
+    public void validateApprover(String toBeApprovedBy) {
         log.info("Validating approver: {}", toBeApprovedBy);
 
         boolean approverExists = userRepository.existsByUsername(toBeApprovedBy);
@@ -595,5 +595,30 @@ public class ProductValidator {
         }
 
         log.info("Approver validation passed");
+    }
+
+    /**
+     * Performs business rule validations for product date change.
+     *
+     * @param product existing product entity
+     * @param newStart new start datetime
+     * @param newEnd new end datetime
+     */
+    public void validateDateChange(Product product, LocalDateTime newStart, LocalDateTime newEnd) {
+
+        LocalDateTime existingStart = product.getStartDate();
+        LocalDateTime existingEnd = product.getEndDate();
+
+        if (newStart.equals(existingStart) && newEnd.equals(existingEnd)) {
+            throw new InvalidRequestException("No changes detected in start or end dates.");
+        }
+
+        if (newEnd.isBefore(newStart)) {
+            throw new InvalidRequestException("End date and time cannot be before start date and time.");
+        }
+
+        if (newStart.isBefore(LocalDateTime.now())) {
+            throw new InvalidRequestException("Start date cannot be in the past.");
+        }
     }
 }

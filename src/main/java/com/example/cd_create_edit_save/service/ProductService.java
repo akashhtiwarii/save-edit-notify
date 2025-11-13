@@ -1,6 +1,7 @@
 package com.example.cd_create_edit_save.service;
 
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductDateUpdateInDTO;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
@@ -84,4 +85,6 @@ public interface ProductService {
      * @return {@link ProductSummaryOutDTO} containing summarized product information
      */
     ProductSummaryOutDTO getProductSummary();
+
+    ProductOutDto updateProductDates(String productId, ProductDateUpdateInDTO dto);
 }

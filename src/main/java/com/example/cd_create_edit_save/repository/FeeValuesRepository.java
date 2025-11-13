@@ -2,11 +2,10 @@ package com.example.cd_create_edit_save.repository;
 
 import com.example.cd_create_edit_save.model.entity.FeeValues;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface FeeValuesRepository extends JpaRepository<FeeValues, Long> {
@@ -24,5 +23,14 @@ public interface FeeValuesRepository extends JpaRepository<FeeValues, Long> {
      * @return true if exists, false otherwise
      */
     boolean existsByFeeValueAndFeeType(BigDecimal feeValue, String feeType);
+
+
+    /**
+     * Finds all fee values by fee type.
+     *
+     * @param feeType the type of fee (ANNUAL or MONTHLY)
+     * @return a list of fee values matching the specified fee type
+     */
+    List<FeeValues> findByFeeType(String feeType);
 }
 

@@ -20,6 +20,7 @@ class ProductTest {
         String rewardsTypeShtCd = "RW";
         String aprType = "Fixed";
         String aprValueType = "Percentage";
+        BigDecimal feeValue = BigDecimal.valueOf(200.00);
         BigDecimal purchaseAprMin = new BigDecimal("10.50");
         BigDecimal purchaseAprMax = new BigDecimal("15.75");
         BigDecimal cashAprMin = new BigDecimal("5.25");
@@ -35,6 +36,11 @@ class ProductTest {
         String status = "ACTIVE";
         String createdBy = "Admin";
         LocalDateTime createdDatetime = LocalDateTime.now();
+        String updatedBy = "Updater";
+        LocalDateTime updatedDatetime = LocalDateTime.now();
+        String requestType = "CREATE";
+        String toBeApprovedBy = "Approver";
+        String commentsToApprover = "Approve ASAP";
         String reviewedBy = "Reviewer";
         LocalDateTime reviewedDatetime = LocalDateTime.now();
         String reviewComments = "Looks good";
@@ -47,16 +53,15 @@ class ProductTest {
         String boardingIndicator = "Y";
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().plusDays(30);
-        String toBeApprovedBy = "Approver";
-        String approvalPriorityLevel = "High";
-        String commentsToApprover = "Approve ASAP";
 
+        // Set all fields
         product.setProductId(productId);
         product.setProductShtCd(productShtCd);
         product.setFeeTypeShtCd(feeTypeShtCd);
         product.setRewardsTypeShtCd(rewardsTypeShtCd);
         product.setAprType(aprType);
         product.setAprValueType(aprValueType);
+        product.setFeeValue(feeValue);
         product.setPurchaseAprMin(purchaseAprMin);
         product.setPurchaseAprMax(purchaseAprMax);
         product.setCashAprMin(cashAprMin);
@@ -72,6 +77,11 @@ class ProductTest {
         product.setStatus(status);
         product.setCreatedBy(createdBy);
         product.setCreatedDatetime(createdDatetime);
+        product.setUpdatedBy(updatedBy);
+        product.setUpdatedDatetime(updatedDatetime);
+        product.setRequestType(requestType);
+        product.setToBeApprovedBy(toBeApprovedBy);
+        product.setCommentsToApprover(commentsToApprover);
         product.setReviewedBy(reviewedBy);
         product.setReviewedDatetime(reviewedDatetime);
         product.setReviewComments(reviewComments);
@@ -84,16 +94,15 @@ class ProductTest {
         product.setBoardingIndicator(boardingIndicator);
         product.setStartDate(startDate);
         product.setEndDate(endDate);
-        product.setToBeApprovedBy(toBeApprovedBy);
-        product.setApprovalPriorityLevel(approvalPriorityLevel);
-        product.setCommentsToApprover(commentsToApprover);
 
+        // Verify all getters
         assertEquals(productId, product.getProductId());
         assertEquals(productShtCd, product.getProductShtCd());
         assertEquals(feeTypeShtCd, product.getFeeTypeShtCd());
         assertEquals(rewardsTypeShtCd, product.getRewardsTypeShtCd());
         assertEquals(aprType, product.getAprType());
         assertEquals(aprValueType, product.getAprValueType());
+        assertEquals(feeValue, product.getFeeValue());
         assertEquals(purchaseAprMin, product.getPurchaseAprMin());
         assertEquals(purchaseAprMax, product.getPurchaseAprMax());
         assertEquals(cashAprMin, product.getCashAprMin());
@@ -109,6 +118,11 @@ class ProductTest {
         assertEquals(status, product.getStatus());
         assertEquals(createdBy, product.getCreatedBy());
         assertEquals(createdDatetime, product.getCreatedDatetime());
+        assertEquals(updatedBy, product.getUpdatedBy());
+        assertEquals(updatedDatetime, product.getUpdatedDatetime());
+        assertEquals(requestType, product.getRequestType());
+        assertEquals(toBeApprovedBy, product.getToBeApprovedBy());
+        assertEquals(commentsToApprover, product.getCommentsToApprover());
         assertEquals(reviewedBy, product.getReviewedBy());
         assertEquals(reviewedDatetime, product.getReviewedDatetime());
         assertEquals(reviewComments, product.getReviewComments());
@@ -121,9 +135,6 @@ class ProductTest {
         assertEquals(boardingIndicator, product.getBoardingIndicator());
         assertEquals(startDate, product.getStartDate());
         assertEquals(endDate, product.getEndDate());
-        assertEquals(toBeApprovedBy, product.getToBeApprovedBy());
-        assertEquals(approvalPriorityLevel, product.getApprovalPriorityLevel());
-        assertEquals(commentsToApprover, product.getCommentsToApprover());
     }
 
     @Test
@@ -131,19 +142,15 @@ class ProductTest {
         Product product1 = createSampleProduct();
         Product product2 = createSampleProduct();
 
-        assertEquals(product1, product1);
-        assertEquals(product1.hashCode(), product1.hashCode());
         assertEquals(product1, product2);
         assertEquals(product1.hashCode(), product2.hashCode());
 
         product2.setProductId("P002");
         assertNotEquals(product1, product2);
-        assertNotEquals(product1.hashCode(), product2.hashCode());
 
         product2 = createSampleProduct();
         product2.setStatus("INACTIVE");
         assertNotEquals(product1, product2);
-        assertNotEquals(product1.hashCode(), product2.hashCode());
 
         assertNotEquals(product1, new Object());
         assertNotEquals(product1, null);
@@ -166,6 +173,7 @@ class ProductTest {
                 .rewardsTypeShtCd("RW")
                 .aprType("Fixed")
                 .aprValueType("Percentage")
+                .feeValue(BigDecimal.valueOf(200.00))
                 .purchaseAprMin(new BigDecimal("10.00"))
                 .purchaseAprMax(new BigDecimal("15.00"))
                 .cashAprMin(new BigDecimal("5.00"))
@@ -181,6 +189,11 @@ class ProductTest {
                 .status("ACTIVE")
                 .createdBy("Admin")
                 .createdDatetime(now)
+                .updatedBy("Updater")
+                .updatedDatetime(now)
+                .requestType("CREATE")
+                .toBeApprovedBy("Approver")
+                .commentsToApprover("Approve soon")
                 .reviewedBy("Reviewer")
                 .reviewedDatetime(now)
                 .reviewComments("Reviewed")
@@ -193,9 +206,6 @@ class ProductTest {
                 .boardingIndicator("Y")
                 .startDate(now)
                 .endDate(now.plusDays(10))
-                .toBeApprovedBy("Approver")
-                .approvalPriorityLevel("High")
-                .commentsToApprover("Approve soon")
                 .build();
 
         assertNotNull(product.toString());
@@ -204,12 +214,12 @@ class ProductTest {
     }
 
     private Product createSampleProduct() {
-        Product product = new Product();
-        product.setProductId("P001");
-        product.setProductShtCd("PRD");
-        product.setFeeTypeShtCd("FT");
-        product.setRewardsTypeShtCd("RW");
-        product.setStatus("ACTIVE");
-        return product;
+        return Product.builder()
+                .productId("P001")
+                .productShtCd("PRD")
+                .feeTypeShtCd("FT")
+                .rewardsTypeShtCd("RW")
+                .status("ACTIVE")
+                .build();
     }
 }

@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import java.util.*;
 
-class ChaCodeServiceImplementationTest {
+class ChaCodeServiceImplTest {
 
 	@Mock
 	private ChaCodeRepository repository;
@@ -23,7 +23,7 @@ class ChaCodeServiceImplementationTest {
 	@InjectMocks
 	private ChaCodeServiceImpl chaCodeService;
 
-	public ChaCodeServiceImplementationTest() {
+	public ChaCodeServiceImplTest() {
 		MockitoAnnotations.openMocks(this);
 	}
 

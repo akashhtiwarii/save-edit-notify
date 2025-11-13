@@ -1,16 +1,22 @@
 package com.example.cd_create_edit_save.mapper;
 
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductDateUpdateInDTO;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
 import com.example.cd_create_edit_save.model.entity.Product;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class ProductMapper {
 
 
@@ -176,6 +182,46 @@ public class ProductMapper {
                 .build();
     }
 
+    /**
+     * Maps updated date fields and metadata into the product entity.
+     * Dates are already parsed in the service layer.
+     *
+     * @param product   existing product entity
+     * @param dto       input date update DTO
+     * @param newStart  new start datetime (already parsed)
+     * @param newEnd    new end datetime (already parsed)
+     * @param updatedBy user performing the update
+     * @return updated product entity
+     */
+    public Product mapDateChangeFields(Product product,
+                                       ProductDateUpdateInDTO dto,
+                                       LocalDateTime newStart,
+                                       LocalDateTime newEnd,
+                                       String updatedBy) {
+        log.debug("Mapping date change fields for Product ID: {}", product.getProductId());
+
+        product.setStartDate(newStart);
+        product.setEndDate(newEnd);
+        log.debug("Set new start date: {} and end date: {}", newStart, newEnd);
+
+        product.setToBeApprovedBy(dto.getApprover());
+        product.setRequestType("DATE_CHANGE");
+        log.debug("Set approver: '{}' and request type: DATE_CHANGE", dto.getApprover());
+
+        String comments = dto.getReasonForDateChange();
+        if (StringUtils.hasText(dto.getAdditionalNotes())) {
+            comments += " | " + dto.getAdditionalNotes();
+        }
+        product.setCommentsToApprover(comments);
+        log.debug("Set commentsToApprover: {}", comments);
+
+        product.setUpdatedBy(updatedBy);
+        product.setUpdatedDatetime(LocalDateTime.now());
+        log.debug("Set updatedBy: '{}' and updatedDatetime", updatedBy);
+
+        log.info("Date change mapping completed successfully for Product ID: {}", product.getProductId());
+        return product;
+    }
 
     private String buildBoardingIndicator(Boolean flag1, Boolean flag2, Boolean flag3, Boolean flag4, Boolean flag5,
                                           Boolean flag6, Boolean flag7, Boolean flag8, Boolean flag9, Boolean flag10,
