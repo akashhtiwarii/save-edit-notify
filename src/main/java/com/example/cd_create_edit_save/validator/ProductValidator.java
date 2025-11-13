@@ -61,7 +61,7 @@ public class ProductValidator {
         validatePrinCode(dto.getPrin());
         validateCwsProductCode(dto.getCwsProductId());
         validateChaCode(dto.getChaCode());
-        validateFeeValue(dto.getFeeTypeShtCd(), dto.getFeeValue());  // ✅ NEW
+        validateFeeValue(dto.getFeeTypeShtCd(), dto.getFeeValue());
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
@@ -81,7 +81,7 @@ public class ProductValidator {
         validatePrinCode(dto.getPrin());
         validateCwsProductCode(dto.getCwsProductId());
         validateChaCode(dto.getChaCode());
-        validateFeeValue(dto.getFeeTypeShtCd(), dto.getFeeValue());  // ✅ NEW
+        validateFeeValue(dto.getFeeTypeShtCd(), dto.getFeeValue());
         validateAprMinMax(dto.getAprValueType(), dto.getPurchaseAprMin(), dto.getPurchaseAprMax());
         verifyCashApr(dto.getPurchaseAprMin(), dto.getPurchaseAprMax(), dto.getCashAprMin(), dto.getCashAprMax());
         validateCreditLine(dto.getCreditLineMin(), dto.getCreditLineMax());
@@ -263,7 +263,6 @@ public class ProductValidator {
             changed = true;
         }
 
-        // ✅ NEW: Check feeValue
         if (!safeEquals(existing.getFeeValue(), dto.getFeeValue())) {
             log.debug("Fee Value changed");
             changed = true;
@@ -385,37 +384,48 @@ public class ProductValidator {
     }
 
     /**
-     * ✅ NEW: Validate fee value based on fee type
+     * Validate fee value based on fee type
      */
-    private void validateFeeValue(String feeTypeShtCd,BigDecimal feeValue) {
+    private void validateFeeValue(String feeTypeShtCd, BigDecimal feeValue) {
         log.info("Validating fee value for fee type: {}", feeTypeShtCd);
 
         if ("NF".equalsIgnoreCase(feeTypeShtCd)) {
-            // NONE fee type - fee value must be null
-            if (feeValue != null) {
-                log.error("Fee value must be null for NONE fee type");
+            if (feeValue != null && feeValue.compareTo(BigDecimal.ZERO) != 0) {
+                log.error("Fee value must be null or 0 for NONE fee type, but got: {}", feeValue);
                 throw new InvalidRequestException(
-                        "Fee value must be null when fee type is NONE"
+                        "Fee value must be null or 0 when fee type is NONE"
                 );
             }
-        } else if ("AF".equalsIgnoreCase(feeTypeShtCd) || "MF".equalsIgnoreCase(feeTypeShtCd)) {
-            // ANNUAL or MONTHLY - fee value is required
-            if (feeValue == null) {
-                log.error("Fee value is required for {} fee type", feeTypeShtCd);
+        } else if ("AF".equalsIgnoreCase(feeTypeShtCd)) {
+            if (feeValue == null || feeValue.compareTo(BigDecimal.ZERO) <= 0) {
+                log.error("Fee value is required and must be greater than 0 for ANNUAL fee type");
                 throw new InvalidRequestException(
-                        "Fee value is required for " +
-                                (feeTypeShtCd.equals("AF") ? "ANNUAL" : "MONTHLY") + " fee type"
+                        "Fee value is required and must be greater than 0 for ANNUAL fee type"
                 );
             }
 
-            // Validate fee value exists in database
-            String feeType = feeTypeShtCd.equals("AF") ? "ANNUAL" : "MONTHLY";
-            boolean feeValueExists = feeValuesRepository.existsByFeeValueAndFeeType(feeValue, feeType);
+            boolean feeValueExists = feeValuesRepository.existsByFeeValueAndFeeType(feeValue, "ANNUAL");
 
             if (!feeValueExists) {
-                log.error("Fee value {} does not exist in database for fee type {}", feeValue, feeType);
+                log.error("Fee value {} does not exist in database for ANNUAL fee type", feeValue);
                 throw new InvalidRequestException(
-                        "Fee value " + feeValue + " does not exist in the system for " + feeType + " fee type"
+                        "Fee value " + feeValue + " does not exist in the system for ANNUAL fee type"
+                );
+            }
+        } else if ("MF".equalsIgnoreCase(feeTypeShtCd)) {
+            if (feeValue == null || feeValue.compareTo(BigDecimal.ZERO) <= 0) {
+                log.error("Fee value is required and must be greater than 0 for MONTHLY fee type");
+                throw new InvalidRequestException(
+                        "Fee value is required and must be greater than 0 for MONTHLY fee type"
+                );
+            }
+
+            boolean feeValueExists = feeValuesRepository.existsByFeeValueAndFeeType(feeValue, "MONTHLY");
+
+            if (!feeValueExists) {
+                log.error("Fee value {} does not exist in database for MONTHLY fee type", feeValue);
+                throw new InvalidRequestException(
+                        "Fee value " + feeValue + " does not exist in the system for MONTHLY fee type"
                 );
             }
         }
@@ -493,6 +503,11 @@ public class ProductValidator {
         log.info("Credit line validation passed");
     }
 
+    /**
+     * Validate security deposit configuration
+     * - If indicator = 'Y', min and max are required and max > min
+     * - If indicator = 'N', min and max must be null or 0
+     */
     private void validateSecurityDeposit(String indicator, Integer min, Integer max) {
         log.info("Validating security deposit: indicator={}, min={}, max={}", indicator, min, max);
 
@@ -501,17 +516,17 @@ public class ProductValidator {
         }
 
         if ("Y".equalsIgnoreCase(indicator)) {
-            if (min == null) {
-                log.error("Security deposit min is null when indicator is Y");
+            if (min == null || min == 0) {
+                log.error("Security deposit min is null or 0 when indicator is Y");
                 throw new InvalidRequestException(
-                        "Security deposit min is required when security deposit is enabled"
+                        "Security deposit min is required and must be greater than 0 when security deposit is enabled"
                 );
             }
 
-            if (max == null) {
-                log.error("Security deposit max is null when indicator is Y");
+            if (max == null || max == 0) {
+                log.error("Security deposit max is null or 0 when indicator is Y");
                 throw new InvalidRequestException(
-                        "Security deposit max is required when security deposit is enabled"
+                        "Security deposit max is required and must be greater than 0 when security deposit is enabled"
                 );
             }
 
@@ -524,21 +539,20 @@ public class ProductValidator {
         }
 
         if ("N".equalsIgnoreCase(indicator)) {
-            if (min != null) {
-                log.error("Security deposit min is not null when indicator is N");
+            if (min != null && min != 0) {
+                log.error("Security deposit min is {} when indicator is N (should be null or 0)", min);
                 throw new InvalidRequestException(
-                        "Security deposit min must be null when security deposit is not required"
+                        "Security deposit min must be null or 0 when security deposit is not required"
                 );
             }
 
-            if (max != null) {
-                log.error("Security deposit max is not null when indicator is N");
+            if (max != null && max != 0) {
+                log.error("Security deposit max is {} when indicator is N (should be null or 0)", max);
                 throw new InvalidRequestException(
-                        "Security deposit max must be null when security deposit is not required"
+                        "Security deposit max must be null or 0 when security deposit is not required"
                 );
             }
         }
-
         log.info("Security deposit validation passed");
     }
 
