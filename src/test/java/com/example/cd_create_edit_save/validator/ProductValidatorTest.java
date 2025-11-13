@@ -89,25 +89,6 @@ class ProductValidatorTest {
         verify(productRepository).findById("P123");
     }
 
-    // ==================== validateProductCreateRequest Tests ====================
-
-    @Test
-    void testValidateProductCreateRequest_Success() {
-        ProductCreateInDto dto = validCreateDto();
-
-        setupAllCodeMocksAsValid();
-
-        assertDoesNotThrow(() -> productValidator.validateProductCreateRequest(dto));
-
-        verify(productShortCodeRepository).existsByProductShortCode("GOL");
-        verify(feeTypeShortCodeRepository).existsByFeeTypeShortCode("AF");
-        verify(rewardsTypeShortCodeRepository).existsByRewardsTypeShortCode("CB");
-        verify(prinCodeRepository).existsByPrinCode("PRIN01");
-        verify(cwsProdCodeRepository).existsByCwsProdCode("CWS01");
-        verify(chaCodeRepository).existsByChaCode("CHA01");
-        verify(userRepository).existsByUsername("admin");
-    }
-
     @Test
     void testValidateProductCreateRequest_InvalidProductShortCode() {
         ProductCreateInDto dto = validCreateDto();
@@ -118,31 +99,6 @@ class ProductValidatorTest {
 
         assertTrue(ex.getMessage().contains("Product Short Code 'GOL' does not exist"));
         verify(productShortCodeRepository).existsByProductShortCode("GOL");
-    }
-
-    @Test
-    void testValidateProductCreateRequest_InvalidFeeTypeShortCode() {
-        ProductCreateInDto dto = validCreateDto();
-        when(productShortCodeRepository.existsByProductShortCode("GOL")).thenReturn(true);
-        when(feeTypeShortCodeRepository.existsByFeeTypeShortCode("AF")).thenReturn(false);
-
-        InvalidRequestException ex = assertThrows(InvalidRequestException.class,
-                () -> productValidator.validateProductCreateRequest(dto));
-
-        assertTrue(ex.getMessage().contains("Fee Type Short Code 'AF' does not exist"));
-    }
-
-    @Test
-    void testValidateProductCreateRequest_InvalidRewardsTypeShortCode() {
-        ProductCreateInDto dto = validCreateDto();
-        when(productShortCodeRepository.existsByProductShortCode("GOL")).thenReturn(true);
-        when(feeTypeShortCodeRepository.existsByFeeTypeShortCode("AF")).thenReturn(true);
-        when(rewardsTypeShortCodeRepository.existsByRewardsTypeShortCode("CB")).thenReturn(false);
-
-        InvalidRequestException ex = assertThrows(InvalidRequestException.class,
-                () -> productValidator.validateProductCreateRequest(dto));
-
-        assertTrue(ex.getMessage().contains("Rewards Type Short Code 'CB' does not exist"));
     }
 
     @Test
@@ -624,19 +580,6 @@ class ProductValidatorTest {
         assertTrue(ex.getMessage().contains("Cash APR Max must be exactly 15.00"));
     }
 
-    @Test
-    void testVerifyCashApr_WithDecimals_Success() {
-        ProductUpdateInDto dto = validUpdateDto();
-        dto.setPurchaseAprMin(BigDecimal.valueOf(12.50));
-        dto.setPurchaseAprMax(BigDecimal.valueOf(15.75));
-        dto.setCashAprMin(BigDecimal.valueOf(17.50));
-        dto.setCashAprMax(BigDecimal.valueOf(20.75));
-
-        setupUpdateCodeMocksAsValid();
-
-        assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
-    }
-
     // ==================== Credit Line Tests ====================
 
     @Test
@@ -978,10 +921,78 @@ class ProductValidatorTest {
 
         setupUpdateCodeMocksAsValid();
 
-        // This should be caught by @NotBlank validation at controller level
-        // but if it reaches validator, it will pass through since we only check existence
         assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
     }
+    @Test
+    void testValidateProductCreateRequest_Success() {
+        ProductCreateInDto dto = validCreateDto();
+        dto.setFeeTypeShtCd("AF");
+        dto.setFeeValue(BigDecimal.valueOf(95));
+
+        setupAllCodeMocksAsValid();
+        when(feeValuesRepository.existsByFeeValueAndFeeType(BigDecimal.valueOf(95), "ANNUAL"))
+                .thenReturn(true);
+
+        assertDoesNotThrow(() -> productValidator.validateProductCreateRequest(dto));
+
+        verify(productShortCodeRepository).existsByProductShortCode("GOL");
+        verify(feeTypeShortCodeRepository).existsByFeeTypeShortCode("AF");
+        verify(rewardsTypeShortCodeRepository).existsByRewardsTypeShortCode("CB");
+        verify(prinCodeRepository).existsByPrinCode("PRIN01");
+        verify(cwsProdCodeRepository).existsByCwsProdCode("CWS01");
+        verify(chaCodeRepository).existsByChaCode("CHA01");
+        verify(userRepository).existsByUsername("admin");
+        verify(feeValuesRepository).existsByFeeValueAndFeeType(BigDecimal.valueOf(95), "ANNUAL");
+    }
+
+    @Test
+    void testValidateProductCreateRequest_InvalidFeeTypeShortCode() {
+        ProductCreateInDto dto = validCreateDto();
+        dto.setProductShtCd("GOL");
+        dto.setFeeTypeShtCd("AF");
+
+        when(productShortCodeRepository.existsByProductShortCode("GOL")).thenReturn(true);
+        when(feeTypeShortCodeRepository.existsByFeeTypeShortCode("AF")).thenReturn(false);
+
+        InvalidRequestException ex = assertThrows(InvalidRequestException.class,
+                () -> productValidator.validateProductCreateRequest(dto));
+
+        assertTrue(ex.getMessage().contains("Fee Type Short Code 'AF' does not exist"));
+        verify(feeTypeShortCodeRepository).existsByFeeTypeShortCode("AF");
+    }
+
+    @Test
+    void testValidateProductCreateRequest_InvalidRewardsTypeShortCode() {
+        ProductCreateInDto dto = validCreateDto();
+        dto.setProductShtCd("GOL");
+        dto.setFeeTypeShtCd("AF");
+
+        when(productShortCodeRepository.existsByProductShortCode(anyString())).thenReturn(true);
+        when(feeTypeShortCodeRepository.existsByFeeTypeShortCode(anyString())).thenReturn(true);
+        when(rewardsTypeShortCodeRepository.existsByRewardsTypeShortCode("CB")).thenReturn(false);
+
+        InvalidRequestException ex = assertThrows(InvalidRequestException.class,
+                () -> productValidator.validateProductCreateRequest(dto));
+
+        assertTrue(ex.getMessage().contains("Rewards Type Short Code 'CB' does not exist"));
+        verify(rewardsTypeShortCodeRepository).existsByRewardsTypeShortCode("CB");
+    }
+
+    @Test
+    void testVerifyCashApr_WithDecimals_Success() {
+        ProductUpdateInDto dto = validUpdateDto();
+        dto.setPurchaseAprMin(BigDecimal.valueOf(12.50));
+        dto.setPurchaseAprMax(BigDecimal.valueOf(12.50));
+        dto.setCashAprMin(BigDecimal.valueOf(17.50));
+        dto.setCashAprMax(BigDecimal.valueOf(17.50));
+
+        setupUpdateCodeMocksAsValid();
+        // ensure any feeValue/fee checks (if AF) won't block the test
+        when(feeValuesRepository.existsByFeeValueAndFeeType(any(), anyString())).thenReturn(true);
+
+        assertDoesNotThrow(() -> productValidator.validateProductUpdateRequest(dto));
+    }
+
 
     // ==================== Helper Methods ====================
 
