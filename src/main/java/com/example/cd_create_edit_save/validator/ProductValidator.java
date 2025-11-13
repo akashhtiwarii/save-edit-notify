@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -559,19 +560,20 @@ public class ProductValidator {
     private void validateDates(LocalDateTime startDate, LocalDateTime endDate) {
         log.info("Validating start date: {}, end date: {}", startDate, endDate);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneWeekFromNow = now.plusWeeks(1);
+        LocalDate today = LocalDate.now();
+        LocalDate oneWeekFromToday = today.plusWeeks(1);
+        LocalDate startDateOnly = startDate.toLocalDate();
+        LocalDate endDateOnly = endDate.toLocalDate();
 
-        if (startDate.isBefore(oneWeekFromNow)) {
-            log.error("Start date ({}) is before one week from now ({})", startDate, oneWeekFromNow);
+        if (startDateOnly.isBefore(oneWeekFromToday)) {
+            log.error("Start date ({}) is before one week from now ({})", startDateOnly, oneWeekFromToday);
             throw new InvalidRequestException(
-                    "Start date must be at least one week from today (" +
-                            oneWeekFromNow.toLocalDate() + ")"
+                    "Start date must be at least one week from today (" + oneWeekFromToday + ")"
             );
         }
 
-        if (endDate.isBefore(startDate) || endDate.isEqual(startDate)) {
-            log.error("End date ({}) is not after start date ({})", endDate, startDate);
+        if (endDateOnly.isBefore(startDateOnly) || endDateOnly.isEqual(startDateOnly)) {
+            log.error("End date ({}) is not after start date ({})", endDateOnly, startDateOnly);
             throw new InvalidRequestException(
                     "End date must be after start date (not equal)"
             );
