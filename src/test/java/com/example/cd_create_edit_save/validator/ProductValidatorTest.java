@@ -729,8 +729,8 @@ class ProductValidatorTest {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.plusWeeks(2);
 
-        dto.setStartDate(startDate.atTime(9, 0)); // 9 AM
-        dto.setEndDate(startDate.atTime(17, 0)); // 5 PM (same day, different time)
+        dto.setStartDate(startDate.atTime(9, 0));
+        dto.setEndDate(startDate.atTime(17, 0));
 
         setupUpdateCodeMocksAsValid();
 
