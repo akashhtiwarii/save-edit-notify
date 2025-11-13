@@ -107,9 +107,11 @@ public class ProductUpdateInDto {
     private String securityDepositIndicator;
 
     /** Minimum required security deposit amount (optional). */
+    @Min(value = 0, message = "Security deposit min must be >= 0")
     private Integer securityDepositMin;
 
     /** Maximum allowed security deposit amount (optional). */
+    @Min(value = 0, message = "Security deposit max must be >= 0")
     private Integer securityDepositMax;
 
     /** Name of the person who must approve the product. */
@@ -117,6 +119,8 @@ public class ProductUpdateInDto {
     @Size(max = 255, message = "To be approved by name too long")
     private String toBeApprovedBy;
 
+    @DecimalMin(value = "0.00", message = "Fee value must be >= 0")
+    @Digits(integer = 10, fraction = 2, message = "Fee value must have max 2 decimal places")
     private BigDecimal feeValue;
 
     /** Optional comments to the approver. */
