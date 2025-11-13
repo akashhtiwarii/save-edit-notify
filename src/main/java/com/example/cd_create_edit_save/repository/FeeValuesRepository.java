@@ -2,8 +2,6 @@ package com.example.cd_create_edit_save.repository;
 
 import com.example.cd_create_edit_save.model.entity.FeeValues;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
