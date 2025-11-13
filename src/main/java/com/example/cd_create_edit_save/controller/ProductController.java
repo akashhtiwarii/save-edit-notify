@@ -4,6 +4,7 @@ import com.example.cd_create_edit_save.model.dto.ProductRequestInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 import com.example.cd_create_edit_save.constants.AppConstants;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductDateUpdateInDTO;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductUpdateInDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductOutDto;
@@ -209,4 +210,26 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    @PutMapping("/{productId}/update-dates")
+    public ResponseEntity<ApiResponseOutDto<ProductOutDto>> updateProductDates(
+            @PathVariable String productId,
+            @Valid @RequestBody ProductDateUpdateInDTO dto) {
+
+        log.info("Received request to update product dates for Product ID: {}", productId);
+
+        ProductOutDto responseData = productService.updateProductDates(productId, dto);
+
+        log.info("Successfully updated dates for Product ID: {}", productId);
+
+        ApiResponseOutDto<ProductOutDto> response = ApiResponseOutDto.<ProductOutDto>builder()
+                .status("SUCCESS")
+                .message("Product date updated successfully.")
+                .data(responseData)
+                .timestamp(Instant.now())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.cd_create_edit_save.service.serviceImpl;
 
 import com.example.cd_create_edit_save.mapper.ProductMapper;
+import com.example.cd_create_edit_save.model.dto.inDto.ProductDateUpdateInDTO;
 import com.example.cd_create_edit_save.model.dto.outDto.ProductResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.outDto.ApiResponseOutDto;
 import com.example.cd_create_edit_save.model.dto.inDto.ProductCreateInDto;
@@ -22,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -278,4 +282,42 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("Error retrieving product summary", e);
         }
     }
+
+    @Override
+    public ProductOutDto updateProductDates(String productId, ProductDateUpdateInDTO dto) {
+        log.info("Starting product date update process for Product ID: {}", productId);
+
+        Product product = productValidator.validateProductIdAndGetProduct(productId);
+        log.debug("Fetched product details for Product ID: {}", product.getProductId());
+
+        LocalDateTime newStart = LocalDateTime.of(
+                LocalDate.parse(dto.getNewStartDate()),
+                LocalTime.parse(dto.getNewStartTime())
+        );
+        LocalDateTime newEnd = LocalDateTime.of(
+                LocalDate.parse(dto.getNewEndDate()),
+                LocalTime.parse(dto.getNewEndTime())
+        );
+
+        log.debug("Parsed new start datetime: {}, new end datetime: {}", newStart, newEnd);
+
+        productValidator.validateDateChange(product, newStart, newEnd);
+        log.debug("Validated date changes successfully for Product ID: {}", productId);
+
+        productValidator.validateApprover(dto.getApprover());
+        log.debug("Validated approver '{}' for Product ID: {}", dto.getApprover(), productId);
+
+        productMapper.mapDateChangeFields(product, dto, newStart, newEnd, "SYSTEM");
+        log.debug("Mapped new date fields and metadata into product entity for Product ID: {}", productId);
+
+        productRepository.save(product);
+        log.info("Product dates updated and saved successfully for Product ID: {}", productId);
+
+        ProductOutDto response = productMapper.toDto(product);
+        log.debug("Mapped updated product entity to DTO for Product ID: {}", productId);
+
+        return response;
+    }
+
+
 }
